@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>财报速读</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --border: #e2e8f0;
+  --red: #cc0000;
+  --green: #006400;
+  --blue: #2b6cb0;
+  --yellow: #d69e2e;
+  --gray: #718096;
+  --light-bg: #f7fafc;
+  --section-bg: #edf2f7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  padding: 20px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+header {
+  background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+  color: #fff;
+  padding: 28px 24px 20px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  text-align: center;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d69e2e, #2b6cb0, #553c9a);
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+header .date {
+  color: #a0aec0;
+  font-size: 13px;
+}
+
+.section {
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 16px 0 12px;
+  border-bottom: 2px solid var(--blue);
+  margin-bottom: 12px;
+}
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.metrics-table th,
+.metrics-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+}
+
+.metrics-table th {
+  background: var(--section-bg);
+  font-weight: 600;
+}
+
+.trend-box {
+  background: var(--light-bg);
+  padding: 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.roe-breakdown {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.risk-item {
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.risk-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+}
+
+.risk-high { background: #fed7d7; color: var(--red); }
+.risk-medium { background: #fefcbf; color: #975a16; }
+.risk-low { background: #bee3f8; color: var(--blue); }
+.risk-none { background: #c6f6d5; color: var(--green); }
+
+.score-box {
+  background: var(--light-bg);
+  padding: 16px;
+  border-radius: 6px;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.score {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+footer {
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.disclaimer {
+  background: var(--light-bg);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>财报速读</h1>
+    <div class="date">{{公司简称}}({{股票代码}}) | {{最新报告期}}</div>
+  </header>
+
+  <div class="section">
+    <div class="section-title">核心指标一页纸</div>
+    <table class="metrics-table">
+      <tr><th>指标</th><th>数值</th><th>同比</th><th>行业均值</th><th>行业排名</th></tr>
+      <tr><td>营业总收入</td><td>{{XX亿}}</td><td>{{+X%}}</td><td>{{XX亿}}</td><td>{{N/N}}</td></tr>
+      <tr><td>归母净利润</td><td>{{XX亿}}</td><td>{{+X%}}</td><td>{{XX亿}}</td><td>{{N/N}}</td></tr>
+      <tr><td>毛利率</td><td>{{X%}}</td><td>{{+Xpp}}</td><td>{{X%}}</td><td>{{N/N}}</td></tr>
+      <tr><td>净利率</td><td>{{X%}}</td><td>{{+Xpp}}</td><td>{{X%}}</td><td>{{N/N}}</td></tr>
+      <tr><td>ROE</td><td>{{X%}}</td><td>{{+Xpp}}</td><td>{{X%}}</td><td>{{N/N}}</td></tr>
+      <tr><td>资产负债率</td><td>{{X%}}</td><td>{{-Xpp}}</td><td>{{X%}}</td><td>{{N/N}}</td></tr>
+      <tr><td>经营现金流/净利润</td><td>{{X}}</td><td>{{-}}</td><td>{{X}}</td><td>{{N/N}}</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">营收与利润趋势</div>
+    <div class="trend-box">
+      <p>营业总收入走势：{{最近8季度数据}}</p>
+      <p>同比增速：{{最近8季度增速}}</p>
+      <p>归母净利润走势：{{最近8季度数据}}</p>
+      <p>同比增速：{{最近8季度增速}}</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">盈利能力拆解</div>
+    <div class="roe-breakdown">
+      <p>ROE = {{净利率}}% × {{周转率}} × {{杠杆倍数}} = {{ROE}}%</p>
+      <p>利润驱动因素：{{净利率驱动 / 周转率驱动 / 杠杆驱动}}</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">财务异常检测</div>
+    <div class="risk-item">
+      <span class="risk-tag risk-none">无异常</span>
+      <span>未发现异常信号</span>
+    </div>
+    <!-- 如有异常 -->
+    <div class="risk-item">
+      <span class="risk-tag risk-high">高风险</span>
+      <span>{{异常项说明}}</span>
+    </div>
+    <div class="risk-item">
+      <span class="risk-tag risk-medium">中风险</span>
+      <span>{{异常项说明}}</span>
+    </div>
+    <div class="risk-item">
+      <span class="risk-tag risk-low">低风险</span>
+      <span>{{异常项说明}}</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">综合财务健康评分</div>
+    <div class="score-box">
+      <div class="score">{{A/B/C/D/F}}</div>
+      <div class="score-label">{{一句话总结财务健康状况}}</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="disclaimer">
+      <p>数据来源：通达信MCP财报接口 | 本报告仅供参考，不构成投资建议</p>
+      <p>财报数据为历史数据，反映的是过去经营情况，不代表未来</p>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

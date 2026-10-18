@@ -1,0 +1,24 @@
+{
+  "name": "tdx-stock-analysis",
+  "display_name": "通达信·个股深度分析",
+  "version": "1.1.2",
+  "description": "对单只A股进行全面投资研究输出结构化一页纸报告覆盖公司近况核心投资逻辑催化事件业务拆分产销链",
+  "category": "个股分析",
+  "skillType": "ANALYSIS",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "个股深度",
+    "个股分析",
+    "股票研究",
+    "投资分析",
+    "一页纸报告"
+  ],
+  "useCases": [
+    "面向通用场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}

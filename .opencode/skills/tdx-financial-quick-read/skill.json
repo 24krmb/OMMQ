@@ -1,0 +1,26 @@
+{
+  "name": "tdx-financial-quick-read",
+  "display_name": "通达信·财报速读",
+  "version": "1.1.2",
+  "description": "财报关键指标快速提取与异常检测技能，覆盖三表关键指标提取/多期趋势对比/财务异常检测/盈利能力诊断四大功能",
+  "category": "财务分析",
+  "skillType": "ANALYSIS",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "财报速读",
+    "财报分析",
+    "财务解读",
+    "财报诊断",
+    "financial quick read",
+    "财报核心指标",
+    "财务健康度"
+  ],
+  "useCases": [
+    "面向财务分析场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}

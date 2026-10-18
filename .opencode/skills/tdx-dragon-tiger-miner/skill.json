@@ -1,0 +1,26 @@
+{
+  "name": "tdx-dragon-tiger-miner",
+  "display_name": "通达信·龙虎榜掘金",
+  "version": "1.1.2",
+  "description": "龙虎榜深度解析技能，支持明细查询/席位识别分类/买卖力量对比/游资追踪/三日榜分析等核心功能",
+  "category": "行情监控",
+  "skillType": "ANALYSIS",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "龙虎榜分析",
+    "龙虎榜",
+    "龙虎榜掘金",
+    "dragon tiger",
+    "龙虎榜机构",
+    "游资动向",
+    "龙虎榜解读"
+  ],
+  "useCases": [
+    "面向行情监控场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}

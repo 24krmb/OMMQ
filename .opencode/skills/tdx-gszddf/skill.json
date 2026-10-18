@@ -1,0 +1,23 @@
+{
+  "name": "tdx-gszddf",
+  "display_name": "通达信·公司质地打分",
+  "version": "1.1.2",
+  "description": "公司质地打分聚焦基本面研究公司质量评估长线选股判断是否好公司壁垒强不强成长质量如何",
+  "category": "财务分析",
+  "skillType": "ANALYSIS",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "公司质地",
+    "公司打分",
+    "质量评估",
+    "长线选股"
+  ],
+  "useCases": [
+    "面向通用场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}

@@ -1,0 +1,26 @@
+# 通达信备份数据（本地二进制数据，不入库）
+TdxBak_*/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# 环境与密钥
+.env
+.env.*
+*.key
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# 临时与日志
+*.log
+*.tmp
+.cache/

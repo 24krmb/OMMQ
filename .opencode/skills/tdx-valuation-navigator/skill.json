@@ -1,0 +1,22 @@
+{
+  "name": "tdx-valuation-navigator",
+  "display_name": "通达信·估值导航员",
+  "version": "1.1.2",
+  "description": "用于估值与定价框架分析，聚焦估值分析 / 定价逻辑 / 投资决策。适合判断一家公司该用什么估值方法、当前估值是否合理、市场在交易什么预期，以及未来是否存在重估或杀估值风险。常用工具包括 `行情数...",
+  "category": "估值分析",
+  "skillType": "ANALYSIS",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "tdx-valuation-navigator",
+    "估值导航仪",
+    "估值分析"
+  ],
+  "useCases": [
+    "面向估值分析场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}

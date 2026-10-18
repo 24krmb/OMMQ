@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>龙虎榜掘金</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --border: #e2e8f0;
+  --red: #cc0000;
+  --green: #006400;
+  --blue: #2b6cb0;
+  --purple: #553c9a;
+  --yellow: #d69e2e;
+  --orange: #dd6b20;
+  --gray: #718096;
+  --light-bg: #f7fafc;
+  --section-bg: #edf2f7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  padding: 20px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+header {
+  background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+  color: #fff;
+  padding: 28px 24px 20px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  text-align: center;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d69e2e, #cc0000, #553c9a);
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+header .date {
+  color: #a0aec0;
+  font-size: 13px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-item {
+  background: var(--light-bg);
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.section {
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 16px 0 12px;
+  border-bottom: 2px solid var(--blue);
+  margin-bottom: 12px;
+}
+
+.seat-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.seat-table th,
+.seat-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 13px;
+}
+
+.seat-table th {
+  background: var(--section-bg);
+  font-weight: 600;
+}
+
+.seat-table tfoot td {
+  font-weight: 600;
+  background: var(--light-bg);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.tag-institution { background: #fed7d7; color: var(--red); }
+.tag-northbound { background: #feebc8; color: var(--orange); }
+.tag-hot-money { background: #fefcbf; color: #975a16; }
+.tag-normal { background: #e2e8f0; color: var(--gray); }
+
+.score-box {
+  background: var(--light-bg);
+  padding: 16px;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.score-grade {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--blue);
+  text-align: center;
+}
+
+.score-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.score-metric {
+  text-align: center;
+}
+
+.score-metric-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.score-metric-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.comment {
+  padding: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--blue);
+  background: var(--light-bg);
+  margin-top: 12px;
+}
+
+footer {
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.disclaimer {
+  background: var(--light-bg);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>龙虎榜掘金</h1>
+    <div class="date">{{股票简称}}({{股票代码}}) | {{上榜日期}}</div>
+  </header>
+
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="info-label">上榜原因</div>
+      <div class="info-value">{{原因}}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">涨跌幅</div>
+      <div class="info-value">{{X}}%</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">换手率</div>
+      <div class="info-value">{{X}}%</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">龙虎榜成交额</div>
+      <div class="info-value">{{X}}亿</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">占总成交</div>
+      <div class="info-value">{{X}}%</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">综合评级</div>
+      <div class="info-value">{{A/B/C/D/E}}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">买入TOP5席位</div>
+    <table class="seat-table">
+      <thead>
+        <tr><th>排名</th><th>营业部</th><th>类型</th><th>买入(万)</th><th>占比</th><th>卖出(万)</th><th>净买(万)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>{{营业部}}</td><td><span class="tag tag-institution">[机构]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>2</td><td>{{营业部}}</td><td><span class="tag tag-hot-money">[游资]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>3</td><td>{{营业部}}</td><td><span class="tag tag-normal">[普通]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>4</td><td>{{营业部}}</td><td><span class="tag tag-northbound">[北向]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>5</td><td>{{营业部}}</td><td><span class="tag tag-normal">[普通]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3">合计</td><td>{{总额}}</td><td>{{总占比}}</td><td>{{总额}}</td><td>{{净额}}</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">卖出TOP5席位</div>
+    <table class="seat-table">
+      <thead>
+        <tr><th>排名</th><th>营业部</th><th>类型</th><th>买入(万)</th><th>占比</th><th>卖出(万)</th><th>净买(万)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>{{营业部}}</td><td><span class="tag tag-institution">[机构]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>2</td><td>{{营业部}}</td><td><span class="tag tag-hot-money">[游资]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>3</td><td>{{营业部}}</td><td><span class="tag tag-normal">[普通]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>4</td><td>{{营业部}}</td><td><span class="tag tag-northbound">[北向]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+        <tr><td>5</td><td>{{营业部}}</td><td><span class="tag tag-normal">[普通]</span></td><td>{{金额}}</td><td>{{占比}}</td><td>{{金额}}</td><td>{{净额}}</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3">合计</td><td>{{总额}}</td><td>{{总占比}}</td><td>{{总额}}</td><td>{{净额}}</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">综合评分</div>
+    <div class="score-box">
+      <div class="score-grade">{{A/B/C/D/E}}</div>
+      <div class="score-metrics">
+        <div class="score-metric">
+          <div class="score-metric-label">净买入强度</div>
+          <div class="score-metric-value">{{X}}%</div>
+        </div>
+        <div class="score-metric">
+          <div class="score-metric-label">机构参与度</div>
+          <div class="score-metric-value">{{X}}%</div>
+        </div>
+        <div class="score-metric">
+          <div class="score-metric-label">游资参与度</div>
+          <div class="score-metric-value">{{X}}%</div>
+        </div>
+      </div>
+      <div class="comment">{{一句话点评}}</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="disclaimer">
+      <p>数据来源：通达信MCP龙虎榜接口 | 本报告仅供参考，不构成投资建议</p>
+      <p>龙虎榜数据由交易所T+0盘后发布，非实时数据</p>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

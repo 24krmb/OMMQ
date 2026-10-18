@@ -1,0 +1,23 @@
+{
+  "name": "tdx-yjygby",
+  "display_name": "通达信·业绩预告博弈",
+  "version": "1.1.2",
+  "description": "业绩预告博弈聚焦事件驱动财报博弈短中期交易判断发布前后市场怎么交易超预期是否还能涨",
+  "category": "事件分析",
+  "skillType": "HYBRID",
+  "author": "通达信 AI 能力运营中心",
+  "triggers": [
+    "业绩预告",
+    "业绩博弈",
+    "超预期",
+    "利空出尽"
+  ],
+  "useCases": [
+    "面向通用场景，提供专业分析与结构化输出",
+    "支持自然语言触发，输出可直接用于投资决策参考"
+  ],
+  "dependencies": [
+    "通达信 MCP"
+  ],
+  "lastUpdated": "2026-07-17"
+}
