@@ -1,6 +1,3 @@
-# 通达信备份数据（本地二进制数据，不入库）
-TdxBak_*/
-
 # Python
 __pycache__/
 *.py[cod]
@@ -24,3 +21,7 @@ desktop.ini
 *.log
 *.tmp
 .cache/
+
+# 通达信备份数据（本地二进制数据，不入库）
+TdxBak_*/
+
