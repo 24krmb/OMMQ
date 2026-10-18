@@ -16,7 +16,7 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
-
+.trae/
 # 临时与日志
 *.log
 *.tmp
@@ -24,4 +24,8 @@ desktop.ini
 
 # 通达信备份数据（本地二进制数据，不入库）
 TdxBak_*/
+
+# 自定义指标与自定义数据（本地数据，不入库）
+自定义数据/
+自定义指标/
 
