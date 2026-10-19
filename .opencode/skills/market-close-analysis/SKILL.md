@@ -76,8 +76,8 @@ Get-ChildItem strategies/output/*_<YYYYMMDD>.png
 ### 第 5 步：生成图文报告
 
 1. 复制 8 张图到报告目录（与 MD 同目录，保证相对路径嵌入在本地与 GitHub 均可显示）：
-   `Copy-Item strategies\output\*_YYYYMMDD.png -Destination reports\`
-2. 报告文件：`reports/market_close_analysis_YYYYMMDD.md`。
+   建议按日期建子目录并按图序重命名（如 `reports/YYYYMMDD/01.png` … `reports/YYYYMMDD/08.png`），MD 用 `./01.png` 相对路径嵌入。
+2. 报告文件：`reports/YYYYMMDD/market_close_analysis_YYYYMMDD.md`（按日期建子目录，MD 与图片同目录）。
 
 **报告结构模板（七节）：**
 
