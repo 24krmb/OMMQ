@@ -1,45 +1,79 @@
-# UpdateLog
+# OMMQ 更新日志
 
-> 逆序列记录仓库重要变更；日常运行产物归档见 `reports/YYYYMMDD/`。
+> 数据来源：OMMQ 仓库（`main` 分支）Git 提交推送历史，共 28 次提交，已全部同步至远程 `origin/main`（github.com:24krmb/OMMQ.git）
+> 类型说明：`feat` 新功能 / `fix` 问题修复 / `docs` 文档 / `chore` 杂项维护 / `merge` 分支合并
+> 每个日期内按提交时间倒序排列（最新在前）
 
-## 2026-10-24 · 图表布局治理（tight_layout 两大坑）与全景数据日期修复
+## 2026-10-24（5 次提交）
 
-**背景与根因**（matplotlib 3.11.2，源码级定位 `matplotlib/_tight_layout.py`）：
+### 功能新增
+- 新增约翰·内夫（John Neff）低 PE 价值投资策略脚本，覆盖选股 / 回测 / 监控 / 报告模板
+- 新增 `strategies/plot_paths.py` 统一产物路径模块；17 个策略脚本完成接入，产物按编号写入 `reports/YYYYMMDD/`，并兼容 macOS 中文字体
 
-1. 向 gridspec 显式传入 `hspace`/`wspace`（`gridspec_kw` 或 `add_gridspec`）会经
-   `GridSpec.locally_modified_subplot_params()` 将其 subplotspec 记为 `None`，
-   `tight_layout` 据此判定 “Axes not compatible” 后**静默跳过整个布局**，
-   子图顶部停留在默认边距 0.88，与 suptitle(≈0.98) 之间留出大片空白；
-   而脚本头的 `warnings.filterwarnings("ignore")` 将警告吞掉，线下毫无感知。
-2. `tight_layout` 仅在 `rect=None` 时自动为 suptitle 预留顶部空间；一旦显式传
-   `rect`，其顶部余量=「自然余量(含 suptitle)」被再扣一次（双重预留），
-   内容被额外压低 3%~5% 图高（单轴+colorbar 图实测同样存在，colorbar 本身不触发失效）。
+### 文档
+- 部分案例图片迁移至 `.opencode/Example/`（01、2–8 共 8 张），README 收录策略产物示例，并修正 20261019 收盘报告图片链接
+- 收盘分析技能（market-close-analysis）同步产物新路径与核心八图编号规则
 
-**修复内容**：
+### 杂项
+- 归档 20261023 策略脚本运行产物（market_overview / futures_volume_oi / industry_valuation 三图）
+- 图表布局治理（tight_layout 两大坑）与全景数据日期修复
 
-| 文件 | 修复 | 效果（顶部净空白） |
-|---|---|---|
-| `strategies/stock_technical.py` | `hspace` 移出 gridspec_kw；去 `rect=(0,0,1,0.97)`；`suptitle y=0.995` | 109px/6.7% → 38px/2.11% |
-| `strategies/market_overview.py` | 同上配方（`hspace/wspace` → `fig.subplots_adjust`）；去 `rect=(0,0,1,0.95)` | 5.03% → 2.96%（实测 40px） |
-| `strategies/sector_rotation_heatmap.py` | 去 `rect=(0,0,1,0.96)`（colorbar 无需处理） | 主轴顶 0.8962 → 0.9362（5.75% → 1.75%） |
-| `strategies/market_overview.py` | 「数据日期」改取**已抓取数据的最后一日**（`closes["上证指数"].index[-1].date()`） | 原 `latest_trade_date()` 异常兜底会在周末/瞬时网络失败时误标为当日（实测出现 10-24 误标，数据实至 10-23） |
-| `plot_utils.py` | 核查无恙（无 suptitle、无 rect，本就自然路径） | — |
+## 2026-10-23（8 次提交）
 
-其余 12 个策略脚本无失效触发源（tight_layout 正常生效），仅存 “rect+suptitle” 双重预留带来的 2%~4% 轻度顶部空白，暂保留。
+### 功能新增
+- 新增通达信数据接口技能 `tdx-aidata`（v1.2.2，基于 tqs 跨平台取数）
+- 统一绘图工具（补齐 `charts_demo` 依赖，兼容 macOS 字体回退）
+- 新增 `plot_paths.py`：全部策略脚本产物统一切换为 `reports/YYYYMMDD/` 编号命名。
 
-**数据复核**：关键数字读图 + akshare 内联复算一致——全景日报上证 3690.47、沪市成交额 8987 亿、涨/平/跌 4197/135/887、涨停 82（真实 78）、跌停 9（真实 6）；工商银行 601398 收盘 8.32（−3.14%）、MA5 8.45 / MA20 8.20 / MA60 7.89、RSI 56.9。当日产物目录 `reports/20261024/` 经用户整理后移除，本次不入库存档。
+### 文档
+- 调整 README 章节顺序（策略脚本 / 技能清单 / 目录结构前移，环境要求后移）
+- 更新 README：技能清单收录 `tdx-aidata`、新增交互能力说明、快速开始步骤调整
+-README 新增 Agent 章节，精简 `market_overview` 数据源说明（同步修改对应脚本）
+- README Agent 章节补充目录小标题
+- 重写 README Agent 章节（主代理 / 子代理说明、调用方式与创建示例）
 
-**并行改动披露**：`strategies/stock_technical.py` 的 MACD 周期由默认 (12, 26, 9) 调整为 (8.39, 17.52, 9.05)（用户会话内操作；两口径输出：柱 0.022 → 0.002，DIF 0.151 → 0.108）。
+### 杂项
+- 策略脚本取数截止日期更新至 2026-10-23，并刷新 charts 四张产物图（折线 / 柱状 / 直方 / 热力）
 
-**附注**：`reports/20261023/` 旧归档已由用户移除整理（现存 `reports/20261019/`，本章不计）；`.opencode/Example/` 收录 601398 技术面示例图，README 同步增列「技术分析」展示位与「更新记录」入口。
+## 2026-10-19（2 次提交）
 
-## 2026-10-23 · 产物归档机制 + 全景日报
+### 功能新增
+- 新增收盘分析技能（market-close-analysis）与 2026-10-19 图文收盘报告（含期货基差图与 7 张核心行情图）
 
-- 新增 `strategies/plot_paths.py`：全部策略脚本产物统一切换为 `reports/YYYYMMDD/` 编号命名（核心八图 01–08、扩展图 09 起、参数化脚本以代码作后缀），报告 Markdown 与图同目录嵌图。
-- 15 个脚本中文字体统一五字体列表（Windows/macOS 双端验证）。
-- 产出全景日报 `market_overview_20261023.md`、申万一级行业估值分位（数据截至 2026-09-30）、期货量仓图，均已归档。
-- 相关提交：`addde9e`（plot_paths 与字体）、`d83607f`（SKILL.md 同步）、`4bbde31`（20261023 产物归档）。
+### 问题修复
+- 修正收盘报告图片链接（对应用户整理后的 `reports/20261019` 目录），技能路径约定同步更新
 
-## 2026-10-19 · 前次收盘分析
+## 2026-10-18（13 次提交）
 
-- 报告 `reports/20261019/market_close_analysis_20261019.md`（图片已迁移至 `.opencode/Example/`，见提交 `ebb6f53`）。
+### 功能新增
+- 新增三大指数周度累计收益曲线脚本 `global_index_week_curve.py`（沪深300 / 恒生指数 / 标普500），README 同步收录
+- 新增 `strategies` 策略脚本体系：图表演示、期货基差 / 持仓前五 / 量仓、行业估值分位、市场总览、市场情绪、资金流向趋势、同业杜邦分析、行业轮动热力、行业资金前五、个股财务 / 财务年报 / 资金流 / 技术面共 14 个脚本，并附带首批运行产物
+
+### 文档
+- 新增 README 与依赖锁定文件 `requirements.txt`
+- 完善 README
+- README 收录 strategies 脚本说明
+- 调整 README 说明
+
+### 初始化 / 合并
+- 新增 LICENSE（作者：王成）
+- 合并远程 LICENSE 初始提交
+- 初始化仓库：`.gitignore`、`.opencode/agents/TdxQuant.md` 代理、10 个 tdx 系列技能、YGHZ 等权曲线报告及自定义指标 / 数据目录占位
+- 忽略自定义数据 / 自定义指标目录
+- 补充 `.gitignore` 忽略自定义数据与自定义指标目录
+- 统一绘图配色规范并调整报告标题（同步 TdxQuant 代理配置）
+- 补充量化分析依赖
+
+## 统计概览
+
+| 维度 | 数值 |
+| --- | --- |
+| 提交总数 | 28 |
+| 类型分布 | feat 7 / fix 1 / docs 11 / chore 8 / merge 1 |
+| 按日分布 | 10-24（5）· 10-23（8）· 10-19（2）· 10-18（13） |
+
+### 阶段里程碑
+- **2026-10-18**：仓库初始化，落地 LICENSE、README、依赖清单与首批 14 个策略脚本
+- **2026-10-19**：沉淀收盘分析技能，产出首份图文收盘报告
+- **2026-10-23**：统一绘图工具 `plot_utils.py` 上线，新增 `tdx-aidata` 技能，README 完成章节重排与 Agent 章节建设
+- **2026-10-24**：统一产物路径 `plot_paths.py` 接入全部策略脚本，新增约翰·内夫价值投资策略
