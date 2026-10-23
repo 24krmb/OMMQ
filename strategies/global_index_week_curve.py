@@ -38,7 +38,7 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 DEFAULT_START = "20261012"
-DEFAULT_END = "20261016"
+DEFAULT_END = "20261023"
 OUT_DIR = "strategies/output"
 
 # 名称 -> 新浪代码

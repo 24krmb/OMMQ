@@ -28,7 +28,7 @@ def main() -> None:
     os.makedirs(OUT, exist_ok=True)
 
     # 1) 折线图 —— 板块指数走势
-    wine = ak.stock_board_industry_index_ths(symbol="白酒", start_date="20260901", end_date="20261016")
+    wine = ak.stock_board_industry_index_ths(symbol="白酒", start_date="20260901", end_date="20261023")
     wine = wine.set_index("日期")
     pm.plot_line(wine["收盘价"], title="白酒板块指数收盘价 (2026-09 ~ 2026-10)",
                  xlabel="日期", ylabel="指数点", path=f"{OUT}/1_line_白酒指数.png")
@@ -40,7 +40,7 @@ def main() -> None:
     records: list[dict] = []
     for board in names:
         try:
-            h = ak.stock_board_industry_index_ths(symbol=board, start_date="20261009", end_date="20261016")
+            h = ak.stock_board_industry_index_ths(symbol=board, start_date="20261009", end_date="20261023")
             closes = h.set_index("日期")["收盘价"]
             if len(closes) >= 2 and float(closes.iloc[0]) > 0:
                 pct = (float(closes.iloc[-1]) / float(closes.iloc[0]) - 1) * 100
