@@ -11,7 +11,7 @@
     - 标普500：ak.index_us_stock_sina(".INX")
     说明：恒指/标普停市日无数据（如节假日），曲线自动跳过该日。
 
-输出：strategies/output/global_index_week_curve_<结束日>.png
+输出：reports/YYYYMMDD/15_global_index_week.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/global_index_week_curve.py [起始日 YYYYMMDD] [结束日 YYYYMMDD]
 """
 
@@ -26,9 +26,14 @@ import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -39,7 +44,6 @@ matplotlib.rcParams["ytick.color"] = "#27254c"
 
 DEFAULT_START = "20261012"
 DEFAULT_END = "20261023"
-OUT_DIR = "strategies/output"
 
 # 名称 -> 新浪代码
 INDICES: dict[str, str] = {
@@ -123,8 +127,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.93))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"global_index_week_curve_{end:%Y%m%d}.png")
+    out = report_image_path(15, "global_index_week")
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"\n图表已保存: {out}")

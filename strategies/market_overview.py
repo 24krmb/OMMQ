@@ -13,7 +13,7 @@
     - 成交额：中证指数官网 ak.stock_zh_index_hist_csindex("000001")（上证综指成交金额，亿元）
     - 涨跌家数：乐咕乐股 ak.stock_market_activity_legu
 说明：东方财富接口限流，故全部改用新浪 / 中证指数 / 乐咕数据源。
-输出：strategies/output/market_overview_<日期>.png
+输出：reports/YYYYMMDD/01.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/market_overview.py [交易日数]
 """
 
@@ -28,9 +28,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -40,7 +45,6 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 60  # 展示最近多少个交易日
-OUT_DIR = "strategies/output"
 UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 FLAT_COLOR = "#99F"  # 平盘
@@ -66,7 +70,7 @@ def latest_trade_date() -> dt.date:
         dates = ak.tool_trade_date_hist_sina()["trade_date"]
         today = dt.date.today()
         past = [d for d in dates if d <= today]
-        return past[-1] if past else today
+        return past[-1].date() if past else today
     except Exception:  # noqa: BLE001
         return dt.date.today()
 
@@ -194,8 +198,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"market_overview_{date:%Y%m%d}.png")
+    out = report_image_path(1)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

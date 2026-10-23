@@ -12,7 +12,7 @@
     - 东方财富 大盘 / 个股 主力资金流向接口（push2 / push2his）在本机被限流，无法取数；
     - 北向资金“当日净买入”自 2024-08-19 起交易所停止逐日披露，数据已停更，故本图不含北向；
     - 因此本图以「两融（杠杆资金）」作为当期资金流主口径，与主流终端口径一致。
-输出：strategies/output/money_flow_trend_<日期>.png
+输出：reports/YYYYMMDD/05.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/money_flow_trend.py [交易日数]   # 默认 60
 """
 
@@ -27,9 +27,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -38,7 +43,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output"
 N = 60              # 展示最近多少个交易日
 UP_COLOR = "#F36"
 DOWN_COLOR = "#0C9"
@@ -130,8 +134,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"money_flow_trend_{date:%Y%m%d}.png")
+    out = report_image_path(5)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

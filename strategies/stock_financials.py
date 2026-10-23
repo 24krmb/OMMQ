@@ -8,7 +8,7 @@
 
 说明：东方财富接口在本机被限流，故采用同花顺 + 新浪源。
 输出：strategies/output/financials/<代码>/*.csv（utf-8-sig，Excel 可直接打开）
-      strategies/output/financials/<代码>/财务概览.png（中文图表）
+      reports/YYYYMMDD/12_<代码>.png（中文图表；CSV 数据仍存 strategies/output/）
 运行：uv run python strategies/stock_financials.py [股票代码]   # 默认 600519
 """
 
@@ -21,8 +21,13 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -187,7 +192,7 @@ def plot_overview(code: str, ind: pd.DataFrame, out_dir: str) -> str | None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.96))
 
-    out = os.path.join(out_dir, "财务概览.png")
+    out = report_image_path(12, code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out

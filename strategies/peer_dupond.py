@@ -13,7 +13,7 @@
       （权益乘数 = 100 / 股东权益比率(%) = 总资产 / 股东权益）
     - 估值（PE-TTM / PB / 名称）：腾讯 ak.stock_zh_a_spot_tx 全A快照
 说明：东方财富接口在本机被限流，故财务走新浪、估值走腾讯源。
-输出：strategies/output/dupond/<主代码>_同业对比.png
+输出：reports/YYYYMMDD/14_<主代码>.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/peer_dupond.py [主代码] [同业代码,逗号分隔]
       默认：600519 000858,000568,600809,002304,000596
 """
@@ -28,9 +28,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -39,7 +44,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output/dupond"
 DEFAULT_MAIN = "600519"
 DEFAULT_PEERS = ["000858", "000568", "600809", "002304", "000596"]
 YEARS = 8
@@ -203,8 +207,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"{main_code}_同业对比.png")
+    out = report_image_path(14, main_code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"\n图表已保存: {out}")

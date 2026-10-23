@@ -9,7 +9,7 @@
 
 数据源：新浪个股日线 ak.stock_zh_a_daily(adjust="qfq")（前复权）
 指标计算：ta-lib（MACD 12/26/9，RSI 14）
-输出：strategies/output/technical/<代码>_技术面.png
+输出：reports/YYYYMMDD/10_<代码>.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
 """
 
@@ -25,8 +25,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
 
+from plot_paths import report_image_path
+
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -35,7 +41,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output/technical"
 DEFAULT_CODE = "600519"
 DEFAULT_DAYS = 120
 
@@ -170,8 +175,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.97))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"{code}_技术面.png")
+    out = report_image_path(10, code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

@@ -9,7 +9,7 @@
 
 数据源：新浪主力连续 ak.futures_main_sina(symbol="RB0"/"I0"/…)
 口径：取国内商品期货主力连续合约；持仓量 = 未平仓合约量，日增仓 = 持仓量日变化。
-输出：strategies/output/futures_volume_oi_<日期>.png
+输出：reports/YYYYMMDD/07.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/futures_volume_oi.py [品种代码] [交易日数]   # 默认 RB0 120
 """
 
@@ -24,9 +24,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -35,7 +40,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output"
 MAIN_SYM = "RB0"      # 主图品种（主力连续）
 N = 120               # 主图展示交易日数
 UP_COLOR = "#F36"
@@ -178,8 +182,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"futures_volume_oi_{date:%Y%m%d}.png")
+    out = report_image_path(7)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

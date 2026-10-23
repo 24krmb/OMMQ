@@ -10,7 +10,7 @@
 数据源：同花顺 ak.stock_financial_abstract_ths(symbol, indicator="按年度")
         （年报口径，营收/净利为全年累计值）
 说明：与 stock_financials.py 的**季度**概览图互补，本图按**年度**呈现长周期趋势。
-输出：strategies/output/financials/<代码>/年度财务概览.png
+输出：reports/YYYYMMDD/13_<代码>.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
 """
 
@@ -24,9 +24,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -35,7 +40,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output/financials"
 YEARS = 10          # 展示最近多少个年度
 UP_COLOR = "#F36"
 DOWN_COLOR = "#0C9"
@@ -144,9 +148,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    out_dir = os.path.join(OUT_DIR, code)
-    os.makedirs(out_dir, exist_ok=True)
-    out = os.path.join(out_dir, "年度财务概览.png")
+    out = report_image_path(13, code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

@@ -13,7 +13,7 @@
     - 股指期货主力合约行情：新浪 AKShare: ak.futures_zh_realtime
     - 现货指数（沪深300/上证50/中证500/中证1000）：中证指数官网 ak.stock_zh_index_hist_csindex
 说明：东方财富接口在本机被限流，故全部改用生意社 / 新浪 / 中证指数源。
-输出：strategies/output/futures_basis_<日期>.png
+输出：reports/YYYYMMDD/08.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/futures_basis_spread.py [历史交易日数]   # 默认 15
 """
 
@@ -28,9 +28,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -39,7 +44,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output"
 N_HIST = 15          # 基差率历史回溯交易日数
 N_CROSS = 18         # 横截面展示品种数（按 |基差率| 取前 N）
 UP_COLOR = "#F36"   # 正（期货升水 / 近月升水）
@@ -226,8 +230,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"futures_basis_{date:%Y%m%d}.png")
+    out = report_image_path(8)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

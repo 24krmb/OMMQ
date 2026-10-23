@@ -14,7 +14,7 @@
     - 涨停家数历史：按交易日逐日调用涨停池 / 跌停池
 说明：东方财富 push2/push2his 资金流接口在本机被限流，故资金流类指标改由其他源提供；
       涨停/跌停池走 push2ex 接口，本机可正常返回。
-输出：strategies/output/market_sentiment_<日期>.png
+输出：reports/YYYYMMDD/02.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/market_sentiment.py [交易日数]   # 默认 15
 """
 
@@ -29,9 +29,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -40,7 +45,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output"
 HIST_N = 15          # 涨停/跌停家数趋势回溯交易日数
 UP_COLOR = "#F36"   # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
@@ -201,8 +205,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"market_sentiment_{date:%Y%m%d}.png")
+    out = report_image_path(2)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

@@ -9,7 +9,7 @@
     数据源：AKShare: ak.stock_sector_spot(indicator="概念")（新浪 newFLJK 概念板块）
 
 说明：东方财富 clist 接口在限流，故行业改用申万一级、概念改用新浪源。
-输出：strategies/output/sector_top5_<日期>.png
+输出：reports/YYYYMMDD/03.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/sector_top5_chart.py
 """
 
@@ -21,9 +21,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")  # 抑制申万接口 verify=False 的 InsecureRequestWarning
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -33,7 +38,6 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 TOP_N = 5
-OUT_DIR = "strategies/output"
 UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 
@@ -97,8 +101,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"sector_top5_{date:%Y%m%d}.png")
+    out = report_image_path(3)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"图表已保存: {out}")
     print("\n[行业 TOP5 · 申万一级]\n" + ind.to_string(index=False))

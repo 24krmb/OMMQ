@@ -7,7 +7,7 @@
 说明：
     - 仅取商品期货（dce/czce/shfe/gfex/ine），剔除中金所金融期货（字段布局不同）。
     - 东方财富 clist 接口在本机被限流，故直接走新浪行情接口并按字段索引解析。
-输出：strategies/output/futures_top5_<日期>.png
+输出：reports/YYYYMMDD/06.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/futures_top5_chart.py
 """
 
@@ -21,9 +21,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 import requests
 
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -33,7 +38,6 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 TOP_N = 5
-OUT_DIR = "strategies/output"
 UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 EXCLUDE_EXCHANGE = {"cffex"}  # 剔除金融期货
@@ -114,8 +118,7 @@ def main() -> None:
                  fontsize=16, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"futures_top5_{date:%Y%m%d}.png")
+    out = report_image_path(6)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"图表已保存: {out}")
     print(f"\n[涨幅 TOP{TOP_N}]\n" + top[["合约", "代码", "涨跌幅"]].to_string(index=False))

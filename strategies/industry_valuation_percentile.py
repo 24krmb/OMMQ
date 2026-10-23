@@ -11,7 +11,7 @@
     - 月频截面：ak.index_analysis_monthly_sw(symbol="一级行业", date=月末)
     - 有效月末日期：ak.index_analysis_week_month_sw(symbol="month")
 口径：历史分位 = 该行业当前 PE/PB 在其近 5 年月频序列中的分位数（0~100，越高越贵）。
-输出：strategies/output/industry_valuation_<日期>.png
+输出：reports/YYYYMMDD/09_industry_valuation.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/industry_valuation_percentile.py [历史年数]   # 默认 5
 """
 
@@ -26,9 +26,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -37,7 +42,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output"
 YEARS = 5                      # 历史回溯年数（月频）
 HIGH_COLOR = "#F36"         # 高估
 LOW_COLOR = "#0C9"          # 低估
@@ -139,8 +143,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"industry_valuation_{date:%Y%m%d}.png")
+    out = report_image_path(9, "industry_valuation")
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")

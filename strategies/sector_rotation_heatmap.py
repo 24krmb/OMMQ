@@ -8,7 +8,7 @@
     行业清单：申万一级行业 ak.sw_index_first_info()
     涨跌幅 = 当日收盘 / 前一日收盘 - 1
 说明：口径为申万一级行业（与 Wind 一致）；东方财富接口在本机被限流，故走申万源。
-输出：strategies/output/sector_rotation_<日期>.png
+输出：reports/YYYYMMDD/04.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/sector_rotation_heatmap.py [交易日数]   # 默认 20
 """
 
@@ -24,10 +24,15 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from plot_paths import report_image_path
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -37,7 +42,6 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 20  # 展示最近多少个交易日
-OUT_DIR = "strategies/output"
 # 统一配色热力图：绿 #0C9（跌）→ 白 → 红 #F36（涨）
 CLaw_CMAP = LinearSegmentedColormap.from_list("claw", ["#0C9", "#FFFFFF", "#F36"])
 
@@ -129,8 +133,7 @@ def main() -> None:
     date = latest_trade_date()
     mat, dates = build_matrix(n)
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"sector_rotation_{date:%Y%m%d}.png")
+    out = report_image_path(4)
     draw_heatmap(mat, dates, out)
     print(f"图表已保存: {out}")
 

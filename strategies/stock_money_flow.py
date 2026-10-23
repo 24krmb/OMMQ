@@ -12,7 +12,7 @@
     - 东方财富 个股主力资金流向历史接口（push2his）在本机被限流，无法取数；
     - 本图采用「同花顺 资金流」口径：以资金流入/流出净额刻画个股资金动向，
       并给出全市场横向排行，替代主力资金历史曲线。
-输出：strategies/output/money_flow/<代码>_资金流.png
+输出：reports/YYYYMMDD/11_<代码>.png（编号规则见 strategies/plot_paths.py）
 运行：uv run python strategies/stock_money_flow.py [股票代码]   # 默认 600519
 """
 
@@ -26,9 +26,14 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+matplotlib.rcParams["font.sans-serif"] = [
+    "Microsoft YaHei", "SimHei",           # Windows
+    "PingFang SC", "Hiragino Sans GB",     # macOS
+    "Arial Unicode MS",
+]
 matplotlib.rcParams["axes.unicode_minus"] = False
 # 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -37,7 +42,6 @@ matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-OUT_DIR = "strategies/output/money_flow"
 UP_COLOR = "#F36"
 DOWN_COLOR = "#0C9"
 WINDOWS = [("即时", "当日"), ("3日排行", "3日"), ("5日排行", "5日"),
@@ -164,8 +168,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, f"{code}_资金流.png")
+    out = report_image_path(11, code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"图表已保存: {out}")
