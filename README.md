@@ -8,6 +8,9 @@
 
 OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖云端数据服务，也不做自动化实盘交易。核心思路是：把专业的投研流程拆解成可复用的技能（Skill），由 Agent 按任务类型调度，最终产出结构化、可落盘的研报。
 
+通过`OpenCode` 中打开本项目，直接用自然语言提问（见下方"常用提问示例"），Agent 会自动加载对应技能并调度取数。
+> 新手首次使用 prompt：帮我分析这个项目，安装依赖环境，创建虚拟环境并且激活；
+
 核心能力：
 
 - **取数**：通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
@@ -20,7 +23,7 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 
 ## 策略脚本
 
-`strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
+`strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`（编号规则见 `strategies/plot_paths.py`：核心八图 01–08、扩展研究图 09 起，参数化脚本以代码作后缀避免覆盖）；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
 
 | 脚本                                 | 用途                                       |
 | ---------------------------------- | ---------------------------------------- |
@@ -40,6 +43,39 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 | stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
 | peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
 | charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
+| neff_value_strategy.py        | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
+
+## 部分案例
+
+以下图表均由项目脚本自动生成（数据日期 2026-10-19，来源：24K-Claw）：
+
+**A 股市场全景日报**（`market_overview.py`）
+
+![A 股市场全景日报](.opencode/Example/01.png)
+
+**市场情绪**（`market_sentiment.py`）
+
+![市场情绪](.opencode/Example/2.png)
+
+**板块涨跌幅 TOP5**（`sector_top5_chart.py`）
+
+![板块涨跌幅 TOP5](.opencode/Example/3.png)
+
+**申万一级行业轮动热力图**（`sector_rotation_heatmap.py`）
+
+![申万一级行业轮动热力图](.opencode/Example/4.png)
+
+**资金流趋势（两融）**（`money_flow_trend.py`）
+
+![资金流趋势（两融）](.opencode/Example/5.png)
+
+**商品期货主力合约涨跌幅 TOP5**（`futures_top5_chart.py`）
+
+![商品期货主力合约涨跌幅 TOP5](.opencode/Example/6.png)
+
+**期货量仓**（`futures_volume_oi.py`）
+
+![期货量仓](.opencode/Example/7.png)
 
 ## 技能清单
 
@@ -173,6 +209,7 @@ python -m venv .venv
 ## 快速开始
 
 1. 通过`OpenCode` 中打开本项目，直接用自然语言提问（见下方"常用提问示例"），Agent 会自动加载对应技能并调度取数。
+> 新手首次使用 prompt：帮我分析这个项目，安装依赖环境，创建虚拟环境并且激活；
 2. 启动通达信客户端（TdxQuant 平台）并登录到主界面。确认本地 HTTP 服务可用：
    ```powershell
    curl -s --connect-timeout 3 -X POST "http://127.0.0.1:17709/" `
