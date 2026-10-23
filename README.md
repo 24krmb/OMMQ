@@ -18,19 +18,6 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 - **量化计算与绘图**：pandas / numpy / scipy / TA-Lib 计算，matplotlib / seaborn 出图
 - **产出归档**：正式报告与图表统一落盘至 `reports/`
 
-## Agent
-
-目录：`.opencode/agents/` 下存放适用于`OpenCode`的项目级`Agent`；
-**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
-
-### Agent目录
-
-| Agent                | 用途                         |
-| ---------------------| ----------------------------|
-| 通达信量化投研分析Agent | 通过通达信获取数，输出结构化研报。|
-
-### 调用Agent
-
 ## 策略脚本
 
 `strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
@@ -67,6 +54,70 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 | tdx-valuation-navigator  | 估值导航员  | 估值方法选择、估值合理性、市场交易预期、重估/杀估值风险       |
 | tdx-dragon-tiger-miner  | 龙虎榜掘金  | 龙虎榜明细拆解、机构/北向/游资席位意图、买卖力量评分、三日榜分析  |
 | tdx-yjygby              | 业绩预告博弈 | 业绩发布前后的市场交易、预期差、博弈路径与多情景推演         |
+
+## Agent
+
+每个 Agent 可以配置独立的系统提示词、模型、工具访问权限和行为约束，用于处理特定类型的任务和工作流程。你可以在会话期间随时切换代理，或通过 `@` Agent名称 的方式直接调用特定代理。
+
+### 本项目 Agent 
+全局：`~/.config/opencode/agents/`（对所有项目有效）
+
+项目：`.opencode/agents/`（仅对当前项目有效）
+
+### Agent目录
+
+| Agent                | 用途                         |
+| ---------------------| ----------------------------|
+| Build （主Agent）| 默认，启用了所有工具，适合需要完整文件操作和系统命令访问权限的日常开发工作。这是你最常使用的代理。|
+| Plan （主Agent）| 专为代码分析和规划设计的受限代理。|
+| TdxQuant（子Agent） | 通过通达信获取数，输出结构化研报。|
+| General （子Agent）| 通用子代理，拥有完整的工具访问权限，可以修改文件。适用于研究复杂问题和执行多步骤任务，也可以并行运行多个独立的工作单元。|
+| Explore （主Agent）| 只读子代理，无法修改任何文件。适合快速查找文件、搜索代码关键字或回答关于代码库结构的问题，速度快且不会产生副作用。|
+
+### Agrnt 使用方式
+
+1、切换主 Agent
+在会话期间按 Tab 键可以在所有主代理之间循环切换，按 Shift+Tab 反向切换。也可以使用 <Leader>a 打开代理列表直接选择。
+
+2、调用 子 Agent
+子代理有两种调用方式：
+
+自动调用：主代理根据任务性质判断需要某个子代理时，会自动调用并将任务委派给它
+
+手动 `@` Agent：在消息中使用 @Agent名称 直接指定由哪个子代理处理
+
+### 简单创建 Agent
+
+在以下路径创建 .md 文件，文件名即为代理名称（如 review.md 对应代理名 review）：
+
+全局：~/.config/opencode/agents/（对所有项目有效）
+
+项目级：.opencode/agents/（仅对当前项目有效）
+
+实例
+```Markdown
+# 文件路径：~/.config/opencode/agents/review.md
+---
+description: Reviews code for quality and best practices
+mode: subagent
+model: anthropic/claude-sonnet-4-20250514
+temperature: 0.1
+tools:
+  write: false
+  edit: false
+  bash: false
+---
+
+You are in code review mode. Focus on:
+
+- Code quality and best practices
+- Potential bugs and edge cases
+- Performance implications
+- Security considerations
+
+Provide constructive feedback without making direct changes.
+```
+
 
 ## 技术栈
 
