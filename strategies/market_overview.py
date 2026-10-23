@@ -175,14 +175,16 @@ def plot_limit_bar(ax, breadth: dict[str, object]) -> None:
 
 def main() -> None:
     n = int(sys.argv[1]) if len(sys.argv) > 1 else N
-    date = latest_trade_date()
-
     closes = {name: fetch_index(sym, n) for name, sym in INDICES.items()}
+    date = closes["上证指数"].index[-1].date()  # 数据最后一日：不依赖交易日历兜底，周末/节假日时即为最近交易日
     turnover = fetch_sh_turnover(n)
     breadth = fetch_breadth()
 
     fig = plt.figure(figsize=(15, 9))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.7, 1.0], hspace=0.28, wspace=0.22)
+    # hspace/wspace 不能写进 add_gridspec：matplotlib 3.11 会判定 Axes 与 tight_layout
+    # 不兼容并静默跳过布局（同 stock_technical 修复），因此在 Figure 层设置
+    fig.subplots_adjust(hspace=0.28, wspace=0.22)
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.7, 1.0])
     ax_top = fig.add_subplot(gs[0, :])
     ax_bl = fig.add_subplot(gs[1, 0])
     ax_br = fig.add_subplot(gs[1, 1])
@@ -194,9 +196,10 @@ def main() -> None:
     stat = breadth.get("统计日期", "")
     fig.suptitle(
         f"A股市场全景日报（数据日期 {date}，活跃度统计 {stat}）　来源：24K-Claw",
-        fontsize=16, fontweight="bold",
+        fontsize=16, fontweight="bold", y=0.995,
     )
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    # rect 不传：让 tight_layout 走自然路径自动预留 suptitle 空间（传 rect 会双重预留）
+    fig.tight_layout()
 
     out = report_image_path(1)
     fig.savefig(out, dpi=150, bbox_inches="tight")

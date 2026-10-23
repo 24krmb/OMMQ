@@ -14,17 +14,14 @@
 """
 
 from __future__ import annotations
-
 import os
 import sys
 import warnings
-
 import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
-
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
@@ -43,11 +40,9 @@ matplotlib.rcParams["ytick.color"] = "#27254c"
 
 DEFAULT_CODE = "600519"
 DEFAULT_DAYS = 120
-
 UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 MA_COLORS = {"MA5": "#F36", "MA20": "#99F", "MA60": "#FC3"}
-
 
 def sina_prefix(code: str) -> str:
     c = code.strip()
@@ -70,17 +65,15 @@ def fetch_daily(code: str, days: int):
 
 def add_indicators(df):
     import talib
-
     close = df["close"].astype(float).to_numpy()
     for w in (5, 20, 60):
         df[f"MA{w}"] = df["close"].rolling(w).mean()
-    dif, dea, hist = talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
+    dif, dea, hist = talib.MACD(close, fastperiod=8.3896, slowperiod=17.5195, signalperiod=9.0503)
     df["DIF"] = dif
     df["DEA"] = dea
-    df["MACD"] = (dif - dea) * 2  # 国内常用口径：2*(DIF-DEA)
+    df["MACD"] = (dif - dea) * 2
     df["RSI"] = talib.RSI(close, timeperiod=14)
     return df
-
 
 def _xticks(ax, dates) -> None:
     n = len(dates)
@@ -155,8 +148,11 @@ def main() -> None:
 
     fig, axes = plt.subplots(
         4, 1, figsize=(14, 12), sharex=True,
-        gridspec_kw={"height_ratios": [3.2, 1.0, 1.4, 1.0], "hspace": 0.06},
+        gridspec_kw={"height_ratios": [3.2, 1.0, 1.4, 1.0]},
     )
+    # hspace 不能写进 gridspec_kw：matplotlib 3.11 会判定 Axes 与 tight_layout
+    # 不兼容并静默跳过布局，导致 suptitle 与子图间留出大片空白，因此在 Figure 层设置
+    fig.subplots_adjust(hspace=0.06)
     draw_candles(axes[0], df)
     draw_volume(axes[1], df)
     draw_macd(axes[2], df)
@@ -171,9 +167,9 @@ def main() -> None:
     fig.suptitle(
         f"{label} 日K/均线/成交量/MACD/RSI　最新收盘 {last['close']:.2f} "
         f"（{(last['close']/prev['close']-1)*100:+.2f}%）　来源：24K-Claw",
-        fontsize=16, fontweight="bold",
+        fontsize=16, fontweight="bold", y=0.995,
     )
-    fig.tight_layout(rect=(0, 0, 1, 0.97))
+    fig.tight_layout()
 
     out = report_image_path(10, code)
     fig.savefig(out, dpi=150, bbox_inches="tight")
@@ -182,7 +178,6 @@ def main() -> None:
     print(f"\n最新交易日 {last['date']}")
     print(f"  收盘 {last['close']:.2f}  MA5 {last['MA5']:.2f}  MA20 {last['MA20']:.2f}  MA60 {last['MA60']:.2f}")
     print(f"  MACD DIF {last['DIF']:.3f}  DEA {last['DEA']:.3f}  柱 {last['MACD']:.3f}  RSI {last['RSI']:.1f}")
-
 
 if __name__ == "__main__":
     main()

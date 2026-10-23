@@ -123,7 +123,9 @@ def draw_heatmap(mat: pd.DataFrame, dates: list[str], out: str) -> None:
         f"　来源：24K-Claw",
         fontsize=15, fontweight="bold",
     )
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    # rect 不传：让 tight_layout 走自然路径自动预留 suptitle 空间（传 rect 会双重预留，
+    # 反而把内容压低——实测顶部多出约 4% 空白）
+    fig.tight_layout()
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
