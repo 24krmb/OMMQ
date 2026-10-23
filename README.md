@@ -18,42 +18,51 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 - **量化计算与绘图**：pandas / numpy / scipy / TA-Lib 计算，matplotlib / seaborn 出图
 - **产出归档**：正式报告与图表统一落盘至 `reports/`
 
+## Agent
+
+目录：`.opencode/agents/` 下存放适用于`OpenCode`的项目级`Agent`；
+**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
+
+| Agent                | 用途                         |
+| ---------------------| ----------------------------|
+| 通达信量化投研分析Agent | 通过通达信获取数，输出结构化研报。|
+
 ## 策略脚本
 
 `strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
 
 | 脚本                                 | 用途                                       |
 | ---------------------------------- | ---------------------------------------- |
-| `market_overview.py`               | A 股市场全景日报：四大指数走势（归一化）+ 成交额 + 涨跌家数        |
-| `global_index_week_curve.py`       | 全球三大指数周度累计收益曲线：沪深300 / 恒生指数 / 标普500      |
-| `market_sentiment.py`              | 市场情绪：涨停/跌停家数趋势、连板梯队、涨停行业分布               |
-| `money_flow_trend.py`              | 杠杆资金（两融）趋势：融资余额、两融余额、单日净增                |
-| `sector_top5_chart.py`             | 申万一级行业 / 新浪概念板块 涨跌幅 TOP5                 |
-| `sector_rotation_heatmap.py`       | 申万一级行业板块轮动热力图（行=行业，列=交易日）                |
-| `industry_valuation_percentile.py` | 申万一级行业 PE / PB 当前值及近 5 年历史分位             |
-| `futures_basis_spread.py`          | 期货基差与跨期价差：期货 vs 现货、近月 vs 远月、股指基差         |
-| `futures_top5_chart.py`            | 国内商品期货主力合约 涨幅/跌幅 TOP5                    |
-| `futures_volume_oi.py`             | 期货量仓：主力合约成交量与持仓量、日增仓                     |
-| `stock_financials.py`              | 个股财务：主要指标 + 三大报表（季度口径），导出 CSV 并出图        |
-| `stock_financials_annual.py`       | 年度财务概览：营收 / 净利 / EPS / ROE 长周期趋势         |
-| `stock_money_flow.py`              | 个股资金流                                    |
-| `stock_technical.py`               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
-| `peer_dupond.py`                   | 同业杜邦分析 / 财务估值横向对比                        |
-| `charts_demo.py`                   | 绘图示例：折线、柱状、直方、热力图各一张                     |
+| market_overview.py              | A 股市场全景日报：四大指数走势（归一化）+ 成交额 + 涨跌家数        |
+| global_index_week_curve.py       | 全球三大指数周度累计收益曲线：沪深300 / 恒生指数 / 标普500      |
+| market_sentiment.py              | 市场情绪：涨停/跌停家数趋势、连板梯队、涨停行业分布               |
+| money_flow_trend.py              | 杠杆资金（两融）趋势：融资余额、两融余额、单日净增                |
+| sector_top5_chart.py            | 申万一级行业 / 概念板块 涨跌幅 TOP5                 |
+| sector_rotation_heatmap.py      | 申万一级行业板块轮动热力图（行=行业，列=交易日）                |
+| industry_valuation_percentile.py | 申万一级行业 PE / PB 当前值及近 5 年历史分位             |
+| futures_basis_spread.py          | 期货基差与跨期价差：期货 vs 现货、近月 vs 远月、股指基差         |
+| futures_top5_chart.py           | 国内商品期货主力合约 涨幅/跌幅 TOP5                    |
+| futures_volume_oi.py           | 期货量仓：主力合约成交量与持仓量、日增仓                     |
+| stock_financials.py            | 个股财务：主要指标 + 三大报表（季度口径），导出 CSV 并出图        |
+| stock_financials_annual.py      | 年度财务概览：营收 / 净利 / EPS / ROE 长周期趋势         |
+| stock_money_flow.py             | 个股资金流                                    |
+| stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
+| peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
+| charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
 
 ## 技能清单
 
 | 技能 ID          | 名称            | 说明                                                                |
 | -------------- | ------------- | ----------------------------------------------------------------- |
-| `tdx-tq-local` | 通达信 TQ-Local  | 通过本机 HTTP 服务（JSON-RPC，`127.0.0.1:17709`）直接调用 `tqcenter` 接口，**首选** |
-| `tdx-aidata`    | 通达信AiData | 跨平台（Windows / macOS / Linux）|
-| `tdx-quant`    | 通达信 TQ-Python | 生成 Python 代码，通过 `tqcenter.py` 模块与本地通达信客户端交互                       |
-| `tdx-financial-quick-read` | 财报速读   | 三表关键指标提取、多期趋势对比、财务异常检测、盈利能力诊断与同业对标 |
-| `tdx-stock-analysis`       | 个股深度分析 | 单只 A 股全面研究，输出结构化一页纸报告（九大维度）        |
-| `tdx-gszddf`               | 公司质地打分 | 长期质地结构化评估打分，区分"好公司"与"好股票"，辅助长线选股   |
-| `tdx-valuation-navigator`  | 估值导航员  | 估值方法选择、估值合理性、市场交易预期、重估/杀估值风险       |
-| `tdx-dragon-tiger-miner`   | 龙虎榜掘金  | 龙虎榜明细拆解、机构/北向/游资席位意图、买卖力量评分、三日榜分析  |
-| `tdx-yjygby`               | 业绩预告博弈 | 业绩发布前后的市场交易、预期差、博弈路径与多情景推演         |
+| tdx-tq-local | 通达信 TQ-Local  | 通过本机 HTTP 服务（JSON-RPC，`127.0.0.1:17709`）直接调用 `tqcenter` 接口，**首选** |
+| tdx-aidata    | 通达信AiData | 跨平台（Windows / macOS / Linux）|
+| tdx-quant   | 通达信 TQ-Python | 生成 Python 代码，通过 `tqcenter.py` 模块与本地通达信客户端交互                       |
+| tdx-financial-quick-read | 财报速读   | 三表关键指标提取、多期趋势对比、财务异常检测、盈利能力诊断与同业对标 |
+| tdx-stock-analysis      | 个股深度分析 | 单只 A 股全面研究，输出结构化一页纸报告（九大维度）        |
+| tdx-gszddf           | 公司质地打分 | 长期质地结构化评估打分，区分"好公司"与"好股票"，辅助长线选股   |
+| tdx-valuation-navigator  | 估值导航员  | 估值方法选择、估值合理性、市场交易预期、重估/杀估值风险       |
+| tdx-dragon-tiger-miner  | 龙虎榜掘金  | 龙虎榜明细拆解、机构/北向/游资席位意图、买卖力量评分、三日榜分析  |
+| tdx-yjygby              | 业绩预告博弈 | 业绩发布前后的市场交易、预期差、博弈路径与多情景推演         |
 
 ## 技术栈
 

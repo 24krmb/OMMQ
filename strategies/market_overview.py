@@ -12,7 +12,7 @@
       sh000001 上证综指 / sz399001 深证成指 / sz399006 创业板指 / sh000300 沪深300
     - 成交额：中证指数官网 ak.stock_zh_index_hist_csindex("000001")（上证综指成交金额，亿元）
     - 涨跌家数：乐咕乐股 ak.stock_market_activity_legu
-说明：东方财富接口在本机被限流，故全部改用新浪 / 中证指数 / 乐咕数据源。
+说明：东方财富接口限流，故全部改用新浪 / 中证指数 / 乐咕数据源。
 输出：strategies/output/market_overview_<日期>.png
 运行：uv run python strategies/market_overview.py [交易日数]
 """
