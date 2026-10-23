@@ -17,81 +17,9 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 - **量化计算与绘图**：pandas / numpy / scipy / TA-Lib 计算，matplotlib / seaborn 出图
 - **产出归档**：正式报告与图表统一落盘至 `reports/`
 
-## 技术栈
-
-| 类别    | 组件                       | 说明                           |
-| ----- | ------------------------ | ---------------------------- |
-| 运行平台  | OpenCode / Trae          | 加载 `.opencode` 下的 Agent 与技能  |
-| 数据接口  | 通达信 TdxQuant（`tqcenter`） | 本地客户端取数，主数据源                 |
-| 第三方数据 | Akshare                  | 补充行情与宏观数据                    |
-| 数据处理  | pandas、numpy、scipy       | 数据清洗、统计与计算                   |
-| 技术指标  | TA-Lib                   | 常用技术指标计算（预编译 wheel，无需额外 C 库） |
-| 可视化   | matplotlib、seaborn       | 研报图表输出                       |
-| 运行环境  | Python 3.12              | Windows                      |
-
-## 环境要求
-
-- Windows 系统（`tqcenter` 接口仅在 Windows 下可用）
-- Python 3.12（项目虚拟环境 `.venv` 基于此版本创建）
-- 本机已安装并**启动**通达信客户端（TdxQuant 平台）
-- `PYPlugins\user\tqcenter.py` 模块可用（Python 取数方式）
-- 本地 HTTP 服务可达：`http://127.0.0.1:17709/`（JSON-RPC 取数方式）
-
-## 依赖安装
-
-项目使用 `.venv` 虚拟环境管理 Python 依赖（akshare 等）。`.venv/` 不入库。
-
-```powershell
-# 激活虚拟环境
-.\.venv\Scripts\Activate.ps1
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 或直接使用虚拟环境中的解释器运行脚本
-.\.venv\Scripts\python.exe your_script.py
-```
-
-首次创建虚拟环境（基于本机 Python 3.12）：
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -U pip -r requirements.txt
-```
-
-依赖清单见 [requirements.txt](./requirements.txt)，已包含 akshare、pandas、numpy、scipy、TA-Lib、matplotlib、seaborn 等。
-
-## 快速开始
-
-1. 启动通达信客户端（TdxQuant 平台）并登录到主界面。
-2. 确认本地 HTTP 服务可用：
-   ```powershell
-   curl -s --connect-timeout 3 -X POST "http://127.0.0.1:17709/" `
-     -H "Content-Type: application/json; charset=utf-8" `
-     -d '{"id":1,"method":"get_match_stkinfo","params":{"key_word":"茅台"}}'
-   ```
-   返回正常 JSON-RPC 响应即取数链路通畅。
-3. 在 OpenCode / Trae 中打开本项目，直接用自然语言提问（见下方"常用提问示例"），Agent 会自动加载对应技能并调度取数。
-4. 报告与图表产物归档至 `reports/`。
-
-## 目录结构
-
-```
-OMMQ/
-├── .opencode/
-│   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
-│   └── skills/                   # 技能集（取数 + 分析）
-├── reports/                      # 生成的研报与图表产物
-├── strategies/                   # 量化策略与图表脚本（Akshare 取数）
-│   └── output/                   # 脚本生成的图表与数据产物
-├── requirements.txt              # Python 依赖锁定文件
-├── .venv/                        # 项目虚拟环境（已忽略，不入库）
-└── .gitignore
-```
-
 ## 策略脚本
 
-`strategies/` 下的脚本**独立于技能体系**，直接用 Akshare 拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
+`strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。全部产出写入 `strategies/output/`。
 
 | 脚本                                 | 用途                                       |
 | ---------------------------------- | ---------------------------------------- |
@@ -131,6 +59,78 @@ OMMQ/
 | `tdx-valuation-navigator`  | 估值导航员  | 估值方法选择、估值合理性、市场交易预期、重估/杀估值风险       |
 | `tdx-dragon-tiger-miner`   | 龙虎榜掘金  | 龙虎榜明细拆解、机构/北向/游资席位意图、买卖力量评分、三日榜分析  |
 | `tdx-yjygby`               | 业绩预告博弈 | 业绩发布前后的市场交易、预期差、博弈路径与多情景推演         |
+
+## 技术栈
+
+| 类别    | 组件                       | 说明                           |
+| ----- | ------------------------ | ---------------------------- |
+| 运行平台  | OpenCode / Trae          | 加载 `.opencode` 下的 Agent 与技能  |
+| 数据接口  | 通达信 TdxQuant（`tqcenter`） | 本地客户端取数，主数据源                 |
+| 第三方数据 | Akshare                  | 补充行情与宏观数据                    |
+| 数据处理  | pandas、numpy、scipy       | 数据清洗、统计与计算                   |
+| 技术指标  | TA-Lib                   | 常用技术指标计算（预编译 wheel，无需额外 C 库） |
+| 可视化   | matplotlib、seaborn       | 研报图表输出                       |
+| 运行环境  | Python 3.12              | Windows                      |
+
+## 目录结构
+
+```
+OMMQ/
+├── .opencode/
+│   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
+│   └── skills/                   # 技能集（取数 + 分析）
+├── reports/                      # 生成的研报与图表产物
+├── strategies/                   # 量化策略与图表脚本（Akshare 取数）
+│   └── output/                   # 脚本生成的图表与数据产物
+├── requirements.txt              # Python 依赖锁定文件
+├── .venv/                        # 项目虚拟环境（已忽略，不入库）
+└── .gitignore
+```
+
+## 依赖安装
+
+项目使用 `.venv` 虚拟环境管理 Python 依赖（akshare 等）。`.venv/` 不入库。
+
+```powershell
+# 激活虚拟环境
+.\.venv\Scripts\Activate.ps1
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 或直接使用虚拟环境中的解释器运行脚本
+.\.venv\Scripts\python.exe your_script.py
+```
+
+首次创建虚拟环境（基于本机 Python 3.12）：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -U pip -r requirements.txt
+```
+
+依赖清单见 [requirements.txt](./requirements.txt)，已包含 akshare、pandas、numpy、scipy、TA-Lib、matplotlib、seaborn 等。
+
+## 快速开始
+
+1. 启动通达信客户端（TdxQuant 平台）并登录到主界面。
+2. 确认本地 HTTP 服务可用：
+   ```powershell
+   curl -s --connect-timeout 3 -X POST "http://127.0.0.1:17709/" `
+     -H "Content-Type: application/json; charset=utf-8" `
+     -d '{"id":1,"method":"get_match_stkinfo","params":{"key_word":"茅台"}}'
+   ```
+   返回正常 JSON-RPC 响应即取数链路通畅。
+3. 在 OpenCode / Trae 中打开本项目，直接用自然语言提问（见下方"常用提问示例"），Agent 会自动加载对应技能并调度取数。
+4. 报告与图表产物归档至 `reports/`。
+
+## 环境要求
+
+- Windows 系统（`tqcenter` 接口仅在 Windows 下可用）
+- Python 3.12（项目虚拟环境 `.venv` 基于此版本创建）
+- 本机已安装并**启动**通达信客户端（TdxQuant 平台）
+- `PYPlugins\user\tqcenter.py` 模块可用（Python 取数方式）
+- 本地 HTTP 服务可达：`http://127.0.0.1:17709/`（JSON-RPC 取数方式）
 
 运行方式（**需在项目根目录执行**，脚本输出路径基于项目根目录计算）：
 
