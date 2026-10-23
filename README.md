@@ -77,6 +77,10 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 
 ![期货量仓](.opencode/Example/7.png)
 
+**技术分析**（`stock_technical.py`）
+
+![技术分析](.opencode/Example/601398.png)
+
 ## 技能清单
 
 | 技能 ID          | 名称            | 说明                                                                |
@@ -271,6 +275,10 @@ python -m venv .venv
 | `tqcenter` 导入失败 | 将通达信 `PYPlugins\user` 目录加入 `sys.path`，并优先使用 `sys.path.insert(0, ...)`   |
 | `talib` 导入报错    | 使用本项目的 `TA-Lib 0.8.2`（PyPI 预编译 wheel），`pip install -r requirements.txt` 即可，无需单独安装 C 库 |
 | 数据缺失            | 如实标注缺失项，**不得编造**；必要时改用 Akshare 补充数据源   |
+
+## 更新记录
+
+![更新记录](/UpdateLog.md)
 
 ## 免责声明
 
