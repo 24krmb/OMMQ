@@ -47,10 +47,10 @@ uv run python strategies/futures_basis_spread.py
 ### 第 2 步：确认产物
 
 ```powershell
-Get-ChildItem strategies/output/*_<YYYYMMDD>.png
+Get-ChildItem reports/YYYYMMDD/*.png
 ```
 
-应得到 8 张图：`market_overview` / `market_sentiment` / `money_flow_trend` / `sector_top5` / `sector_rotation` / `futures_top5` / `futures_volume_oi` / `futures_basis`。
+脚本已把图直接写入当天目录 `reports/YYYYMMDD/`，应得到 8 张按固定编号命名的核心图（编号规则见 `strategies/plot_paths.py`）：`01` market_overview / `02` market_sentiment / `03` sector_top5 / `04` sector_rotation / `05` money_flow_trend / `06` futures_top5 / `07` futures_volume_oi / `08` futures_basis；扩展图从 `09` 起加名称后缀（如 `09_industry_valuation.png`）。
 
 ### 第 3 步：读图核验（关键，不得跳过）
 
@@ -75,15 +75,14 @@ Get-ChildItem strategies/output/*_<YYYYMMDD>.png
 
 ### 第 5 步：生成图文报告
 
-1. 复制 8 张图到报告目录（与 MD 同目录，保证相对路径嵌入在本地与 GitHub 均可显示）：
-   建议按日期建子目录并按图序重命名（如 `reports/YYYYMMDD/01.png` … `reports/YYYYMMDD/08.png`），MD 用 `./01.png` 相对路径嵌入。
-2. 报告文件：`reports/YYYYMMDD/market_close_analysis_YYYYMMDD.md`（按日期建子目录，MD 与图片同目录）。
+1. 图片已由脚本按当天日期直接写入 `reports/YYYYMMDD/`（核心八图 `01.png`–`08.png` 编号固定），无需复制或改名。
+2. 报告文件：`reports/YYYYMMDD/market_close_analysis_YYYYMMDD.md`（MD 与图片同目录；单主题日报可按 `market_overview_YYYYMMDD.md` 等脚本名命名），正文一律用 `./<NN>.png` 相对路径嵌入。
 
 **报告结构模板（七节）：**
 
 ```markdown
 # A 股收盘分析 · YYYY-MM-DD（周X）
-来源：24K-Claw ｜ 数据脚本：strategies/* ｜ 图表：已嵌入下文（另归档于 reports/ 与 strategies/output/）
+来源：24K-Claw ｜ 数据脚本：strategies/* ｜ 图表已嵌入下文（与 MD 同目录 reports/YYYYMMDD/）
 
 ## 核心摘要          ← 一段话定性（如"缩量分化修复日"），量能/情绪/资金三要素结论
 ## 一、指数表现      ← 表格：上证/沪深300/深成指/创业板/恒指/标普500 收盘与涨跌
@@ -98,7 +97,7 @@ Get-ChildItem strategies/output/*_<YYYYMMDD>.png
 > 免责声明（固定文案）
 ```
 
-每张图嵌入格式：`![标题](./文件名.png)`，下一行斜体 `*图N：一句话说明（含数据日期）*`。
+每张图嵌入格式：`![标题](./<NN>.png)`，下一行斜体 `*图N：一句话说明（含数据日期）*`。
 
 ### 第 6 步：收尾
 
