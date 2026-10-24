@@ -20,6 +20,8 @@ desktop.ini
 # 临时与日志
 *.log
 *.tmp
+*.csv
+*.html
 .cache/
 
 # 通达信备份数据（本地二进制数据，不入库）

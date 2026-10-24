@@ -48,11 +48,13 @@
 
 import argparse
 import logging
+import math
 import os
 import random
 import sys
 import time
 import unicodedata
+import urllib.request
 from datetime import date, datetime, timedelta
 from functools import wraps
 
@@ -295,16 +297,97 @@ def ensure_dirs():
 # 所有函数的约定：失败返回 None（不抛异常），由调用方决定跳过或中止。
 # ==============================================================================
 
-@with_retry("全A股实时快照(stock_zh_a_spot_em)", swallow=False)   # 全局行情是选股根基，失败必须中止
-def fetch_spot_all_a() -> pd.DataFrame:
-    """一次性拉取全A股实时快照（东方财富源，1次接口调用≈5700只股票）。
+SPOT_SOURCE = "auto"    # 全A快照数据源路由: "em"=固定东财 / "tx"=固定腾讯 / "auto"=东财优先,
+                        # 被拒连(push2风控)或超时自动切换腾讯兜底，恢复后无感切回主源
+TX_BATCH_N = 60         # 腾讯行情单批请求的代码数(qt.gtimg.cn 批量报价上限内)
+
+
+@with_retry("全A股实时快照-东财(stock_zh_a_spot_em)", swallow=False)   # 失败抛出，由路由逻辑决定是否兜底
+def _fetch_spot_all_a_em() -> pd.DataFrame:
+    """东财主源：一次性拉取全A股实时快照（1次接口调用≈5700只股票）。
     关键字段：代码/名称/最新价/市盈率-动态/总市值/流通市值/60日涨跌幅。
     这是全脚本"性价比"最高的一次调用，选股与监控都依赖它。"""
     df = ak.stock_zh_a_spot_em()
     if df is None or df.empty:
         raise RuntimeError("全A股快照返回为空")
-    logger.info("全A快照获取成功: %d 只股票", len(df))
+    logger.info("全A快照获取成功(东财): %d 只股票", len(df))
     return df
+
+
+@with_retry("全A股名单-交易所官方(stock_info_a_code_name)", swallow=False)
+def _fetch_all_a_list() -> pd.DataFrame:
+    """交易所官方全A代码名单（上交所/深交所/北交所官方站点，非东财），列 code/name。"""
+    df = ak.stock_info_a_code_name()
+    if df is None or df.empty:
+        raise RuntimeError("交易所全A名单返回为空")
+    logger.info("交易所全A名单: %d 行", len(df))
+    return df
+
+
+def _tx_prefix(code: str) -> str:
+    """腾讯行情的市场前缀：沪市(5/6/9开头)→sh，其余→sz（0/2/3深市+北交所）。"""
+    return "sh" if code.startswith(("5", "6", "9")) else "sz"
+
+
+@with_retry("全A股实时快照-腾讯(qt.gtimg)", swallow=False)
+def _fetch_spot_all_a_tx() -> pd.DataFrame:
+    """腾讯兜底快照：交易所官方全A名单 + qt.gtimg.cn 批量报价(共93批)，
+    列名与东财快照同构：代码/名称/最新价/市盈率-动态/流通市值/总市值。
+    字段实证(2026-10-24，工行/茅台/平安对照)：
+      idx1名称 idx2代码 idx3现价 idx39动态PE idx44流通市值(亿) idx45总市值(亿)
+      idx52静态PE idx53TTM PE idx30行情时间戳。
+    口径披露：市值单位亿→元(×1e8)；动态PE为腾讯口径(与东财略有差异，但行业内
+    中位PE同源同口径，PE折价的相对排序不受影响)；腾讯无"60日涨跌幅"列，
+    次新股过滤改由 filter_recent_listings 在二阶段前用腾讯日K核对。"""
+    lst = _fetch_all_a_list()
+    names = dict(zip(lst["code"].astype(str).str.zfill(6), lst["name"].astype(str)))
+    codes = sorted(names)          # 稳定顺序，日志可复现
+    rows, n_batches = [], math.ceil(len(codes) / TX_BATCH_N)
+    for b in range(1, n_batches + 1):
+        chunk = codes[(b - 1) * TX_BATCH_N: b * TX_BATCH_N]
+        url = "https://qt.gtimg.cn/q=" + ",".join(_tx_prefix(c) + c for c in chunk)
+        with urllib.request.urlopen(url, timeout=15) as r:
+            raw = r.read().decode("gbk", "replace")
+        for line in raw.splitlines():
+            if '="' not in line:
+                continue
+            f = line.split('="', 1)[1].rstrip('";').split("~")
+            if len(f) < 54 or not f[2]:
+                continue
+            code = str(f[2]).zfill(6)
+            try:
+                rows.append({
+                    "代码": code, "名称": names.get(code, f[1]),
+                    "最新价": float(f[3]) if f[3] else np.nan,
+                    "市盈率-动态": float(f[39]) if f[39] else np.nan,
+                    "流通市值": float(f[44]) * 1e8 if f[44] else np.nan,
+                    "总市值": float(f[45]) * 1e8 if f[45] else np.nan,
+                })
+            except (ValueError, IndexError):
+                continue
+        if b % 20 == 0:
+            logger.info("  腾讯快照进度: %d/%d 批", b, n_batches)
+        time.sleep(API_SLEEP)          # 限速
+    df = pd.DataFrame(rows).drop_duplicates("代码")
+    if df.empty:
+        raise RuntimeError("腾讯快照解析为空")
+    logger.info("全A快照获取成功(腾讯兜底): %d 只股票", len(df))
+    return df
+
+
+def fetch_spot_all_a() -> pd.DataFrame:
+    """全A实时快照·数据源路由（选股根基，最终失败必须抛出中止）。
+    SPOT_SOURCE="auto": 东财优先，异常自动切腾讯兜底（日志声明）；
+    "em"/"tx": 固定指定源。"""
+    if SPOT_SOURCE == "tx":
+        return _fetch_spot_all_a_tx()
+    try:
+        return _fetch_spot_all_a_em()
+    except Exception as e:  # noqa: BLE001
+        if SPOT_SOURCE == "em":
+            raise
+        logger.warning("东财快照不可用(%s) → 自动切换腾讯快照兜底", e)
+        return _fetch_spot_all_a_tx()
 
 
 @with_retry("东财行业板块列表", swallow=False)
@@ -682,6 +765,45 @@ def attach_industry_pe(df: pd.DataFrame) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
+@with_retry("次新股核对-腾讯K线条数(stock_zh_a_hist_tx)", swallow=True, default=None)
+def _fetch_tx_d60_bars(code: str):
+    """近130自然日的日K条数（腾讯端点，已在用的备源行情接口）。
+    沪深A股约每130个自然日有88~90个交易日：条数<60 ⇔ 上市不足60个交易日，
+    与东财快照"60日涨跌幅缺失"的旧近似完全同义。返回 None 表示核对失败。"""
+    start = (date.today() - timedelta(days=130)).strftime("%Y%m%d")
+    df = ak.stock_zh_a_hist_tx(symbol=_tx_symbol(code), start_date=start,
+                               end_date=date.today().strftime("%Y%m%d"), adjust="")
+    if df is None or df.empty:
+        raise RuntimeError(f"{code} 腾讯日K为空")
+    return len(df)
+
+
+def filter_recent_listings(cand: pd.DataFrame) -> pd.DataFrame:
+    """剔除"上市不足60个交易日"的次新股（腾讯快照路径专用，iterable级补丁）。
+    东财快照自带"60日涨跌幅"列（缺失⇔次新），prepare_stock_universe 已处理，
+    列存在时直接返回零开销；腾讯路径无该列，对入围股(通常是STAGE1_N只量级)
+    逐只调腾讯日K核对，核对失败的不误杀、放行并记日志。"""
+    if "60日涨跌幅" in cand.columns:
+        return cand
+    keep, n_new, n_fail = [], 0, 0
+    for i, code in enumerate(cand["代码"].astype(str), 1):
+        bars = _fetch_tx_d60_bars(code)
+        if bars is None:
+            n_fail += 1
+            keep.append(True)          # 失败不误杀
+        elif bars < 60:
+            n_new += 1
+            keep.append(False)
+        else:
+            keep.append(True)
+        if i % 30 == 0:
+            logger.info("  次新股核对进度: %d/%d（已剔除 %d）", i, len(cand), n_new)
+    out = cand[pd.Series(keep, index=cand.index)].copy()
+    logger.info("次新股过滤: 核对 %d 只 → 剔除 %d 只次新、%d 只核对失败放行，剩 %d 只",
+                len(cand), n_new, n_fail, len(out))
+    return out
+
+
 def stage2_enrich(candidates: pd.DataFrame) -> pd.DataFrame:
     """Step2 对初筛入围股逐股核对（每只2次接口，约1秒/只）：
       * PE-TTM：乐咕(老版akshare)/百度股市通(新版)，比东财"动态PE"更稳健
@@ -740,6 +862,7 @@ def run_screening(top_n: int = None, quiet: bool = False) -> pd.DataFrame:
     # ---- 初筛：PE低于行业中位（Neff"被市场忽视"的量化表达），按折价从深到浅取前N只 ----
     stage1 = df[df["PE动态"] < df["行业中位PE"]].copy()
     stage1 = stage1.sort_values("PE折价%", ascending=False).head(NEFF_PARAMS["STAGE1_N"])
+    stage1 = filter_recent_listings(stage1)     # 腾讯快照路径补刀次新过滤（东财路径零开销）
     logger.info("初筛(PE<行业中位): %d 只 → 取折价最深的 %d 只进入二阶段",
                 len(df[df["PE动态"] < df["行业中位PE"]]), len(stage1))
 
