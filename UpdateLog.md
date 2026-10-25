@@ -1,8 +1,9 @@
 # OMMQ 更新日志
 
-> 数据来源：OMMQ 仓库（`main` 分支）Git 提交推送历史，共 28 次提交，已全部同步至远程 `origin/main`（github.com:24krmb/OMMQ.git）
-> 类型说明：`feat` 新功能 / `fix` 问题修复 / `docs` 文档 / `chore` 杂项维护 / `merge` 分支合并
-> 每个日期内按提交时间倒序排列（最新在前）
+## 2026-10-26
+
+1. 新增量化策略目录
+2. 新增股指期货期现基差与升贴水分析 `stock_index_basis.py`
 
 ## 2026-10-24（5 次提交）
 
