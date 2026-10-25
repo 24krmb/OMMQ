@@ -81,6 +81,9 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 
 ![技术分析](.opencode/Example/601398.png)
 
+**股指期货期现基差与升贴水分析**（`stock_index_basis.py`）
+![股指期货期现基差与升贴水分析](.opencode/Example/IM_中证1000_基差分析.png)
+
 ## 技能清单
 
 | 技能 ID          | 名称            | 说明                                                                |
