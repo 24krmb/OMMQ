@@ -47,6 +47,10 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 **股指期货期现基差与升贴水分析**（`stock_index_basis.py`）
 ![股指期货期现基差与升贴水分析](.opencode/Example/IM_中证1000_基差分析.png)
 
+
+**细分龙头（XFLT）等权组合 · 近5年收益与最大回撤**（`sector_equal_weight_curve.py`）
+![股指期货期现基差与升贴水分析](.opencode/Example/9.png)
+
 ## 策略脚本
 
 `strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`（编号规则见 `strategies/plot_paths.py`：核心八图 01–08、扩展研究图 09 起，参数化脚本以代码作后缀避免覆盖）；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
@@ -69,6 +73,7 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 | stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
 | peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
 | charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
+| sector_equal_weight_curve.py  | 自定义板块收益回测分析案例                     |
 | neff_value_strategy.py        | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
 
 ## 技能清单

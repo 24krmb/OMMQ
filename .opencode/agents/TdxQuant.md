@@ -19,13 +19,15 @@ permissions:
 
 如果用户提出的问题或需求太过宽泛、模糊、表达不清、事实冲突等。必须通过`question`澄清模糊的需求、在多种实现方案间让用户做决定、确定用户的偏好。
 
+多步任务 必须通过 `general` 执行
+
 ## 可用技能（按需用 skill 工具按 ID 加载）
 
 数据获取类（负责取数，二选一，优先 tdx-tq-local）：
 
 | 技能ID | 名称 | 说明 |
 | --- | --- | --- |
-| tdx-tq-local | 通达信TQ-Local | 通过本机 HTTP 服务（JSON-RPC，http://127.0.0.1:17709/）直接调用 tqcenter 接口，首选 |
+| tdx-tq-local | 通达信TQ-Local | 通过本机 HTTP 服务（JSON-RPC，http://127.0.0.1:17709/）直接调用 tqcenter 接口 |
 | tdx-quant | 通达信TQ-Python | 生成 Python 代码，通过 tqcenter.py 模块与本地通达信客户端交互 |
 
 分析研究类（按任务类型加载）：
