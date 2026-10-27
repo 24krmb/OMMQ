@@ -6,44 +6,7 @@
 
 ## 项目简介
 
-OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖云端数据服务，也不做自动化实盘交易。核心思路是：把专业的投研流程拆解成可复用的技能（Skill），由 Agent 按任务类型调度，最终产出结构化、可落盘的研报。
-
-通过`OpenCode` 中打开本项目，直接用自然语言提问（见下方"常用提问示例"），Agent 会自动加载对应技能并调度取数。
-> 新手首次使用 prompt：帮我分析这个项目，安装依赖环境，创建虚拟环境并且激活；
-
-核心能力：
-
-- **取数**：通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
-- **分析**：财报速读、个股深度研究、公司质地打分、估值研判、龙虎榜掘金、业绩预告博弈
-- **交互**：推荐 `OpenCode`  开源工具及内置的免费模型，实现 0 费用对话与分析；
-- **补充数据源**：Akshare 作为第三方数据补充（`strategies/` 下的脚本全部基于 Akshare 取数）
-- **量化策略**：`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
-- **量化计算与绘图**：pandas / numpy / scipy / TA-Lib 计算，matplotlib / seaborn 出图
-- **产出归档**：正式报告与图表统一落盘至 `reports/`
-
-## 策略脚本
-
-`strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`（编号规则见 `strategies/plot_paths.py`：核心八图 01–08、扩展研究图 09 起，参数化脚本以代码作后缀避免覆盖）；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
-
-| 脚本                                 | 用途                                       |
-| ---------------------------------- | ---------------------------------------- |
-| market_overview.py              | A 股市场全景日报：四大指数走势（归一化）+ 成交额 + 涨跌家数        |
-| global_index_week_curve.py       | 全球三大指数周度累计收益曲线：沪深300 / 恒生指数 / 标普500      |
-| market_sentiment.py              | 市场情绪：涨停/跌停家数趋势、连板梯队、涨停行业分布               |
-| money_flow_trend.py              | 杠杆资金（两融）趋势：融资余额、两融余额、单日净增                |
-| sector_top5_chart.py            | 申万一级行业 / 概念板块 涨跌幅 TOP5                 |
-| sector_rotation_heatmap.py      | 申万一级行业板块轮动热力图（行=行业，列=交易日）                |
-| industry_valuation_percentile.py | 申万一级行业 PE / PB 当前值及近 5 年历史分位             |
-| futures_basis_spread.py          | 期货基差与跨期价差：期货 vs 现货、近月 vs 远月、股指基差         |
-| futures_top5_chart.py           | 国内商品期货主力合约 涨幅/跌幅 TOP5                    |
-| futures_volume_oi.py           | 期货量仓：主力合约成交量与持仓量、日增仓                     |
-| stock_financials.py            | 个股财务：主要指标 + 三大报表（季度口径），导出 CSV 并出图        |
-| stock_financials_annual.py      | 年度财务概览：营收 / 净利 / EPS / ROE 长周期趋势         |
-| stock_money_flow.py             | 个股资金流                                    |
-| stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
-| peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
-| charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
-| neff_value_strategy.py        | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
+OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台，不依赖MCP服务，不依赖靠积分充值的范办公工具。内置各类绘图脚本、量化策略。由 Agent 与 SubAgent 按任务类型调度，最终产出结构化、可落盘的研报、量化选股池子、量化回测结果等。
 
 ## 部分案例
 
@@ -80,6 +43,41 @@ OMMQ 是一个**轻量级、本地优先**的 A 股投研工作台，不依赖�
 **技术分析**（`stock_technical.py`）
 
 ![技术分析](.opencode/Example/601398.png)
+
+## 核心能力：
+
+- **取数**：通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
+- **分析**：财报速读、个股深度研究、公司质地打分、估值研判、龙虎榜掘金、业绩预告博弈
+- **交互**：推荐 `OpenCode`  开源工具及内置的免费模型，实现 0 费用对话与分析；
+- **补充数据源**：第三方数据补充（`strategies/` 下的脚本全部基于 Akshare 取数）
+- **量化策略**：`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
+- **量化计算与绘图**：pandas / numpy / scipy / TA-Lib 计算，matplotlib / seaborn 出图
+- **产出归档**：正式报告与图表统一落盘至 `reports/`
+
+
+## 策略脚本
+
+`strategies/` 下的脚本**独立于技能体系**，直接用拉取公开数据并出图，可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`（编号规则见 `strategies/plot_paths.py`：核心八图 01–08、扩展研究图 09 起，参数化脚本以代码作后缀避免覆盖）；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
+
+| 脚本                                 | 用途                                       |
+| ---------------------------------- | ---------------------------------------- |
+| market_overview.py              | A 股市场全景日报：四大指数走势（归一化）+ 成交额 + 涨跌家数   |
+| global_index_week_curve.py       | 全球三大指数周度累计收益曲线：沪深300 / 恒生指数 / 标普500  |
+| market_sentiment.py              | 市场情绪：涨停/跌停家数趋势、连板梯队、涨停行业分布          |
+| money_flow_trend.py              | 杠杆资金（两融）趋势：融资余额、两融余额、单日净增           |
+| sector_top5_chart.py            | 申万一级行业 / 概念板块 涨跌幅 TOP5                       |
+| sector_rotation_heatmap.py      | 申万一级行业板块轮动热力图（行=行业，列=交易日）             |
+| industry_valuation_percentile.py | 申万一级行业 PE / PB 当前值及近 5 年历史分位              |
+| futures_basis_spread.py          | 期货基差与跨期价差：期货 vs 现货、近月 vs 远月、股指基差   |
+| futures_top5_chart.py           | 国内商品期货主力合约 涨幅/跌幅 TOP5                      |
+| futures_volume_oi.py           | 期货量仓：主力合约成交量与持仓量、日增仓                     |
+| stock_financials.py            | 个股财务：主要指标 + 三大报表（季度口径），导出 CSV 并出图   |
+| stock_financials_annual.py      | 年度财务概览：营收 / 净利 / EPS / ROE 长周期趋势         |
+| stock_money_flow.py             | 个股资金流                                    |
+| stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
+| peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
+| charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
+| neff_value_strategy.py        | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
 
 ## 技能清单
 
