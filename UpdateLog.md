@@ -4,7 +4,6 @@
 
 ### 功能新增
 - 新增本地日线行情缓存 `data/daily/`（parquet，按证券代码分文件）与增量更新脚本 `quant/fetch_daily.py`（新浪数据源，同日去重覆盖，支持 `--refresh` 全量重拉）
-- 首批落盘：上证指数 `sh000001.parquet`（1990-12-19 至 2026-10-27，共 8750 行）、创业板指 `sz399006.parquet`（2010-06-01 至 2026-10-27，共 3982 行）
 
 ### 杂项
 - `requirements.txt` 补充 `pyarrow`（parquet 读写引擎）
