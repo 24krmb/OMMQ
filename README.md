@@ -82,9 +82,10 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台，不
 | stock_money_flow.py             | 个股资金流                                    |
 | stock_technical.py               | 个股技术面：日 K + MA5/20/60 + 成交量 + MACD + RSI |
 | peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
-| charts_demo.py                | 绘图示例：折线、柱状、直方、热力图各一张                     |
-| sector_equal_weight_curve.py  | 自定义板块收益回测分析案例                     |
-| neff_value_strategy.py        | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
+| charts_demo.py                   | 绘图示例：折线、柱状、直方、热力图各一张                     |
+| fetch_daily.py                | 本地日线行情缓存：data/daily/ 按证券代码分文件（parquet）                     |
+| sector_equal_weight_curve.py     | 自定义板块收益回测分析案例                     |
+| neff_value_strategy.py           | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
 
 ## 技能清单
 

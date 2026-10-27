@@ -17,12 +17,17 @@ desktop.ini
 .idea/
 .vscode/
 .trae/
+.workbuddy/
+.kilo/
 # 临时与日志
 *.log
 *.tmp
 *.csv
 *.html
 .cache/
+
+# 行情历史数据不入库
+*.parquet
 
 # 通达信备份数据（本地二进制数据，不入库）
 TdxBak_*/
