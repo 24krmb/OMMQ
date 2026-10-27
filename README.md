@@ -193,10 +193,16 @@ OMMQ/
 ├── .opencode/
 │   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
 │   └── skills/                   # 技能集（取数 + 分析）
-├── reports/                      # 生成的研报与图表产物
-├── strategies/                   # 量化策略与图表脚本（Akshare 取数）
+├── reports/                      # 生成的研报与图表产物/选股结果、复盘报告输出目录
+├── strategies/                   # 量化策略与图表脚本
 │   └── output/                   # 脚本生成的图表与数据产物
 ├── requirements.txt              # Python 依赖锁定文件
+├── data/                         # 本地行情缓存（parquet，别每次重新拉）
+│   └── daily/                    # 按股票代码分文件
+├── backtest/
+│   └── run.py                    # 回测入口，参数化
+├── screening/
+│   └── screen.py                 # 盘后选股脚本
 ├── .venv/                        # 项目虚拟环境（已忽略，不入库）
 └── .gitignore
 ```
