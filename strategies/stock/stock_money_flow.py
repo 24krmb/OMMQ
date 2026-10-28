@@ -17,11 +17,9 @@
 """
 
 from __future__ import annotations
-
 import os
 import sys
 import warnings
-
 import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
@@ -35,7 +33,7 @@ matplotlib.rcParams["font.sans-serif"] = [
     "Arial Unicode MS",
 ]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+# 统一配色 OMMQ：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -46,7 +44,6 @@ UP_COLOR = "#F36"
 DOWN_COLOR = "#0C9"
 WINDOWS = [("即时", "当日"), ("3日排行", "3日"), ("5日排行", "5日"),
            ("10日排行", "10日"), ("20日排行", "20日")]
-
 
 def _to_yi(value) -> float | None:
     """'3.16亿' / '-6448.25万' / '4185.00'(元) -> 亿元。"""
@@ -66,7 +63,6 @@ def _to_yi(value) -> float | None:
     except ValueError:
         return None
 
-
 def fetch_instant() -> pd.DataFrame:
     df = ak.stock_fund_flow_individual(symbol="即时")
     df = df.copy()
@@ -76,14 +72,12 @@ def fetch_instant() -> pd.DataFrame:
     df["流出亿"] = df["流出资金"].map(_to_yi)
     return df
 
-
 def fetch_window(symbol: str) -> pd.DataFrame:
     df = ak.stock_fund_flow_individual(symbol=symbol)
     df = df.copy()
     df["股票代码"] = pd.to_numeric(df["股票代码"], errors="coerce").astype("Int64")
     df["净额亿"] = df["资金流入净额"].map(_to_yi)
     return df
-
 
 def plot_windows(ax, code: int, nets: dict[str, float | None]) -> None:
     labels = list(nets.keys())
@@ -133,16 +127,13 @@ def plot_rank(ax, df: pd.DataFrame, top: bool) -> None:
     for y, v in enumerate(d["净额亿"]):
         ax.text(v, y, f" {v:+.1f}", va="center", ha="left" if v >= 0 else "right", fontsize=9)
 
-
 def main() -> None:
     code = sys.argv[1].strip() if len(sys.argv) > 1 else "600519"
     code_i = int(code)
-
     inst = fetch_instant()
     cur = inst[inst["股票代码"] == code_i]
     inst_row = cur.iloc[0] if not cur.empty else None
     name = str(inst_row["股票简称"]) if inst_row is not None else code
-
     nets: dict[str, float | None] = {}
     for sym, lab in WINDOWS:
         if sym == "即时":
@@ -163,7 +154,7 @@ def main() -> None:
     plot_rank(axes[1, 1], inst, top=False)
 
     fig.suptitle(
-        f"{name}（{code}）个股资金流（同花顺口径）　来源：24K-Claw",
+        f"{name}（{code}）个股资金流（同花顺口径）　来源：OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
@@ -181,7 +172,6 @@ def main() -> None:
     print(f"\n[全市场当日净流入 TOP5]")
     print(inst.dropna(subset=['净额亿']).nlargest(5, "净额亿")[["股票代码", "股票简称", "净额亿"]]
           .to_string(index=False, float_format=lambda v: f"{v:+.2f}"))
-
 
 if __name__ == "__main__":
     main()

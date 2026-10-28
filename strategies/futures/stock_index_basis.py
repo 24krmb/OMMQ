@@ -15,39 +15,32 @@
        - 左上: 基差(点数)近 1 年走势, 标注零轴与最新值、区间统计
        - 右上: 升贴水率(%)近 1 年走势, 标注零轴、区间均值与最新值
        - 下方: 最新截面期限结构 —— 当月/次月/当季/次季四个合约升贴水率柱状图
-      图表配色与字体遵循项目 24K-Claw 规范(红#F36/绿#0C9/蓝#99F/黄#FC3/字体色#27254c);
+      图表配色与字体遵循项目 OMMQ 规范(红#F36/绿#0C9/蓝#99F/黄#FC3/字体色#27254c);
       底部脚注为基于最新数据的自动生成专业解读(升贴水状态/基差分位/期限结构形态)。
 依赖: pip install akshare pandas matplotlib
 用法: python stock_index_basis.py [可选: 历史天数, 默认366]
 输出: 项目根目录 reports/YYYYMMDD/ 文件夹(按运行日期归档)
 """
-
 import datetime as dt
 import sys
 from pathlib import Path
-
 import akshare as ak
 import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
-
 # ==================== 可修改配置 ====================
-HISTORY_DAYS = 366                     # 历史区间: 近 1 年
+HISTORY_DAYS = 366 # 历史区间: 近 1 年
 # 图表铁律: 所有图表产物归档至 reports/日期/ 目录(与收盘报告同规范)
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "reports" / dt.date.today().strftime("%Y%m%d")
-
 PRODUCTS = {                           # 期货代码 -> (品种名, 现货指数代码)
     "IM": ("中证1000", "000852"),
     "IF": ("沪深300", "000300"),
     "IC": ("中证500", "000905"),
 }
 # ===================================================
-
 COL_BLUE, COL_YELLOW, COL_RED, COL_GREEN, COL_GRAY = (
-    "#99F", "#FC3", "#F36", "#0C9", "#bbb")   # 项目统一配色 24K-Claw
-
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+    "#99F", "#FC3", "#F36", "#0C9", "#bbb")
 matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 matplotlib.rcParams["text.color"] = "#27254c"
@@ -55,8 +48,6 @@ matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
-
-
 # -------------------- 数据获取 --------------------
 def _norm_daily(df: pd.DataFrame) -> pd.DataFrame:
     """把不同接口返回的日线数据统一成 [date, close] 两列。"""
@@ -69,8 +60,6 @@ def _norm_daily(df: pd.DataFrame) -> pd.DataFrame:
         "close": pd.to_numeric(df[close_col], errors="coerce"),
     })
     return out.dropna().sort_values("date").reset_index(drop=True)
-
-
 def fetch_spot(index_code: str, start: dt.date, end: dt.date) -> pd.DataFrame:
     """现货指数日线: 优先东财 index_zh_a_hist, 失败则退回新浪 stock_zh_index_daily。"""
     start_s, end_s = start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
@@ -80,11 +69,9 @@ def fetch_spot(index_code: str, start: dt.date, end: dt.date) -> pd.DataFrame:
         return _norm_daily(df)
     except Exception:
         pass
-    df = ak.stock_zh_index_daily(symbol="sh" + index_code)     # 新浪回退
+    df = ak.stock_zh_index_daily(symbol="sh" + index_code)
     out = _norm_daily(df)
     return out[(out["date"] >= start) & (out["date"] <= end)].reset_index(drop=True)
-
-
 def fetch_fut_continuous(product: str, start: dt.date, end: dt.date) -> pd.DataFrame:
     """期货当月连续日线(新浪: IM0/IF0/IC0)。兼容不同 akshare 版本的参数。"""
     try:
@@ -96,12 +83,10 @@ def fetch_fut_continuous(product: str, start: dt.date, end: dt.date) -> pd.DataF
     out = _norm_daily(df)
     return out[(out["date"] >= start) & (out["date"] <= end)].reset_index(drop=True)
 
-
 def third_friday(year: int, month: int) -> dt.date:
     """合约到期日: 当月第三个周五。"""
     d = dt.date(year, month, 1)
     return d + dt.timedelta(days=(4 - d.weekday()) % 7 + 14)   # 周五=4
-
 
 def cffex_contracts(today: dt.date = None):
     """推导中金所挂牌的四个合约(当月/次月/随后两个季月), 返回 [(角色, (年, 月)), ...]"""
@@ -115,7 +100,6 @@ def cffex_contracts(today: dt.date = None):
     quarters = [ym for ym in months                                # 其后两个季月
                 if ym[1] in (3, 6, 9, 12) and third_friday(*ym) > third_friday(*m2)]
     return [("当月", m1), ("次月", m2), ("当季", quarters[0]), ("次季", quarters[1])]
-
 
 def fetch_contract_snapshot(product: str, spot_last_date: dt.date):
     """四个挂牌合约的最新收盘价, 用于期限结构截面。"""
@@ -135,14 +119,11 @@ def fetch_contract_snapshot(product: str, spot_last_date: dt.date):
             print(f"  [警告] 合约 {code} 行情获取失败: {e}")
     return rows
 
-
 # -------------------- 绘图 --------------------
 def _fmt_date_axis(ax):
     loc = mdates.AutoDateLocator()
     ax.xaxis.set_major_locator(loc)
     ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(loc))
-
-
 def _professional_comment(name: str, basis: pd.Series, prem: pd.Series,
                           vols: list) -> str:
     """基于最新数据自动生成底部专业解读(升贴水状态/基差分位/期限结构形态)。"""
@@ -161,7 +142,6 @@ def _professional_comment(name: str, basis: pd.Series, prem: pd.Series,
             term = "期限结构近远月贴水接近平坦，暂缺乏方向性预期"
     else:
         term = "期限结构数据缺失，暂不评估"
-
     if p_last < 0:
         hint = ("贴水结构对多头移仓成本友好" if pct_pos > 20 else
                 "深贴水叠加基差低位，空头拥挤度偏高，关注均值回归修复机会")
@@ -170,15 +150,11 @@ def _professional_comment(name: str, basis: pd.Series, prem: pd.Series,
 
     return (f"专业解读: {name}当前{state} {p_last:+.2f}%（基差 {basis.iloc[-1]:+.1f} 点，"
             f"处近1年{pos}、{pct_pos:.0f}% 分位）；{term}；{hint}")
-
-
 def _annotate_latest(ax, x, y, text, color):
     """在序列末端标注最新值。"""
     ax.scatter([x], [y], s=26, color=color, zorder=5)
     ax.annotate(text, xy=(x, y), xytext=(8, 10), textcoords="offset points",
                 fontsize=9, color=color, fontweight="bold")
-
-
 def plot_product(product: str, name: str, merged: pd.DataFrame,
                  contracts: list, spot_last_date: dt.date, out_path: Path):
     """单个品种一张大图: 基差走势 + 升贴水率走势 + 期限结构。"""
@@ -186,13 +162,11 @@ def plot_product(product: str, name: str, merged: pd.DataFrame,
     prem = merged["prem"]
     dates = merged["date"]
     spot_last = float(merged["close_spot"].iloc[-1])
-
     fig = plt.figure(figsize=(14, 10), constrained_layout=True)
     gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 1.05])
     ax1 = fig.add_subplot(gs[0, 0])     # 基差(点数)
     ax2 = fig.add_subplot(gs[0, 1])     # 升贴水率(%)
     ax3 = fig.add_subplot(gs[1, :])     # 期限结构
-
     # ---- 子图1: 基差走势(点数) ----
     ax1.fill_between(dates, basis, 0, color=COL_BLUE, alpha=0.10)
     ax1.plot(dates, basis, color=COL_BLUE, lw=1.5)
@@ -207,7 +181,6 @@ def plot_product(product: str, name: str, merged: pd.DataFrame,
                      f"{basis.iloc[-1]:+.1f}", COL_BLUE)
     ax1.grid(axis="y", alpha=0.25)
     _fmt_date_axis(ax1)
-
     # ---- 子图2: 升贴水率走势(%) ----
     ax2.plot(dates, prem, color=COL_YELLOW, lw=1.5)
     ax2.axhline(0, color=COL_GRAY, lw=1)
@@ -251,7 +224,7 @@ def plot_product(product: str, name: str, merged: pd.DataFrame,
 
     # ---- 总标题与脚注(自动专业解读) ----
     fig.suptitle(f"{name}股指期货({product}) 期现基差与升贴水分析   "
-                 f"区间 {dates.iloc[0]} ~ {dates.iloc[-1]}   来源：24K-Claw",
+                 f"区间 {dates.iloc[0]} ~ {dates.iloc[-1]}   来源：OMMQ",
                  fontsize=15, fontweight="bold")
     vols = [(c["close"] - spot_last) / spot_last * 100 for c in contracts] \
         if contracts else []

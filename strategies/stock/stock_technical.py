@@ -31,7 +31,7 @@ matplotlib.rcParams["font.sans-serif"] = [
     "Arial Unicode MS",
 ]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+# 统一配色 OMMQ：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -166,7 +166,7 @@ def main() -> None:
     )
     fig.suptitle(
         f"{label} 日K/均线/成交量/MACD/RSI　最新收盘 {last['close']:.2f} "
-        f"（{(last['close']/prev['close']-1)*100:+.2f}%）　来源：24K-Claw",
+        f"（{(last['close']/prev['close']-1)*100:+.2f}%）　来源：OMMQ",
         fontsize=16, fontweight="bold", y=0.995,
     )
     fig.tight_layout()

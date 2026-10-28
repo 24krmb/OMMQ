@@ -143,7 +143,7 @@ def main() -> None:
     ax.grid(axis="y", linestyle="--", alpha=0.35)
 
     fig.suptitle(
-        f"{code} 年度财务概览（近 {len(labels)} 个年度）　来源：24K-Claw",
+        f"{code} 年度财务概览（近 {len(labels)} 个年度）　来源：OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
