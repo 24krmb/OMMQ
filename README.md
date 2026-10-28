@@ -191,6 +191,8 @@ OMMQ/
 │   └── skills/                   # 技能集（取数 + 分析）
 ├── reports/                      # 生成的研报与图表产物/选股结果、复盘报告输出目录
 ├── strategies/                   # 量化策略与图表脚本
+│   ├── futures/                  # 期货相关脚本
+│   ├── stock/                    # A 股相关脚本
 │   └── output/                   # 脚本生成的图表与数据产物
 ├── requirements.txt              # Python 依赖锁定文件
 ├── data/                         # 本地行情缓存（parquet，别每次重新拉）
