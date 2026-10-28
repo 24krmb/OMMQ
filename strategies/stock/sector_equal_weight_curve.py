@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-"""自定义板块等权收益曲线与最大回撤（近 N 年）
+"""自定义板块等权收益曲线与最大回撤(近 N 年)
 
-做什么：
-    1. 读取通达信自定义板块成分（默认 XFLT 细分龙头）；
+做什么:
+    1. 读取通达信自定义板块成分(默认 XFLT 细分龙头)；
     2. 批量拉取成分股近 N 年日线后复权收盘价；
-    3. 按“每日等权再平衡”合成板块等权净值，并计算最大回撤；
+    3. 按“每日等权再平衡”合成板块等权净值,并计算最大回撤；
     4. 输出净值/回撤 CSV、收益-回撤双面板图与 Markdown 简报。
 
-口径：
-    - 个股收益 = 后复权收盘价日收益率，已包含分红送转；
-    - 组合日收益 = 当日所有可交易成分股日收益的算术平均（等权、每日再平衡）；
+口径:
+    - 个股收益 = 后复权收盘价日收益率,已包含分红送转；
+    - 组合日收益 = 当日所有可交易成分股日收益的算术平均(等权、每日再平衡)；
     - 另附“等权静态持有”曲线作对照；
-    - 基准 = 中证全指（000985.CSI）；
+    - 基准 = 中证全指(000985.CSI)；
     - 不计交易成本、印花税、冲击成本；
-    - 按“当前”板块成分回溯，存在幸存者偏差，结果偏乐观。
+    - 按“当前”板块成分回溯,存在幸存者偏差,结果偏乐观。
 
-用法：
+用法:
     python strategies/sector_equal_weight_curve.py
     python strategies/sector_equal_weight_curve.py --block XFLT --name 细分龙头 --years 5
     python strategies/sector_equal_weight_curve.py --end 20261026 --refresh
@@ -40,11 +40,7 @@ from plot_paths import report_dir, report_image_path
 
 warnings.filterwarnings("ignore")
 
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
@@ -66,7 +62,7 @@ BENCH_NAME = "中证全指"
 # 通达信环境
 # ---------------------------------------------------------------------------
 def _tdx_user_path() -> str:
-    """定位 tqcenter.py 所在目录：注册表 → 常见安装路径。"""
+    """定位 tqcenter.py 所在目录:注册表 → 常见安装路径。"""
     try:
         import winreg
 
@@ -92,7 +88,7 @@ def _tdx_user_path() -> str:
         p = os.path.join(root, "PYPlugins", "user")
         if os.path.exists(os.path.join(p, "tqcenter.py")):
             return p
-    raise FileNotFoundError("未找到通达信 PYPlugins/user/tqcenter.py，请检查安装目录。")
+    raise FileNotFoundError("未找到通达信 PYPlugins/user/tqcenter.py,请检查安装目录。")
 
 
 sys.path.insert(0, _tdx_user_path())
@@ -104,12 +100,12 @@ from tqcenter import tq  # noqa: E402
 # ---------------------------------------------------------------------------
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="自定义板块等权收益曲线与最大回撤")
-    p.add_argument("--block", default="XFLT", help="自定义板块简称，默认 XFLT")
-    p.add_argument("--name", default="细分龙头", help="板块中文名，用于图表标题")
-    p.add_argument("--years", type=float, default=5.0, help="回溯年数，默认 5")
-    p.add_argument("--end", default="", help="结束日 YYYYMMDD，默认今天")
-    p.add_argument("--refresh", action="store_true", help="忽略本地缓存，重新拉数")
-    p.add_argument("--batch", type=int, default=100, help="单次请求股票数，默认 100")
+    p.add_argument("--block", default="XFLT", help="自定义板块简称,默认 XFLT")
+    p.add_argument("--name", default="细分龙头", help="板块中文名,用于图表标题")
+    p.add_argument("--years", type=float, default=5.0, help="回溯年数,默认 5")
+    p.add_argument("--end", default="", help="结束日 YYYYMMDD,默认今天")
+    p.add_argument("--refresh", action="store_true", help="忽略本地缓存,重新拉数")
+    p.add_argument("--batch", type=int, default=100, help="单次请求股票数,默认 100")
     return p.parse_args()
 
 
@@ -128,7 +124,7 @@ def _get_members(block: str) -> tuple[list[str], dict[str, str]]:
 
 def _fetch_close(codes: list[str], start: str, end: str,
                  batch: int = 100) -> tuple[pd.DataFrame, list[str]]:
-    """批量拉取后复权日收盘，返回 (日期×代码 矩阵, 失败代码)。"""
+    """批量拉取后复权日收盘,返回 (日期×代码 矩阵, 失败代码)。"""
     frames: list[pd.DataFrame] = []
     failed: list[str] = []
     total = len(codes)
@@ -165,7 +161,7 @@ def _fetch_close(codes: list[str], start: str, end: str,
         print(f"  拉取进度 {done}/{total}  ({elapsed:.0f}s)", flush=True)
 
     if not frames:
-        raise RuntimeError("全部行情拉取失败，请检查通达信客户端与数据下载状态。")
+        raise RuntimeError("全部行情拉取失败,请检查通达信客户端与数据下载状态。")
 
     close = pd.concat(frames, axis=1).sort_index()
     close = close.loc[:, ~close.columns.duplicated()]
@@ -184,7 +180,7 @@ def _load_data(block: str, name: str, codes: list[str], names: dict[str, str],
         candidates = []
         if os.path.exists(cache):
             candidates.append(cache)
-        # 复用区间更长的同板块缓存（旧缓存起点更早、终点不早于本次即可）
+        # 复用区间更长的同板块缓存(旧缓存起点更早、终点不早于本次即可)
         for fn in os.listdir(CACHE_DIR):
             if not (fn.startswith(f"{block}_") and fn.endswith(".pkl")):
                 continue
@@ -200,14 +196,14 @@ def _load_data(block: str, name: str, codes: list[str], names: dict[str, str],
             with open(path, "rb") as f:
                 obj = pickle.load(f)
             if obj.get("codes") == codes:
-                print(f"[缓存] {path}  （{obj['close'].shape[1]} 只股票）")
+                print(f"[缓存] {path}  ({obj['close'].shape[1]} 只股票)")
                 return obj["close"], obj["bench"], obj["failed"]
 
-    print(f"[拉取] {name}（{block}）成分股 {len(codes)} 只，"
+    print(f"[拉取] {name}({block})成分股 {len(codes)} 只,"
           f"区间 {fetch_start} ~ {end} ...")
     close, failed = _fetch_close(codes, fetch_start, end, batch=batch)
 
-    print(f"[拉取] 基准 {BENCH_NAME}（{BENCH_CODE}）...")
+    print(f"[拉取] 基准 {BENCH_NAME}({BENCH_CODE})...")
     bench = _fetch_close([BENCH_CODE], fetch_start, end, batch=1)[0]
 
     with open(cache, "wb") as f:
@@ -268,7 +264,7 @@ def _build_portfolio(close: pd.DataFrame, bench: pd.DataFrame,
     cal = cal[(cal >= base_date) & (cal <= end)]
     px = px.reindex(cal)
 
-    # 前向填充停牌日；最后有效日之后置空，视为退出组合
+    # 前向填充停牌日；最后有效日之后置空,视为退出组合
     px_ff = px.ffill()
     last_valid = px.apply(lambda s: s.last_valid_index())
     for c in px.columns:
@@ -287,7 +283,7 @@ def _build_portfolio(close: pd.DataFrame, bench: pd.DataFrame,
     ])
     nav = nav[~nav.index.duplicated(keep="first")]
 
-    # 等权静态持有对照：老股以基准日收盘为成本，新股以上市首日为成本
+    # 等权静态持有对照:老股以基准日收盘为成本,新股以上市首日为成本
     base_px = px.loc[base_date].copy()
     for c in px.columns:
         if pd.isna(base_px[c]):
@@ -329,11 +325,11 @@ def _plot(result: dict, stats: dict, block: str, name: str,
     ax1.axvspan(peak, rec, color=DOWN_COLOR, alpha=0.05, zorder=0)
 
     ax1.plot(nav.index, nav.values, color=UP_COLOR, lw=2.3, zorder=5,
-             label=f"{name}等权（每日再平衡）")
+             label=f"{name}等权(每日再平衡)")
     ax1.plot(bh.index, bh.values, color=BUYHOLD_COLOR, lw=1.2, ls="--",
-             alpha=0.9, zorder=4, label="等权静态持有（对照）")
+             alpha=0.9, zorder=4, label="等权静态持有(对照)")
     ax1.plot(bench.index, bench.values, color=BENCH_COLOR, lw=1.5,
-             zorder=3, label=f"{BENCH_NAME}（基准）")
+             zorder=3, label=f"{BENCH_NAME}(基准)")
     ax1.axhline(0, color="#aaaaaa", lw=0.9, ls="--", zorder=1)
 
     for s, color in ((nav, UP_COLOR), (bench, BENCH_COLOR), (bh, BUYHOLD_COLOR)):
@@ -360,7 +356,7 @@ def _plot(result: dict, stats: dict, block: str, name: str,
                         connectionstyle="arc3,rad=-0.18"),
     )
 
-    ax1.set_ylabel("累计收益（%）", fontsize=11)
+    ax1.set_ylabel("累计收益(%)", fontsize=11)
     ax1.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}%"))
     ax1.grid(linestyle="--", alpha=0.3)
     ax1.legend(loc="upper left", fontsize=9.5, framealpha=0.9)
@@ -371,8 +367,8 @@ def _plot(result: dict, stats: dict, block: str, name: str,
         f"最大回撤 {stats['mdd']:.1%}｜成分股 {n_members} 只"
     )
     if n_used < n_members:
-        subtitle += f"（有行情 {n_used} 只）"
-    fig.suptitle(f"{name}（{block}）等权组合 · 近 {stats['years']:.0f} 年累计收益",
+        subtitle += f"(有行情 {n_used} 只)"
+    fig.suptitle(f"{name}({block})等权组合 · 近 {stats['years']:.0f} 年累计收益",
                  fontsize=15, fontweight="bold", y=0.975)
     fig.text(0.5, 0.938, subtitle, ha="center", fontsize=10.2, color="#4a5568")
 
@@ -386,7 +382,7 @@ def _plot(result: dict, stats: dict, block: str, name: str,
         xytext=(8, -12), textcoords="offset points", fontsize=9.5,
         color="#078f6e", fontweight="bold",
     )
-    ax2.set_ylabel("回撤（%）", fontsize=11)
+    ax2.set_ylabel("回撤(%)", fontsize=11)
     ax2.set_ylim(min(stats["mdd"] * 100 * 1.18, -1.0), 2.0)
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}%"))
     ax2.grid(linestyle="--", alpha=0.3)
@@ -398,8 +394,8 @@ def _plot(result: dict, stats: dict, block: str, name: str,
 
     fig.text(
         0.5, 0.015,
-        "数据来源：通达信 TdxQuant（后复权收盘价）｜口径：每日等权再平衡，不计交易成本｜"
-        "注：按当前板块成分回溯，存在幸存者偏差，历史收益偏乐观",
+        "数据来源:通达信 TdxQuant(后复权收盘价)｜口径:每日等权再平衡,不计交易成本｜"
+        "注:按当前板块成分回溯,存在幸存者偏差,历史收益偏乐观",
         ha="center", fontsize=8.8, color="#7a8291",
     )
     fig.tight_layout(rect=(0, 0.035, 1, 0.915))
@@ -430,18 +426,18 @@ def _write_report(result: dict, stats: dict, bh_stats: dict, bench_stats: dict,
         return f"| {label} | {f(a)} | {f(b)} | {f(c)} |"
 
     md = [
-        f"# {name}（{block}）等权组合 · 近{stats['years']:.0f}年收益与最大回撤",
+        f"# {name}({block})等权组合 · 近{stats['years']:.0f}年收益与最大回撤",
         "",
-        f"**统计区间**：{nav.index[0]:%Y-%m-%d}（基准日）~ {nav.index[-1]:%Y-%m-%d}，"
+        f"**统计区间**:{nav.index[0]:%Y-%m-%d}(基准日)~ {nav.index[-1]:%Y-%m-%d},"
         f"共 {stats['years']:.2f} 年",
         "",
-        f"**成分股**：{n_members} 只（区间内新上市 {n_new} 只），"
+        f"**成分股**:{n_members} 只(区间内新上市 {n_new} 只),"
         f"区间内取得行情 {n_used} 只"
-        + (f"，拉取失败 {len(failed)} 只" if failed else ""),
+        + (f",拉取失败 {len(failed)} 只" if failed else ""),
         "",
-        "**构建方式**：等权、每日收盘再平衡；个股按通达信后复权收盘价计算收益"
-        "（含分红送转）；不计交易成本、印花税与冲击成本。"
-        f"基准为{BENCH_NAME}（{BENCH_CODE}）。",
+        "**构建方式**:等权、每日收盘再平衡；个股按通达信后复权收盘价计算收益"
+        "(含分红送转)；不计交易成本、印花税与冲击成本。"
+        f"基准为{BENCH_NAME}({BENCH_CODE})。",
         "",
         f"![{name}等权收益与回撤](./{image_name})",
         "",
@@ -475,28 +471,28 @@ def _write_report(result: dict, stats: dict, bh_stats: dict, bench_stats: dict,
 
     md += [
         "",
-        f"*注：{'，'.join(partial)}，均为不完整年度。*" if partial else "",
+        f"*注:{','.join(partial)},均为不完整年度。*" if partial else "",
         "",
         "## 最大回撤明细",
         "",
-        f"- **最大回撤**：{stats['mdd']:.2%}",
-        f"- **峰值日**：{peak:%Y-%m-%d}（净值 {nav.loc[peak]:.4f}）",
-        f"- **谷底日**：{trough:%Y-%m-%d}（净值 {nav.loc[trough]:.4f}）",
-        f"- **修复日**：{rec_txt}",
-        f"- **当前回撤**：{stats['current_dd']:.2%}",
-        f"- **单日最佳 / 最差**：{stats['best']:+.2%} / {stats['worst']:+.2%}",
+        f"- **最大回撤**:{stats['mdd']:.2%}",
+        f"- **峰值日**:{peak:%Y-%m-%d}(净值 {nav.loc[peak]:.4f})",
+        f"- **谷底日**:{trough:%Y-%m-%d}(净值 {nav.loc[trough]:.4f})",
+        f"- **修复日**:{rec_txt}",
+        f"- **当前回撤**:{stats['current_dd']:.2%}",
+        f"- **单日最佳 / 最差**:{stats['best']:+.2%} / {stats['worst']:+.2%}",
         "",
         "## 口径与风险提示",
         "",
-        f"1. 组合按**当前**“{name}”板块成分回溯，历史上被调出或退市的个股不在样本中，"
-        "存在**幸存者偏差与前视偏差**，历史收益大概率偏乐观。",
-        f"2. 等权组合按每日收盘再平衡计算，{n_members} 只成分股每日再平衡在实盘中不可行，"
-        "交易成本会显著侵蚀收益；静态持有曲线仅作对照（老股以基准日收盘等权买入，"
-        "新股以上市首日收盘纳入）。",
-        "3. 停牌股按停牌前收盘价冻结，复牌当日一次性体现区间涨跌；"
+        f"1. 组合按**当前**“{name}”板块成分回溯,历史上被调出或退市的个股不在样本中,"
+        "存在**幸存者偏差与前视偏差**,历史收益大概率偏乐观。",
+        f"2. 等权组合按每日收盘再平衡计算,{n_members} 只成分股每日再平衡在实盘中不可行,"
+        "交易成本会显著侵蚀收益；静态持有曲线仅作对照(老股以基准日收盘等权买入,"
+        "新股以上市首日收盘纳入)。",
+        "3. 停牌股按停牌前收盘价冻结,复牌当日一次性体现区间涨跌；"
         "区间内停止交易的个股在最后有效日后退出组合。",
-        "4. 后复权价格已包含分红送转，但除权处理以通达信数据为准；"
-        "极端异常日收益（绝对值 >500%）已按缺失处理。",
+        "4. 后复权价格已包含分红送转,但除权处理以通达信数据为准；"
+        "极端异常日收益(绝对值 >500%)已按缺失处理。",
         "",
         f"*数据与图表由 `strategies/sector_equal_weight_curve.py` 生成；"
         f"明细见 `{csv_name}`。*",
@@ -524,7 +520,7 @@ def main() -> None:
     tq.initialize(__file__)
     try:
         codes, names = _get_members(args.block)
-        print(f"板块 {args.name}（{args.block}）成分股 {len(codes)} 只")
+        print(f"板块 {args.name}({args.block})成分股 {len(codes)} 只")
 
         close, bench, failed = _load_data(
             args.block, args.name, codes, names, fetch_start, end_str,
@@ -536,11 +532,11 @@ def main() -> None:
     if close.empty:
         raise RuntimeError("未获取到任何成分股行情。")
 
-    # 基准日：统计起点前的最后一个交易日
+    # 基准日:统计起点前的最后一个交易日
     bench_dates = pd.to_datetime(bench.index).sort_values()
     prior = bench_dates[bench_dates < start]
     if len(prior) == 0:
-        raise RuntimeError("基准日前无行情，请扩大 fetch_start。")
+        raise RuntimeError("基准日前无行情,请扩大 fetch_start。")
     base_date = prior[-1]
 
     result = _build_portfolio(close, bench, base_date, end)
@@ -571,9 +567,9 @@ def main() -> None:
     n_big = int((ret_all.abs() > 0.5).to_numpy().sum())
     print(f"\n[数据] 成功股票 {used} 只 / 名单 {len(codes)} 只；"
           f"失败 {len(failed)} 只；区间内停止交易 {stopped} 只")
-    print(f"[数据] 日收益绝对值 >50% 的样本：{n_big} 个")
-    print(f"[数据] 日覆盖股票数：最小 {int(coverage.min())}，"
-          f"中位 {int(coverage.median())}，最大 {int(coverage.max())}")
+    print(f"[数据] 日收益绝对值 >50% 的样本:{n_big} 个")
+    print(f"[数据] 日覆盖股票数:最小 {int(coverage.min())},"
+          f"中位 {int(coverage.median())},最大 {int(coverage.max())}")
 
     print(f"\n[业绩] {start:%Y-%m-%d} ~ {end:%Y-%m-%d}  ({stats['years']:.2f} 年)")
     print(f"  等权组合   累计 {stats['total']:+.2%}  年化 {stats['cagr']:+.2%}  "
@@ -582,9 +578,9 @@ def main() -> None:
           f"波动 {bh_stats['vol']:.2%}  夏普 {bh_stats['sharpe']:.2f}  最大回撤 {bh_stats['mdd']:.2%}")
     print(f"  {BENCH_NAME}   累计 {bench_stats['total']:+.2%}  年化 {bench_stats['cagr']:+.2%}  "
           f"波动 {bench_stats['vol']:.2%}  夏普 {bench_stats['sharpe']:.2f}  最大回撤 {bench_stats['mdd']:.2%}")
-    print(f"  最大回撤区间：{stats['peak']:%Y-%m-%d} → {stats['trough']:%Y-%m-%d}，"
+    print(f"  最大回撤区间:{stats['peak']:%Y-%m-%d} → {stats['trough']:%Y-%m-%d},"
           f"修复日 {stats['recovery']:%Y-%m-%d}" if pd.notna(stats["recovery"])
-          else f"  最大回撤区间：{stats['peak']:%Y-%m-%d} → {stats['trough']:%Y-%m-%d}，尚未修复")
+          else f"  最大回撤区间:{stats['peak']:%Y-%m-%d} → {stats['trough']:%Y-%m-%d},尚未修复")
 
     print("\n[年度收益]")
     print("  年度    等权组合    静态持有    中证全指")

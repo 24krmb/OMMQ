@@ -10,10 +10,8 @@
 """
 
 from __future__ import annotations
-
 import os
 import sys
-
 import akshare as ak
 import numpy as np
 import pandas as pd
@@ -32,7 +30,6 @@ def main() -> None:
     wine = wine.set_index("日期")
     pm.plot_line(wine["收盘价"], title="白酒板块指数收盘价 (2026-09 ~ 2026-10)",
                  xlabel="日期", ylabel="指数点", path=f"{OUT}/16_1_line_白酒指数.png")
-
     # 2) 柱状图 —— 行业板块周涨幅 TOP15 (红涨绿跌由数值正负自动着色)
     #    (自足计算: 10-09 前收盘 -> 10-16 收盘, 与当年 industry_top5 脚本口径一致)
     import time as _time

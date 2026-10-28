@@ -5,7 +5,7 @@
 功能说明:
   1. 通过 AKShare 拉取近 1 年数据:
        - 现货指数日线: IM->中证1000(000852) / IF->沪深300(000300) / IC->中证500(000905)
-       - 期货当月连续日线: IM0 / IF0 / IC0 (新浪财经)
+       - 期货当月连续日线: IM0 / IF0 / IC0 (财经)
        - 四个挂牌合约(当月/次月/当季/次季)最新行情, 用于期限结构截面
   2. 计算指标:
        - 基差     = 现货收盘 - 期货收盘 (单位: 点)
@@ -61,7 +61,7 @@ def _norm_daily(df: pd.DataFrame) -> pd.DataFrame:
     })
     return out.dropna().sort_values("date").reset_index(drop=True)
 def fetch_spot(index_code: str, start: dt.date, end: dt.date) -> pd.DataFrame:
-    """现货指数日线: 优先东财 index_zh_a_hist, 失败则退回新浪 stock_zh_index_daily。"""
+    """现货指数日线: 优先东财 index_zh_a_hist, 失败则退回 stock_zh_index_daily。"""
     start_s, end_s = start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
     try:
         df = ak.index_zh_a_hist(symbol=index_code, period="daily",
@@ -73,7 +73,7 @@ def fetch_spot(index_code: str, start: dt.date, end: dt.date) -> pd.DataFrame:
     out = _norm_daily(df)
     return out[(out["date"] >= start) & (out["date"] <= end)].reset_index(drop=True)
 def fetch_fut_continuous(product: str, start: dt.date, end: dt.date) -> pd.DataFrame:
-    """期货当月连续日线(新浪: IM0/IF0/IC0)。兼容不同 akshare 版本的参数。"""
+    """期货当月连续日线(: IM0/IF0/IC0)。兼容不同 akshare 版本的参数。"""
     try:
         df = ak.futures_main_sina(symbol=product + "0",
                                   start_date=start.strftime("%Y%m%d"),
@@ -135,21 +135,21 @@ def _professional_comment(name: str, basis: pd.Series, prem: pd.Series,
     if len(vols) >= 2:
         near, far = vols[0], vols[-1]
         if far < near - 0.05:
-            term = "期限结构上远月贴水逐级加深，对冲需求偏高、市场对远期偏谨慎"
+            term = "期限结构上远月贴水逐级加深,对冲需求偏高、市场对远期偏谨慎"
         elif far > near + 0.05:
-            term = "期限结构上远月贴水收敛、近低远高，市场远期情绪偏暖"
+            term = "期限结构上远月贴水收敛、近低远高,市场远期情绪偏暖"
         else:
-            term = "期限结构近远月贴水接近平坦，暂缺乏方向性预期"
+            term = "期限结构近远月贴水接近平坦,暂缺乏方向性预期"
     else:
-        term = "期限结构数据缺失，暂不评估"
+        term = "期限结构数据缺失,暂不评估"
     if p_last < 0:
         hint = ("贴水结构对多头移仓成本友好" if pct_pos > 20 else
-                "深贴水叠加基差低位，空头拥挤度偏高，关注均值回归修复机会")
+                "深贴水叠加基差低位,空头拥挤度偏高,关注均值回归修复机会")
     else:
-        hint = "升水结构下多头占优，但需留意情绪过热后的回吐风险"
+        hint = "升水结构下多头占优,但需留意情绪过热后的回吐风险"
 
-    return (f"专业解读: {name}当前{state} {p_last:+.2f}%（基差 {basis.iloc[-1]:+.1f} 点，"
-            f"处近1年{pos}、{pct_pos:.0f}% 分位）；{term}；{hint}")
+    return (f"专业解读: {name}当前{state} {p_last:+.2f}%(基差 {basis.iloc[-1]:+.1f} 点,"
+            f"处近1年{pos}、{pct_pos:.0f}% 分位)；{term}；{hint}")
 def _annotate_latest(ax, x, y, text, color):
     """在序列末端标注最新值。"""
     ax.scatter([x], [y], s=26, color=color, zorder=5)
@@ -224,7 +224,7 @@ def plot_product(product: str, name: str, merged: pd.DataFrame,
 
     # ---- 总标题与脚注(自动专业解读) ----
     fig.suptitle(f"{name}股指期货({product}) 期现基差与升贴水分析   "
-                 f"区间 {dates.iloc[0]} ~ {dates.iloc[-1]}   来源：OMMQ",
+                 f"区间 {dates.iloc[0]} ~ {dates.iloc[-1]}   来源:OMMQ",
                  fontsize=15, fontweight="bold")
     vols = [(c["close"] - spot_last) / spot_last * 100 for c in contracts] \
         if contracts else []

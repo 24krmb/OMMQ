@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""期货量仓图：主力连续合约 成交量 + 持仓量
+"""期货量仓图:主力连续合约 成交量 + 持仓量
 
-内容（2×2）：
-    1. 主力合约 收盘价 + 成交量（双轴，近 N 个交易日）
-    2. 主力合约 持仓量（柱）+ 日增仓（线）
-    3. 多品种 持仓量 近 N 日 归一化对比（起点=100）
-    4. 多品种 最新 成交/持仓 比（换手活跃度）
+内容(2×2):
+    1. 主力合约 收盘价 + 成交量(双轴,近 N 个交易日)
+    2. 主力合约 持仓量(柱)+ 日增仓(线)
+    3. 多品种 持仓量 近 N 日 归一化对比(起点=100)
+    4. 多品种 最新 成交/持仓 比(换手活跃度)
 
-数据源：新浪主力连续 ak.futures_main_sina(symbol="RB0"/"I0"/…)
-口径：取国内商品期货主力连续合约；持仓量 = 未平仓合约量，日增仓 = 持仓量日变化。
-输出：reports/YYYYMMDD/07.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/futures_volume_oi.py [品种代码] [交易日数]   # 默认 RB0 120
+数据源:主力连续 ak.futures_main_sina(symbol="RB0"/"I0"/…)
+口径:取国内商品期货主力连续合约；持仓量 = 未平仓合约量,日增仓 = 持仓量日变化。
+输出:reports/YYYYMMDD/07.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/futures_volume_oi.py [品种代码] [交易日数]   # 默认 RB0 120
 """
 
 from __future__ import annotations
@@ -27,25 +27,21 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
-MAIN_SYM = "RB0"      # 主图品种（主力连续）
+MAIN_SYM = "RB0"      # 主图品种(主力连续)
 N = 120               # 主图展示交易日数
 UP_COLOR = "#F36"
 DOWN_COLOR = "#0C9"
 
-# 多品种对比（主力连续代码）
+# 多品种对比(主力连续代码)
 MULTI = ["RB0", "I0", "CU0", "M0", "TA0", "SR0", "AU0", "AG0", "MA0", "P0"]
 NAME_MAP = {
     "RB": "螺纹钢", "I": "铁矿石", "CU": "铜", "M": "豆粕", "TA": "PTA",
@@ -86,9 +82,9 @@ def plot_price_vol(ax, df: pd.DataFrame, sym: str) -> None:
     ax.tick_params(axis="y", labelcolor=UP_COLOR)
     ax2 = ax.twinx()
     ax2.bar(d["日期"], d["成交量"], width=1.0, color="#99F", alpha=0.7, label="成交量")
-    ax2.set_ylabel("成交量（手）", color="#27254c")
+    ax2.set_ylabel("成交量(手)", color="#27254c")
     ax2.tick_params(axis="y", labelcolor="#27254c")
-    ax.set_title(f"{label(sym)} 主力连续 · 收盘价 / 成交量（近 {len(d)} 交易日）", fontsize=13)
+    ax.set_title(f"{label(sym)} 主力连续 · 收盘价 / 成交量(近 {len(d)} 交易日)", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
     ax.legend(h1 + h2, l1 + l2, fontsize=9, loc="upper left")
@@ -100,13 +96,13 @@ def plot_oi(ax, df: pd.DataFrame, sym: str) -> None:
     d = df.tail(N).copy()
     d["日增仓"] = d["持仓量"].diff()
     ax.bar(d["日期"], d["持仓量"], width=1.0, color="#99F", label="持仓量")
-    ax.set_ylabel("持仓量（手）", color="#27254c")
+    ax.set_ylabel("持仓量(手)", color="#27254c")
     ax.tick_params(axis="y", labelcolor="#27254c")
     ax2 = ax.twinx()
     colors = [UP_COLOR if v >= 0 else DOWN_COLOR for v in d["日增仓"].fillna(0)]
     ax2.bar(d["日期"], d["日增仓"], width=1.0, color=colors, alpha=0.9, label="日增仓")
     ax2.axhline(0, color="#888", linewidth=0.8)
-    ax2.set_ylabel("日增仓（手）", color="#27254c")
+    ax2.set_ylabel("日增仓(手)", color="#27254c")
     ax.set_title(f"{label(sym)} 主力连续 · 持仓量 / 日增仓", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
@@ -122,8 +118,8 @@ def plot_multi_oi(ax, series: dict[str, pd.Series]) -> None:
         rebased = s / s.iloc[0] * 100
         ax.plot(s.index, rebased.values, linewidth=1.3, label=nm)
     ax.axhline(100, color="#bbb", linewidth=0.8, linestyle="--")
-    ax.set_ylabel("持仓量 归一化（起点=100）")
-    ax.set_title("多品种 · 持仓量走势对比（归一化）", fontsize=13)
+    ax.set_ylabel("持仓量 归一化(起点=100)")
+    ax.set_title("多品种 · 持仓量走势对比(归一化)", fontsize=13)
     ax.legend(fontsize=8, ncol=3)
     ax.grid(linestyle="--", alpha=0.3)
     ax.tick_params(axis="x", rotation=30, labelsize=8)
@@ -139,7 +135,7 @@ def plot_turnover(ax, rows: list[dict]) -> None:
     vals = [r["比"] for r in rows]
     bars = ax.bar(names, vals, color="#99F", width=0.6)
     ax.set_ylabel("成交量 / 持仓量")
-    ax.set_title("多品种 · 最新 成交/持仓 比（活跃度）", fontsize=13)
+    ax.set_title("多品种 · 最新 成交/持仓 比(活跃度)", fontsize=13)
     ax.grid(axis="y", linestyle="--", alpha=0.3)
     ax.tick_params(axis="x", rotation=30, labelsize=9)
     for b, v in zip(bars, vals):
@@ -177,7 +173,7 @@ def main() -> None:
 
     date = latest_trade_date()
     fig.suptitle(
-        f"{label(sym)} 期货量仓图（主力连续，近 {n} 交易日）　来源：24K-Claw",
+        f"{label(sym)} 期货量仓图(主力连续,近 {n} 交易日)　来源:24K-Claw",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

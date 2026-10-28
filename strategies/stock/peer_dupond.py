@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """同业杜邦分析 / 财务估值横向对比
 
-内容（2×2）：
+内容(2×2):
     1. 主标的近 N 年 ROE 与销售净利率趋势
-    2. 主标的近 N 年 总资产周转率 与 权益乘数（杜邦拆解因子，双轴）
+    2. 主标的近 N 年 总资产周转率 与 权益乘数(杜邦拆解因子,双轴)
     3. 同业 ROE(%) 与 销售净利率(%) 对比
-    4. 同业 估值对比（PE-TTM / PB，双轴）
-杜邦恒等式：ROE = 销售净利率 × 总资产周转率 × 权益乘数
+    4. 同业 估值对比(PE-TTM / PB,双轴)
+杜邦恒等式:ROE = 销售净利率 × 总资产周转率 × 权益乘数
 
-数据源：
-    - 财务指标（净利率 / 周转率 / 权益乘数 / ROE）：新浪 ak.stock_financial_analysis_indicator
-      （权益乘数 = 100 / 股东权益比率(%) = 总资产 / 股东权益）
-    - 估值（PE-TTM / PB / 名称）：腾讯 ak.stock_zh_a_spot_tx 全A快照
-说明：东方财富接口在本机被限流，故财务走新浪、估值走腾讯源。
-输出：reports/YYYYMMDD/14_<主代码>.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/peer_dupond.py [主代码] [同业代码,逗号分隔]
-      默认：600519 000858,000568,600809,002304,000596
+数据源:
+    - 财务指标(净利率 / 周转率 / 权益乘数 / ROE): ak.stock_financial_analysis_indicator
+      (权益乘数 = 100 / 股东权益比率(%) = 总资产 / 股东权益)
+    - 估值(PE-TTM / PB / 名称):腾讯 ak.stock_zh_a_spot_tx 全A快照
+说明:东方财富接口在本机被限流,故财务走、估值走腾讯源。
+输出:reports/YYYYMMDD/14_<主代码>.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/peer_dupond.py [主代码] [同业代码,逗号分隔]
+      默认:600519 000858,000568,600809,002304,000596
 """
 
 from __future__ import annotations
@@ -31,13 +31,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -148,7 +144,7 @@ def main() -> None:
     ax2.tick_params(axis="y", labelcolor=LEV_COLOR)
     ax.set_xticks(list(x))
     ax.set_xticklabels(md["年"], fontsize=9)
-    ax.set_title(f"{main_code} {names.get(main_code,'')} 杜邦拆解因子（周转率 / 权益乘数）", fontsize=13)
+    ax.set_title(f"{main_code} {names.get(main_code,'')} 杜邦拆解因子(周转率 / 权益乘数)", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
     ax.legend(h1 + h2, l1 + l2, loc="best")
@@ -172,7 +168,7 @@ def main() -> None:
                     f"{b.get_height():.1f}", ha="center", va="bottom", fontsize=8)
     ax.set_xticks(list(xi))
     ax.set_xticklabels(labels, fontsize=8)
-    ax.set_title("同业 ROE / 销售净利率 对比（最新年报）", fontsize=13)
+    ax.set_title("同业 ROE / 销售净利率 对比(最新年报)", fontsize=13)
     ax.set_ylabel("(%)")
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.3)
@@ -195,14 +191,14 @@ def main() -> None:
     ax3.tick_params(axis="y", labelcolor="#27254c")
     ax.set_xticks(xi)
     ax.set_xticklabels(xl, fontsize=8)
-    ax.set_title("同业估值对比（PE-TTM / PB）", fontsize=13)
+    ax.set_title("同业估值对比(PE-TTM / PB)", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax3.get_legend_handles_labels()
     ax.legend(h1 + h2, l1 + l2, loc="best")
     ax.grid(axis="y", linestyle="--", alpha=0.3)
 
     fig.suptitle(
-        f"{main_code} {names.get(main_code,'')} 杜邦分析 / 同业财务估值对比　来源：24K-Claw",
+        f"{main_code} {names.get(main_code,'')} 杜邦分析 / 同业财务估值对比　来源:24K-Claw",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

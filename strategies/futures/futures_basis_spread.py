@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""期货基差 / 跨期价差：期货 vs 现货、近月 vs 远月
+"""期货基差 / 跨期价差:期货 vs 现货、近月 vs 远月
 
-内容（2×2）：
-    1. 商品期货 · 主力基差率（期货 vs 现货）横截面：基差率 =（期货−现货）/现货
-       正 = 期货升水(contango)，负 = 期货贴水(backwardation)
-    2. 商品期货 · 跨期价差率（近月 vs 远月）横截面：价差率 =（临近交割合约−主力合约）/主力
+内容(2×2):
+    1. 商品期货 · 主力基差率(期货 vs 现货)横截面:基差率 =(期货−现货)/现货
+       正 = 期货升水(contango),负 = 期货贴水(backwardation)
+    2. 商品期货 · 跨期价差率(近月 vs 远月)横截面:价差率 =(临近交割合约−主力合约)/主力
     3. 重点品种 · 主力基差率 近 N 个交易日走势
-    4. 股指期货 · 基差（现货指数 vs 主力合约）：IF / IH / IC / IM
+    4. 股指期货 · 基差(现货指数 vs 主力合约):IF / IH / IC / IM
 
-数据源：
-    - 商品现货/近月/主力价格与基差：生意社 AKShare: ak.futures_spot_price(_daily)
-    - 股指期货主力合约行情：新浪 AKShare: ak.futures_zh_realtime
-    - 现货指数（沪深300/上证50/中证500/中证1000）：中证指数官网 ak.stock_zh_index_hist_csindex
-说明：东方财富接口在本机被限流，故全部改用生意社 / 新浪 / 中证指数源。
-输出：reports/YYYYMMDD/08.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/futures_basis_spread.py [历史交易日数]   # 默认 15
+数据源:
+    - 商品现货/近月/主力价格与基差:生意社 AKShare: ak.futures_spot_price(_daily)
+    - 股指期货主力合约行情: AKShare: ak.futures_zh_realtime
+    - 现货指数(沪深300/上证50/中证500/中证1000):中证指数官网 ak.stock_zh_index_hist_csindex
+说明:东方财富接口在本机被限流,故全部改用生意社 /  / 中证指数源。
+输出:reports/YYYYMMDD/08.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/futures_basis_spread.py [历史交易日数]   # 默认 15
 """
 
 from __future__ import annotations
@@ -31,13 +31,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -45,14 +41,14 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N_HIST = 15          # 基差率历史回溯交易日数
-N_CROSS = 18         # 横截面展示品种数（按 |基差率| 取前 N）
-UP_COLOR = "#F36"   # 正（期货升水 / 近月升水）
-DOWN_COLOR = "#0C9"  # 负（期货贴水 / 近月贴水）
+N_CROSS = 18         # 横截面展示品种数(按 |基差率| 取前 N)
+UP_COLOR = "#F36"   # 正(期货升水 / 近月升水)
+DOWN_COLOR = "#0C9"  # 负(期货贴水 / 近月贴水)
 
 # 基差率历史回溯的重点品种
 HIST_VARS = ["RB", "I", "CU", "AL", "M", "C"]
 
-# 基差/跨期横截面仅纳入主流活跃品种（剔除现货口径差异过大的品种，如烧碱）
+# 基差/跨期横截面仅纳入主流活跃品种(剔除现货口径差异过大的品种,如烧碱)
 MAIN_VARS = [
     "RB", "HC", "I", "J", "JM", "CU", "AL", "ZN", "NI", "PB", "SN",
     "AU", "AG", "SC", "FU", "BU", "TA", "MA", "PP", "L", "V", "EG",
@@ -60,7 +56,7 @@ MAIN_VARS = [
     "SA", "FG", "UR", "SP", "AP", "LH", "SM", "SF", "AO", "PF", "PK",
 ]
 
-# 股指期货： (新浪品种名, 现货指数代码, 现货指数名)
+# 股指期货: (品种名, 现货指数代码, 现货指数名)
 INDEX_FUT = [
     ("沪深300指数期货", "000300", "沪深300"),
     ("上证50指数期货", "000016", "上证50"),
@@ -68,7 +64,7 @@ INDEX_FUT = [
     ("中证1000股指期货", "000852", "中证1000"),
 ]
 
-# 常见商品中文名（用于图表更易读，缺失则回退代码）
+# 常见商品中文名(用于图表更易读,缺失则回退代码)
 NAME_MAP = {
     "RB": "螺纹钢", "HC": "热卷", "I": "铁矿石", "J": "焦炭", "JM": "焦煤",
     "CU": "铜", "AL": "铝", "ZN": "锌", "NI": "镍", "SN": "锡", "PB": "铅",
@@ -110,7 +106,7 @@ def fetch_cross(date: dt.date) -> pd.DataFrame:
 
 
 def fetch_hist(n: int) -> pd.DataFrame:
-    """重点品种主力基差率近 n 个交易日走势（透视表）。"""
+    """重点品种主力基差率近 n 个交易日走势(透视表)。"""
     end = latest_trade_date()
     start = end - dt.timedelta(days=int(n * 1.7) + 10)
     df = ak.futures_spot_price_daily(
@@ -128,7 +124,7 @@ def fetch_hist(n: int) -> pd.DataFrame:
 
 
 def fetch_index_futures() -> list[dict]:
-    """股指期货基差：现货指数 vs 主力合约。"""
+    """股指期货基差:现货指数 vs 主力合约。"""
     out: list[dict] = []
     end = dt.date.today()
     start = end - dt.timedelta(days=30)
@@ -181,7 +177,7 @@ def draw_hist(ax, pivot: pd.DataFrame) -> None:
     ax.set_xticks(ticks)
     ax.set_xticklabels([pivot.index[i].strftime("%m-%d") for i in ticks], fontsize=9)
     ax.set_ylabel("主力基差率 (%)")
-    ax.set_title("重点品种 · 主力基差率走势（正=期货升水）", fontsize=13)
+    ax.set_title("重点品种 · 主力基差率走势(正=期货升水)", fontsize=13)
     ax.legend(fontsize=9, ncol=3)
     ax.grid(linestyle="--", alpha=0.35)
 
@@ -189,15 +185,15 @@ def draw_hist(ax, pivot: pd.DataFrame) -> None:
 def draw_index(ax, rows: list[dict]) -> None:
     if not rows:
         ax.text(0.5, 0.5, "股指期货数据不可用", ha="center", va="center", transform=ax.transAxes)
-        ax.set_title("股指期货 · 基差（现货 vs 主力）", fontsize=13)
+        ax.set_title("股指期货 · 基差(现货 vs 主力)", fontsize=13)
         return
     names = [f"{r['名称']}\n{r['合约']}\n现{r['现货']:.0f} / 期{r['期货']:.0f}" for r in rows]
     rates = [r["基差率"] for r in rows]
     colors = [UP_COLOR if v >= 0 else DOWN_COLOR for v in rates]
     bars = ax.bar(names, rates, color=colors, width=0.55)
     ax.axhline(0, color="#888", linewidth=0.8)
-    ax.set_ylabel("基差率 (%)（期货−现货）/现货")
-    ax.set_title("股指期货 · 基差（现货指数 vs 主力合约）", fontsize=13, pad=10)
+    ax.set_ylabel("基差率 (%)(期货−现货)/现货")
+    ax.set_title("股指期货 · 基差(现货指数 vs 主力合约)", fontsize=13, pad=10)
     ax.grid(axis="y", linestyle="--", alpha=0.35)
     ax.tick_params(axis="x", labelsize=9)
     for b, r in zip(bars, rates):
@@ -216,16 +212,16 @@ def main() -> None:
     fig, axes = plt.subplots(2, 2, figsize=(16, 11))
 
     draw_cross(axes[0, 0], cross, "主力基差率",
-               f"商品期货 · 主力基差率 TOP{N_CROSS}（期货 vs 现货）",
-               "基差率 (%)（期货−现货）/现货")
+               f"商品期货 · 主力基差率 TOP{N_CROSS}(期货 vs 现货)",
+               "基差率 (%)(期货−现货)/现货")
     draw_cross(axes[0, 1], cross, "跨期价差率",
-               f"商品期货 · 跨期价差率 TOP{N_CROSS}（近月 vs 远月）",
-               "价差率 (%)（临近合约−主力）/主力")
+               f"商品期货 · 跨期价差率 TOP{N_CROSS}(近月 vs 远月)",
+               "价差率 (%)(临近合约−主力)/主力")
     draw_hist(axes[1, 0], hist)
     draw_index(axes[1, 1], idx_fut)
 
     fig.suptitle(
-        f"期货基差 / 跨期价差（数据日期 {date}，历史回溯 {n} 个交易日）　来源：24K-Claw",
+        f"期货基差 / 跨期价差(数据日期 {date},历史回溯 {n} 个交易日)　来源:24K-Claw",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

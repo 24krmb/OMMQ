@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-"""A股市场情绪图：涨跌家数 / 涨跌停 / 连板梯队 / 涨停行业分布
+"""A股市场情绪图:涨跌家数 / 涨跌停 / 连板梯队 / 涨停行业分布
 
-内容（2×2）：
+内容(2×2):
     1. 近 N 个交易日 涨停 / 跌停 家数趋势
     2. 当日 全市场 上涨 / 平盘 / 下跌 家数
-    3. 当日 涨停梯队：按连板数统计家数分布（最高板标注）
+    3. 当日 涨停梯队:按连板数统计家数分布(最高板标注)
     4. 当日 涨停个股 所属行业 TOP10
 
-数据源：
-    - 全市场涨跌家数：乐咕乐股 ak.stock_market_activity_legu
-    - 涨停池 / 炸板池 / 跌停池：东方财富 ak.stock_zt_pool_em /
-      stock_zt_pool_zbgc_em / stock_zt_pool_dtgc_em（push2ex 接口本机可用）
-    - 涨停家数历史：按交易日逐日调用涨停池 / 跌停池
-说明：东方财富 push2/push2his 资金流接口在本机被限流，故资金流类指标改由其他源提供；
-      涨停/跌停池走 push2ex 接口，本机可正常返回。
-输出：reports/YYYYMMDD/02.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/market_sentiment.py [交易日数]   # 默认 15
+数据源:
+    - 全市场涨跌家数:乐咕乐股 ak.stock_market_activity_legu
+    - 涨停池 / 炸板池 / 跌停池:东方财富 ak.stock_zt_pool_em /
+      stock_zt_pool_zbgc_em / stock_zt_pool_dtgc_em(push2ex 接口本机可用)
+    - 涨停家数历史:按交易日逐日调用涨停池 / 跌停池
+说明:东方财富 push2/push2his 资金流接口在本机被限流,故资金流类指标改由其他源提供；
+      涨停/跌停池走 push2ex 接口,本机可正常返回。
+输出:reports/YYYYMMDD/02.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/market_sentiment.py [交易日数]   # 默认 15
 """
 
 from __future__ import annotations
@@ -32,13 +32,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -69,7 +65,7 @@ def trade_dates(n: int) -> list[dt.date]:
 
 
 def fetch_breadth() -> dict[str, object]:
-    """乐咕乐股 全市场活跃度（上涨/平盘/下跌/涨停/跌停/真实涨跌停 家数）。"""
+    """乐咕乐股 全市场活跃度(上涨/平盘/下跌/涨停/跌停/真实涨跌停 家数)。"""
     df = ak.stock_market_activity_legu()
     out: dict[str, object] = {}
     for _, row in df.iterrows():
@@ -135,10 +131,10 @@ def plot_breadth(ax, breadth: dict[str, object]) -> None:
 
 
 def plot_ladder(ax, zt: pd.DataFrame) -> int:
-    """涨停梯队：按连板数统计家数。"""
+    """涨停梯队:按连板数统计家数。"""
     if "连板数" not in zt.columns or zt.empty:
         ax.text(0.5, 0.5, "涨停池数据不可用", ha="center", va="center", transform=ax.transAxes)
-        ax.set_title("当日 涨停梯队（连板数分布）", fontsize=13)
+        ax.set_title("当日 涨停梯队(连板数分布)", fontsize=13)
         return 0
     lv = pd.to_numeric(zt["连板数"], errors="coerce").fillna(1).astype(int)
     max_lv = int(lv.max())
@@ -147,9 +143,9 @@ def plot_ladder(ax, zt: pd.DataFrame) -> int:
     colors = ["#F36"] * len(levels)
     colors[-1] = UP_COLOR
     bars = ax.bar([str(k) for k in levels], counts, color=colors, width=0.6)
-    ax.set_xlabel("连板数（板）")
+    ax.set_xlabel("连板数(板)")
     ax.set_ylabel("家数")
-    ax.set_title(f"当日 涨停梯队（最高 {max_lv} 板）", fontsize=13)
+    ax.set_title(f"当日 涨停梯队(最高 {max_lv} 板)", fontsize=13)
     ax.grid(axis="y", linestyle="--", alpha=0.35)
     for b, v in zip(bars, counts):
         ax.text(b.get_x() + b.get_width() / 2, v, f"{int(v)}", ha="center", va="bottom", fontsize=10)
@@ -199,8 +195,8 @@ def main() -> None:
     seal_rate = n_zt / (n_zt + zb_n) * 100 if (n_zt + zb_n) else 0.0
     stat = breadth.get("统计日期", "")
     fig.suptitle(
-        f"A股市场情绪图（数据日期 {date}，活跃度统计 {stat}）｜"
-        f"涨停 {n_zt} · 跌停 {n_dt} · 最高 {max_lv} 板 · 封板率 {seal_rate:.1f}%　来源：24K-Claw",
+        f"A股市场情绪图(数据日期 {date},活跃度统计 {stat})｜"
+        f"涨停 {n_zt} · 跌停 {n_dt} · 最高 {max_lv} 板 · 封板率 {seal_rate:.1f}%　来源:24K-Claw",
         fontsize=15, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

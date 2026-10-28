@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""A 股市场全景日报：四大指数走势 + 成交额 + 市场涨跌家数
+"""A 股市场全景日报:四大指数走势 + 成交额 + 市场涨跌家数
 
-内容：
-    1. 上证指数 / 深证成指 / 创业板指 / 沪深300 近 N 个交易日走势（起点=100 归一化）
-       叠加 上证综指成交额（双轴，亿元）
+内容:
+    1. 上证指数 / 深证成指 / 创业板指 / 沪深300 近 N 个交易日走势(起点=100 归一化)
+       叠加 上证综指成交额(双轴,亿元)
     2. 全市场 上涨 / 平盘 / 下跌 家数
-    3. 全市场 涨停 / 跌停（含真实涨停 / 真实跌停）家数
+    3. 全市场 涨停 / 跌停(含真实涨停 / 真实跌停)家数
 
-数据源：
-    - 指数日线（收盘）：新浪 ak.stock_zh_index_daily
+数据源:
+    - 指数日线(收盘): ak.stock_zh_index_daily
       sh000001 上证综指 / sz399001 深证成指 / sz399006 创业板指 / sh000300 沪深300
-    - 成交额：中证指数官网 ak.stock_zh_index_hist_csindex("000001")（上证综指成交金额，亿元）
-    - 涨跌家数：乐咕乐股 ak.stock_market_activity_legu
-说明：东方财富接口限流，故全部改用新浪 / 中证指数 / 乐咕数据源。
-输出：reports/YYYYMMDD/01.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/market_overview.py [交易日数]
+    - 成交额:中证指数官网 ak.stock_zh_index_hist_csindex("000001")(上证综指成交金额,亿元)
+    - 涨跌家数:乐咕乐股 ak.stock_market_activity_legu
+说明:东方财富接口限流,故全部改用 / 中证指数 / 乐咕数据源。
+输出:reports/YYYYMMDD/01.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/market_overview.py [交易日数]
 """
 
 from __future__ import annotations
@@ -31,13 +31,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -49,7 +45,7 @@ UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 FLAT_COLOR = "#99F"  # 平盘
 
-# 名称 -> 新浪代码
+# 名称 -> 代码
 INDICES: dict[str, str] = {
     "上证指数": "sh000001",
     "深证成指": "sz399001",
@@ -65,7 +61,7 @@ LINE_COLORS = {
 
 
 def latest_trade_date() -> dt.date:
-    """最近一个已收盘交易日（含今天）。"""
+    """最近一个已收盘交易日(含今天)。"""
     try:
         dates = ak.tool_trade_date_hist_sina()["trade_date"]
         today = dt.date.today()
@@ -76,14 +72,14 @@ def latest_trade_date() -> dt.date:
 
 
 def fetch_index(symbol: str, n: int) -> pd.Series:
-    """指数日收盘（近 n 个交易日）。"""
+    """指数日收盘(近 n 个交易日)。"""
     df = ak.stock_zh_index_daily(symbol=symbol)
     df["date"] = pd.to_datetime(df["date"])
     return df.set_index("date")["close"].tail(n)
 
 
 def fetch_sh_turnover(n: int) -> pd.Series:
-    """上证综指成交额（亿元，近 n 个交易日，中证指数官网）。"""
+    """上证综指成交额(亿元,近 n 个交易日,中证指数官网)。"""
     end = dt.date.today()
     start = end - dt.timedelta(days=int(n * 2.2) + 30)
     df = ak.stock_zh_index_hist_csindex(
@@ -96,7 +92,7 @@ def fetch_sh_turnover(n: int) -> pd.Series:
 
 
 def fetch_breadth() -> dict[str, object]:
-    """全市场涨跌家数（乐咕乐股）。"""
+    """全市场涨跌家数(乐咕乐股)。"""
     df = ak.stock_market_activity_legu()
     out: dict[str, object] = {}
     for _, row in df.iterrows():
@@ -112,12 +108,12 @@ def fetch_breadth() -> dict[str, object]:
 def plot_index(ax, closes: dict[str, pd.Series], turnover: pd.Series, n: int) -> None:
     """四大指数归一化走势 + 上证成交额双轴。"""
     ax2 = ax.twinx()
-    # 成交额柱（右轴，先画以置底）
+    # 成交额柱(右轴,先画以置底)
     ax2.bar(
         turnover.index, turnover.values, width=1.0,
-        color="#99F", alpha=0.55, label="上证综指成交额（右轴）",
+        color="#99F", alpha=0.55, label="上证综指成交额(右轴)",
     )
-    ax2.set_ylabel("成交额（亿元）", color="#27254c", fontsize=11)
+    ax2.set_ylabel("成交额(亿元)", color="#27254c", fontsize=11)
     ax2.tick_params(axis="y", labelcolor="#27254c")
     ax2.set_ylim(0, turnover.max() * 3.2)
 
@@ -136,8 +132,8 @@ def plot_index(ax, closes: dict[str, pd.Series], turnover: pd.Series, n: int) ->
         )
 
     ax.axhline(100, color="#bbb", linewidth=0.8, linestyle="--")
-    ax.set_ylabel("归一化（起点=100）", fontsize=11)
-    ax.set_title(f"四大指数近 {n} 个交易日走势（起点=100）与沪市成交额", fontsize=13)
+    ax.set_ylabel("归一化(起点=100)", fontsize=11)
+    ax.set_title(f"四大指数近 {n} 个交易日走势(起点=100)与沪市成交额", fontsize=13)
     ax.grid(linestyle="--", alpha=0.3)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
@@ -160,7 +156,7 @@ def plot_breadth_bar(ax, breadth: dict[str, object]) -> None:
 
 
 def plot_limit_bar(ax, breadth: dict[str, object]) -> None:
-    """涨停 / 跌停（含真实口径）。"""
+    """涨停 / 跌停(含真实口径)。"""
     keys = ["涨停", "跌停", "真实涨停", "真实跌停"]
     vals = [float(breadth.get(k, 0) or 0) for k in keys]
     colors = [UP_COLOR, DOWN_COLOR, "#F36", "#0C9"]
@@ -176,13 +172,13 @@ def plot_limit_bar(ax, breadth: dict[str, object]) -> None:
 def main() -> None:
     n = int(sys.argv[1]) if len(sys.argv) > 1 else N
     closes = {name: fetch_index(sym, n) for name, sym in INDICES.items()}
-    date = closes["上证指数"].index[-1].date()  # 数据最后一日：不依赖交易日历兜底，周末/节假日时即为最近交易日
+    date = closes["上证指数"].index[-1].date()  # 数据最后一日:不依赖交易日历兜底,周末/节假日时即为最近交易日
     turnover = fetch_sh_turnover(n)
     breadth = fetch_breadth()
 
     fig = plt.figure(figsize=(15, 9))
-    # hspace/wspace 不能写进 add_gridspec：matplotlib 3.11 会判定 Axes 与 tight_layout
-    # 不兼容并静默跳过布局（同 stock_technical 修复），因此在 Figure 层设置
+    # hspace/wspace 不能写进 add_gridspec:matplotlib 3.11 会判定 Axes 与 tight_layout
+    # 不兼容并静默跳过布局(同 stock_technical 修复),因此在 Figure 层设置
     fig.subplots_adjust(hspace=0.28, wspace=0.22)
     gs = fig.add_gridspec(2, 2, height_ratios=[1.7, 1.0])
     ax_top = fig.add_subplot(gs[0, :])
@@ -195,10 +191,10 @@ def main() -> None:
 
     stat = breadth.get("统计日期", "")
     fig.suptitle(
-        f"A股市场全景日报（数据日期 {date}，活跃度统计 {stat}）　来源：24K-Claw",
+        f"A股市场全景日报(数据日期 {date},活跃度统计 {stat})　来源:24K-Claw",
         fontsize=16, fontweight="bold", y=0.995,
     )
-    # rect 不传：让 tight_layout 走自然路径自动预留 suptitle 空间（传 rect 会双重预留）
+    # rect 不传:让 tight_layout 走自然路径自动预留 suptitle 空间(传 rect 会双重预留)
     fig.tight_layout()
 
     out = report_image_path(1)

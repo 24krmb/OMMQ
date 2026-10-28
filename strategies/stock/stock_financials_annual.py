@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-"""年度财务概览图：以年为单位的营收 / 净利 / EPS / ROE 等长周期概览
+"""年度财务概览图:以年为单位的营收 / 净利 / EPS / ROE 等长周期概览
 
-内容（2×2）：
-    1. 年度 营业总收入 / 净利润（柱状，亿元）
-    2. 年度 每股收益(EPS) / 每股经营现金流（折线，元）
-    3. 年度 销售毛利率 / 销售净利率（折线，%）
-    4. 年度 营业总收入 / 净利润 同比增长率（%，柱状）
+内容(2×2):
+    1. 年度 营业总收入 / 净利润(柱状,亿元)
+    2. 年度 每股收益(EPS) / 每股经营现金流(折线,元)
+    3. 年度 销售毛利率 / 销售净利率(折线,%)
+    4. 年度 营业总收入 / 净利润 同比增长率(%,柱状)
 
-数据源：同花顺 ak.stock_financial_abstract_ths(symbol, indicator="按年度")
-        （年报口径，营收/净利为全年累计值）
-说明：与 stock_financials.py 的**季度**概览图互补，本图按**年度**呈现长周期趋势。
-输出：reports/YYYYMMDD/13_<代码>.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
+数据源:同花顺 ak.stock_financial_abstract_ths(symbol, indicator="按年度")
+        (年报口径,营收/净利为全年累计值)
+说明:与 stock_financials.py 的**季度**概览图互补,本图按**年度**呈现长周期趋势。
+输出:reports/YYYYMMDD/13_<代码>.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
 """
 
 from __future__ import annotations
@@ -27,13 +27,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -47,7 +43,7 @@ BAR2 = "#99F"
 
 
 def _num(value) -> float | None:
-    """解析 '1741.44亿' / '-12.5%' / '35.57' 等为数值（金额单位：亿；百分比为百分数）。"""
+    """解析 '1741.44亿' / '-12.5%' / '35.57' 等为数值(金额单位:亿；百分比为百分数)。"""
     s = str(value).strip()
     if s in ("", "False", "--", "None", "nan"):
         return None
@@ -143,7 +139,7 @@ def main() -> None:
     ax.grid(axis="y", linestyle="--", alpha=0.35)
 
     fig.suptitle(
-        f"{code} 年度财务概览（近 {len(labels)} 个年度）　来源：OMMQ",
+        f"{code} 年度财务概览(近 {len(labels)} 个年度)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

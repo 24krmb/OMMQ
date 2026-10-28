@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""个股技术面图：日 K + 均线 + 成交量 + MACD + RSI
+"""个股技术面图:日 K + 均线 + 成交量 + MACD + RSI
 
-内容（自上而下四个子图，共享横轴）：
-    1. 日 K 蜡烛图（红涨绿跌）叠加 MA5 / MA20 / MA60
-    2. 成交量柱（红涨绿跌）
-    3. MACD（DIF / DEA 折线 + 红绿柱）
-    4. RSI(14) 折线（含 30 / 70 参考线）
+内容(自上而下四个子图,共享横轴):
+    1. 日 K 蜡烛图(红涨绿跌)叠加 MA5 / MA20 / MA60
+    2. 成交量柱(红涨绿跌)
+    3. MACD(DIF / DEA 折线 + 红绿柱)
+    4. RSI(14) 折线(含 30 / 70 参考线)
 
-数据源：新浪个股日线 ak.stock_zh_a_daily(adjust="qfq")（前复权）
-指标计算：ta-lib（MACD 12/26/9，RSI 14）
-输出：reports/YYYYMMDD/10_<代码>.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
+数据源:个股日线 ak.stock_zh_a_daily(adjust="qfq")(前复权)
+指标计算:ta-lib(MACD 12/26/9,RSI 14)
+输出:reports/YYYYMMDD/10_<代码>.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
 """
 
 from __future__ import annotations
@@ -25,13 +25,9 @@ from matplotlib.patches import Rectangle
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 OMMQ：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+# 统一配色 OMMQ:红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -56,7 +52,7 @@ def sina_prefix(code: str) -> str:
 
 
 def fetch_daily(code: str, days: int):
-    """前复权日线（近 days 个交易日）。"""
+    """前复权日线(近 days 个交易日)。"""
     df = ak.stock_zh_a_daily(symbol=sina_prefix(code), adjust="qfq")
     df["date"] = df["date"].astype(str)
     df = df.sort_values("date").reset_index(drop=True)
@@ -150,8 +146,8 @@ def main() -> None:
         4, 1, figsize=(14, 12), sharex=True,
         gridspec_kw={"height_ratios": [3.2, 1.0, 1.4, 1.0]},
     )
-    # hspace 不能写进 gridspec_kw：matplotlib 3.11 会判定 Axes 与 tight_layout
-    # 不兼容并静默跳过布局，导致 suptitle 与子图间留出大片空白，因此在 Figure 层设置
+    # hspace 不能写进 gridspec_kw:matplotlib 3.11 会判定 Axes 与 tight_layout
+    # 不兼容并静默跳过布局,导致 suptitle 与子图间留出大片空白,因此在 Figure 层设置
     fig.subplots_adjust(hspace=0.06)
     draw_candles(axes[0], df)
     draw_volume(axes[1], df)
@@ -162,11 +158,11 @@ def main() -> None:
     last = df.iloc[-1]
     prev = df.iloc[-2]
     axes[0].set_title(
-        f"{label} 技术面（{df['date'].iloc[0]} ~ {df['date'].iloc[-1]}）", fontsize=13, pad=8,
+        f"{label} 技术面({df['date'].iloc[0]} ~ {df['date'].iloc[-1]})", fontsize=13, pad=8,
     )
     fig.suptitle(
         f"{label} 日K/均线/成交量/MACD/RSI　最新收盘 {last['close']:.2f} "
-        f"（{(last['close']/prev['close']-1)*100:+.2f}%）　来源：OMMQ",
+        f"({(last['close']/prev['close']-1)*100:+.2f}%)　来源:OMMQ",
         fontsize=16, fontweight="bold", y=0.995,
     )
     fig.tight_layout()

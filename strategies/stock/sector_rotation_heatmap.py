@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """申万一级行业板块轮动热力图
 
-内容：近 N 个交易日 申万一级行业（31 个）每日涨跌幅热力图
-     行 = 行业（按区间累计涨幅从高到低排序），列 = 交易日，颜色 红涨绿跌
+内容:近 N 个交易日 申万一级行业(31 个)每日涨跌幅热力图
+     行 = 行业(按区间累计涨幅从高到低排序),列 = 交易日,颜色 红涨绿跌
 
-数据源：申万宏源研究-指数历史行情 AKShare: ak.index_hist_sw（逐行业）
-    行业清单：申万一级行业 ak.sw_index_first_info()
+数据源:申万宏源研究-指数历史行情 AKShare: ak.index_hist_sw(逐行业)
+    行业清单:申万一级行业 ak.sw_index_first_info()
     涨跌幅 = 当日收盘 / 前一日收盘 - 1
-说明：口径为申万一级行业（与 Wind 一致）；东方财富接口在本机被限流，故走申万源。
-输出：reports/YYYYMMDD/04.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/sector_rotation_heatmap.py [交易日数]   # 默认 20
+说明:口径为申万一级行业(与 Wind 一致)；东方财富接口在本机被限流,故走申万源。
+输出:reports/YYYYMMDD/04.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/sector_rotation_heatmap.py [交易日数]   # 默认 20
 """
 
 from __future__ import annotations
@@ -28,13 +28,9 @@ from plot_paths import report_image_path
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -42,7 +38,7 @@ matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 20  # 展示最近多少个交易日
-# 统一配色热力图：绿 #0C9（跌）→ 白 → 红 #F36（涨）
+# 统一配色热力图:绿 #0C9(跌)→ 白 → 红 #F36(涨)
 CLaw_CMAP = LinearSegmentedColormap.from_list("claw", ["#0C9", "#FFFFFF", "#F36"])
 
 
@@ -67,7 +63,7 @@ def industry_list() -> list[tuple[str, str]]:
 
 
 def fetch_pct(code: str, n: int) -> pd.Series:
-    """某申万行业近 n 个日度涨跌幅（%）。"""
+    """某申万行业近 n 个日度涨跌幅(%)。"""
     df = ak.index_hist_sw(symbol=code, period="day")
     df["日期"] = pd.to_datetime(df["日期"])
     s = df.sort_values("日期").set_index("日期")["收盘"].astype(float)
@@ -87,7 +83,7 @@ def build_matrix(n: int) -> tuple[pd.DataFrame, list[str]]:
     print()
     mat = pd.DataFrame(series).T  # 行=行业, 列=日期
     dates = [d.strftime("%m-%d") for d in mat.columns]
-    cum = mat.sum(axis=1)  # 区间累计涨幅（近似，求和日收益）
+    cum = mat.sum(axis=1)  # 区间累计涨幅(近似,求和日收益)
     mat = mat.loc[cum.sort_values(ascending=False).index]
     return mat, dates
 
@@ -119,12 +115,12 @@ def draw_heatmap(mat: pd.DataFrame, dates: list[str], out: str) -> None:
 
     first, last = mat.columns[0], mat.columns[-1]
     fig.suptitle(
-        f"申万一级行业轮动热力图（{first:%Y-%m-%d} ~ {last:%Y-%m-%d}，共 {len(dates)} 个交易日）"
-        f"　来源：24K-Claw",
+        f"申万一级行业轮动热力图({first:%Y-%m-%d} ~ {last:%Y-%m-%d},共 {len(dates)} 个交易日)"
+        f"　来源:24K-Claw",
         fontsize=15, fontweight="bold",
     )
-    # rect 不传：让 tight_layout 走自然路径自动预留 suptitle 空间（传 rect 会双重预留，
-    # 反而把内容压低——实测顶部多出约 4% 空白）
+    # rect 不传:让 tight_layout 走自然路径自动预留 suptitle 空间(传 rect 会双重预留,
+    # 反而把内容压低——实测顶部多出约 4% 空白)
     fig.tight_layout()
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)

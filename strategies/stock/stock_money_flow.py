@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-"""个股资金流：单只个股多周期资金净额 + 全市场资金流排行
+"""个股资金流:单只个股多周期资金净额 + 全市场资金流排行
 
-内容（2×2）：
-    1. 目标个股 · 各周期资金净额（当日 / 3日 / 5日 / 10日 / 20日）
-    2. 目标个股 · 当日资金 流入 vs 流出（净额）
+内容(2×2):
+    1. 目标个股 · 各周期资金净额(当日 / 3日 / 5日 / 10日 / 20日)
+    2. 目标个股 · 当日资金 流入 vs 流出(净额)
     3. 当日 全市场 资金净流入 TOP10 个股
     4. 当日 全市场 资金净流出 TOP10 个股
 
-数据源：同花顺 ak.stock_fund_flow_individual（symbol="即时"/"3日排行"/…）
-口径说明 / 数据限制：
-    - 东方财富 个股主力资金流向历史接口（push2his）在本机被限流，无法取数；
-    - 本图采用「同花顺 资金流」口径：以资金流入/流出净额刻画个股资金动向，
-      并给出全市场横向排行，替代主力资金历史曲线。
-输出：reports/YYYYMMDD/11_<代码>.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/stock_money_flow.py [股票代码]   # 默认 600519
+数据源:同花顺 ak.stock_fund_flow_individual(symbol="即时"/"3日排行"/…)
+口径说明 / 数据限制:
+    - 东方财富 个股主力资金流向历史接口(push2his)在本机被限流,无法取数；
+    - 本图采用「同花顺 资金流」口径:以资金流入/流出净额刻画个股资金动向,
+      并给出全市场横向排行,替代主力资金历史曲线。
+输出:reports/YYYYMMDD/11_<代码>.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/stock_money_flow.py [股票代码]   # 默认 600519
 """
 
 from __future__ import annotations
@@ -27,13 +27,9 @@ import pandas as pd
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 OMMQ：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+# 统一配色 OMMQ:红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -85,7 +81,7 @@ def plot_windows(ax, code: int, nets: dict[str, float | None]) -> None:
     colors = [UP_COLOR if v >= 0 else DOWN_COLOR for v in vals]
     bars = ax.bar(labels, vals, color=colors, width=0.55)
     ax.axhline(0, color="#888", linewidth=0.8)
-    ax.set_ylabel("资金净额（亿元）")
+    ax.set_ylabel("资金净额(亿元)")
     ax.set_title(f"{code} · 各周期资金净额", fontsize=13)
     ax.grid(axis="y", linestyle="--", alpha=0.3)
     for b, v in zip(bars, vals):
@@ -104,7 +100,7 @@ def plot_inout(ax, code: int, inst: pd.Series | None) -> None:
     bars = ax.bar(["流入资金", "流出资金", "净额"], [infl, outfl, net],
                   color=[UP_COLOR, DOWN_COLOR, UP_COLOR if net >= 0 else DOWN_COLOR], width=0.55)
     ax.axhline(0, color="#888", linewidth=0.8)
-    ax.set_ylabel("金额（亿元）")
+    ax.set_ylabel("金额(亿元)")
     ax.set_title(f"{code} · 当日资金 流入 / 流出 / 净额", fontsize=13)
     ax.grid(axis="y", linestyle="--", alpha=0.3)
     for b, v in zip(bars, [infl, outfl, net]):
@@ -116,11 +112,11 @@ def plot_rank(ax, df: pd.DataFrame, top: bool) -> None:
     d = df.dropna(subset=["净额亿"]).copy()
     d = d.nlargest(10, "净额亿") if top else d.nsmallest(10, "净额亿")
     d = d.sort_values("净额亿")
-    labels = [f"{n}（{c}）" for n, c in zip(d["股票简称"], d["股票代码"])]
+    labels = [f"{n}({c})" for n, c in zip(d["股票简称"], d["股票代码"])]
     colors = [UP_COLOR if v >= 0 else DOWN_COLOR for v in d["净额亿"]]
     ax.barh(labels, d["净额亿"], color=colors)
     ax.axvline(0, color="#888", linewidth=0.8)
-    ax.set_xlabel("资金净额（亿元）")
+    ax.set_xlabel("资金净额(亿元)")
     ax.set_title("当日 全市场 资金净流入 TOP10" if top else "当日 全市场 资金净流出 TOP10", fontsize=13)
     ax.grid(axis="x", linestyle="--", alpha=0.3)
     ax.margins(x=0.18)
@@ -154,7 +150,7 @@ def main() -> None:
     plot_rank(axes[1, 1], inst, top=False)
 
     fig.suptitle(
-        f"{name}（{code}）个股资金流（同花顺口径）　来源：OMMQ",
+        f"{name}({code})个股资金流(同花顺口径)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
@@ -164,7 +160,7 @@ def main() -> None:
     plt.close(fig)
     print(f"图表已保存: {out}")
 
-    print(f"\n[{name}（{code}）各周期资金净额]")
+    print(f"\n[{name}({code})各周期资金净额]")
     for k, v in nets.items():
         print(f"  {k:4s} {('%.2f' % v) if v is not None else '不可用':>9s} 亿元")
     if inst_row is not None:

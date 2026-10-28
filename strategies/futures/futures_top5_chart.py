@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """最新行情 国内商品期货主力合约 涨幅 TOP5 / 跌幅 TOP5 中文图表
 
-数据源：新浪财经期货实时行情（hq.sinajs.cn，nf_ 前缀）
-    合约清单：AKShare ak.futures_display_main_sina()（主力连续合约一览）
+数据源:财经期货实时行情(hq.sinajs.cn,nf_ 前缀)
+    合约清单:AKShare ak.futures_display_main_sina()(主力连续合约一览)
     涨跌幅 = 最新价 / 昨结算 - 1
-说明：
-    - 仅取商品期货（dce/czce/shfe/gfex/ine），剔除中金所金融期货（字段布局不同）。
-    - 东方财富 clist 接口在本机被限流，故直接走新浪行情接口并按字段索引解析。
-输出：reports/YYYYMMDD/06.png（编号规则见 strategies/plot_paths.py）
-运行：uv run python strategies/futures_top5_chart.py
+说明:
+    - 仅取商品期货(dce/czce/shfe/gfex/ine),剔除中金所金融期货(字段布局不同)。
+    - 东方财富 clist 接口在本机被限流,故直接走行情接口并按字段索引解析。
+输出:reports/YYYYMMDD/06.png(编号规则见 strategies/plot_paths.py)
+运行:uv run python strategies/futures_top5_chart.py
 """
 
 from __future__ import annotations
@@ -24,13 +24,9 @@ import pandas as pd
 from plot_paths import report_image_path
 import requests
 
-matplotlib.rcParams["font.sans-serif"] = [
-    "Microsoft YaHei", "SimHei",           # Windows
-    "PingFang SC", "Hiragino Sans GB",     # macOS
-    "Arial Unicode MS",
-]
+matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 24K-Claw：红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
+
 matplotlib.rcParams["text.color"] = "#27254c"
 matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
@@ -47,7 +43,7 @@ HEADERS = {
     "Referer": "https://vip.stock.finance.sina.com.cn/",
 }
 
-# 商品期货 nf_ 字段索引：0=名称, 8=最新价, 10=昨结算
+# 商品期货 nf_ 字段索引:0=名称, 8=最新价, 10=昨结算
 IDX_NAME, IDX_CURRENT, IDX_SETTLE = 0, 8, 10
 
 
@@ -58,7 +54,7 @@ def main_contracts() -> pd.DataFrame:
 
 
 def fetch_quotes(symbols: list[str]) -> pd.DataFrame:
-    """批量拉取新浪 nf_ 实时行情，按字段索引解析。"""
+    """批量拉取 nf_ 实时行情,按字段索引解析。"""
     subs = ",".join(f"nf_{s}" for s in symbols)
     url = f"https://hq.sinajs.cn/rn={int(time.time())}&list={subs}"
     r = requests.get(url, headers=HEADERS, timeout=15)
@@ -89,7 +85,7 @@ def fetch_quotes(symbols: list[str]) -> pd.DataFrame:
 
 
 def draw(ax, df: pd.DataFrame, title: str, color: str) -> None:
-    # df 已按需排好序：barh 自下而上，列表最后一个显示在最上方
+    # df 已按需排好序:barh 自下而上,列表最后一个显示在最上方
     ax.barh(df["合约"], df["涨跌幅"], color=color)
     ax.axvline(0, color="#888888", linewidth=0.8)
     ax.set_title(title, fontsize=14, pad=12)
@@ -105,16 +101,16 @@ def draw(ax, df: pd.DataFrame, title: str, color: str) -> None:
 
 def main() -> None:
     df = fetch_quotes(main_contracts()["symbol"].tolist())
-    # 涨幅：升序（数值最大者排最后 -> 显示在最上方）
+    # 涨幅:升序(数值最大者排最后 -> 显示在最上方)
     top = df.nlargest(TOP_N, "涨跌幅").sort_values("涨跌幅").reset_index(drop=True)
-    # 跌幅：降序（跌幅最大者排最后 -> 显示在最上方）
+    # 跌幅:降序(跌幅最大者排最后 -> 显示在最上方)
     bot = df.nsmallest(TOP_N, "涨跌幅").sort_values("涨跌幅", ascending=False).reset_index(drop=True)
 
     date = dt.date.today()
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.2))
     draw(axes[0], top, f"商品期货主力 · 涨幅 TOP{TOP_N}", UP_COLOR)
     draw(axes[1], bot, f"商品期货主力 · 跌幅 TOP{TOP_N}", DOWN_COLOR)
-    fig.suptitle(f"国内商品期货主力合约 涨跌幅 TOP{TOP_N}（{date}）　来源：24K-Claw",
+    fig.suptitle(f"国内商品期货主力合约 涨跌幅 TOP{TOP_N}({date})　来源:24K-Claw",
                  fontsize=16, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
