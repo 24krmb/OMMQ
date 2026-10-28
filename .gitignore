@@ -19,6 +19,7 @@ desktop.ini
 .trae/
 .workbuddy/
 .kilo/
+.zcode/
 # 临时与日志
 *.log
 *.tmp
