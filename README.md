@@ -49,14 +49,14 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 
 
 **细分龙头(XFLT)等权组合 · 近5年收益与最大回撤**(`sector_equal_weight_curve.py`)
-![股指期货期现基差与升贴水分析](.opencode/Example/9.png)
+![细分龙头(XFLT)等权组合 · 近5年收益与最大回撤](.opencode/Example/9.png)
 
 ## 核心能力:
 
 - **取数**:通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
 - **分析**:财报速读、个股深度研究、公司质地打分、估值研判、龙虎榜掘金、业绩预告博弈
 - **交互**:推荐 `OpenCode`  开源工具及内置的免费模型,实现 0 费用对话与分析；
-- **补充数据源**:第三方数据补充(`strategies/` 下的脚本全部基于 Akshare 取数)
+- **补充数据源**:第三方数据补充(`strategies/` 下脚本除标注通达信依赖外,均基于 Akshare 取数)
 - **量化策略**:`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
 - **量化计算与绘图**:pandas / numpy / scipy / TA-Lib 计算,matplotlib / seaborn 出图
 - **产出归档**:正式报告与图表统一落盘至 `reports/`
@@ -65,28 +65,32 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 
 `strategies/` 下的脚本**独立于技能体系**,直接用拉取公开数据并出图,可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`(编号规则见 `strategies/plot_paths.py`:核心八图 01–08、扩展研究图 09 起,参数化脚本以代码作后缀避免覆盖)；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
 
-| 脚本                                 | 用途                                       |
-| ---------------------------------- | ---------------------------------------- |
-| market_overview.py              | A 股市场全景日报:四大指数走势(归一化)+ 成交额 + 涨跌家数   |
-| global_index_week_curve.py       | 全球三大指数周度累计收益曲线:沪深300 / 恒生指数 / 标普500  |
-| market_sentiment.py              | 市场情绪:涨停/跌停家数趋势、连板梯队、涨停行业分布          |
-| money_flow_trend.py              | 杠杆资金(两融)趋势:融资余额、两融余额、单日净增           |
-| sector_top5_chart.py            | 申万一级行业 / 概念板块 涨跌幅 TOP5                       |
-| sector_rotation_heatmap.py      | 申万一级行业板块轮动热力图(行=行业,列=交易日)             |
-| industry_valuation_percentile.py | 申万一级行业 PE / PB 当前值及近 5 年历史分位              |
-| futures_basis_spread.py          | 期货基差与跨期价差:期货 vs 现货、近月 vs 远月、股指基差   |
-| futures_top5_chart.py           | 国内商品期货主力合约 涨幅/跌幅 TOP5                      |
-| futures_volume_oi.py           | 期货量仓:主力合约成交量与持仓量、日增仓                     |
-| stock_financials.py            | 个股财务:主要指标 + 三大报表(季度口径),导出 CSV 并出图   |
-| stock_financials_annual.py      | 年度财务概览:营收 / 净利 / EPS / ROE 长周期趋势         |
-| stock_money_flow.py             | 个股资金流                                    |
-| stock_technical.py               | 个股技术面:日 K + MA5/20/60 + 成交量 + MACD + RSI |
-| peer_dupond.py                   | 同业杜邦分析 / 财务估值横向对比                        |
-| charts_demo.py                   | 绘图示例:折线、柱状、直方、热力图各一张                     |
-| fetch_daily.py                | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet)                     |
-| sector_equal_weight_curve.py     | 自定义板块收益回测分析案例                     |
-| neff_value_strategy.py           | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
-| trend_charts.py                  | 近三年“费半”、“七姐妹”走势对比图|
+| 脚本 | 用途 |
+| --- | --- |
+| stock/market_overview.py | A 股市场全景日报:四大指数走势(归一化)+ 成交额 + 涨跌家数 |
+| stock/global_index_week_curve.py | 全球三大指数周度累计收益曲线:沪深300 / 恒生指数 / 标普500 |
+| stock/market_sentiment.py | 市场情绪:涨停/跌停家数趋势、连板梯队、涨停行业分布 |
+| stock/money_flow_trend.py | 杠杆资金(两融)趋势:融资余额、两融余额、单日净增 |
+| stock/sector_top5_chart.py | 申万一级行业 / 概念板块 涨跌幅 TOP5 |
+| stock/sector_rotation_heatmap.py | 申万一级行业板块轮动热力图(行=行业,列=交易日) |
+| stock/industry_valuation_percentile.py | 申万一级行业 PE / PB 当前值及近 5 年历史分位 |
+| futures/futures_basis_spread.py | 期货基差与跨期价差:期货 vs 现货、近月 vs 远月、股指基差 |
+| futures/futures_top5_chart.py | 国内商品期货主力合约 涨幅/跌幅 TOP5 |
+| futures/futures_volume_oi.py | 期货量仓:主力合约成交量与持仓量、日增仓 |
+| futures/stock_index_basis.py | 股指期货期现基差与升贴水分析 |
+| stock/stock_financials.py | 个股财务:主要指标 + 三大报表(季度口径),导出 CSV 并出图 |
+| stock/stock_financials_annual.py | 年度财务概览:营收 / 净利 / EPS / ROE 长周期趋势 |
+| stock/stock_money_flow.py | 个股资金流 |
+| stock/stock_technical.py | 个股技术面:日 K + MA5/20/60 + 成交量 + MACD + RSI |
+| stock/peer_dupond.py | 同业杜邦分析 / 财务估值横向对比 |
+| stock/charts_demo.py | 绘图示例:折线、柱状、直方、热力图各一张 |
+| stock/global_index_5y_mdd.py | 标普500 vs 沪深300:近5年累计收益与最大回撤对比 |
+| fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
+| stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
+| stock/neff_value_strategy.py | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
+| stock/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
+
+**回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。
 
 ## 技能清单
 
@@ -116,7 +120,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | General (子Agent)| 通用子代理,拥有完整的工具访问权限,可以修改文件。适用于研究复杂问题和执行多步骤任务,也可以并行运行多个独立的工作单元。|
 | Explore (主Agent)| 只读子代理,无法修改任何文件。适合快速查找文件、搜索代码关键字或回答关于代码库结构的问题,速度快且不会产生副作用。|
 
-### Agrnt 使用方式
+### Agent 使用方式
 
 1、切换主 Agent
 在会话期间按 Tab 键可以在所有主代理之间循环切换,按 Shift+Tab 反向切换。也可以使用 `/Agent`  打开代理列表直接选择。
@@ -161,16 +165,6 @@ Provide constructive feedback without making direct changes.
 ```
 
 
-核心能力:
-
-- **取数**:通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
-- **分析**:财报速读、个股深度研究、公司质地打分、估值研判、龙虎榜掘金、业绩预告博弈
-- **交互**:推荐 `OpenCode`  开源工具及内置的免费模型,实现 0 费用对话与分析；
-- **补充数据源**:Akshare 作为第三方数据补充(`strategies/` 下的脚本全部基于 Akshare 取数)
-- **量化策略**:`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
-- **量化计算与绘图**:pandas / numpy / scipy / TA-Lib 计算,matplotlib / seaborn 出图
-- **产出归档**:正式报告与图表统一落盘至 `reports/`
-
 ## 技术栈
 
 | 类别    | 组件                       | 说明                           |
@@ -189,19 +183,23 @@ Provide constructive feedback without making direct changes.
 OMMQ/
 ├── .opencode/
 │   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
-│   └── skills/                   # 技能集(取数 + 分析)
-├── reports/                      # 生成的输出目录
+│   ├── skills/                   # 技能集(tdx 取数/分析技能 + 收盘工作流)
+│   └── Example/                  # README 案例图
+├── reports/                      # 产物归档:reports/YYYYMMDD/(编号规则见 strategies/plot_paths.py)
 ├── strategies/                   # 量化策略与图表脚本
-│   ├── futures/                  # 期货相关脚本
-│   ├── stock/                    # A 股相关脚本
+│   ├── stock/                    # A 股相关脚本(除标注外基于 Akshare)
+│   ├── futures/                  # 期货相关脚本(含股指期现基差)
+│   ├── plot_paths.py             # 产物编号归档共享模块
+│   ├── fetch_daily.py            # 本地日线行情缓存(写入 data/daily/,parquet)
 │   └── output/                   # 脚本生成的图表与数据产物
+├── backtest/                     # 自定义板块等权回测(参数化,通达信数据)
+│   ├── equal_weight_backtest.py  # fetch / process / all 三阶段,--board xflt|scqlt
+│   ├── data/                     # 取数缓存(不入库)
+│   ├── output/                   # 统计与图表产物(不入库)
+│   └── archive/                  # 历史回测报告(入库案例)
+├── plot_utils.py                 # 绘图通用工具
 ├── requirements.txt              # Python 依赖锁定文件
-├── data/                         # 本地行情缓存(parquet,别每次重新拉)
-│   └── daily/                    # 按股票代码分文件
-├── backtest/
-│   └── run.py                    # 回测入口,参数化
-├── screening/
-│   └── screen.py                 # 盘后选股脚本
+├── data/daily/                   # fetch_daily.py 首次运行自动创建(已忽略,不入库)
 ├── .venv/                        # 项目虚拟环境(已忽略,不入库)
 └── .gitignore
 ```
@@ -251,11 +249,11 @@ python -m venv .venv
 - `PYPlugins\user\tqcenter.py` 模块可用(Python 取数方式)
 - 本地 HTTP 服务可达:`http://127.0.0.1:17709/`(JSON-RPC 取数方式)
 
-运行方式(**需在项目根目录执行**,脚本输出路径基于项目根目录计算):
+运行方式(**需在项目根目录执行**;产物路径已由 `strategies/plot_paths.py` 锚定仓库根):
 
 ```powershell
-.\.venv\Scripts\python.exe strategies/market_overview.py        # 部分脚本支持命令行参数
-.\.venv\Scripts\python.exe strategies/stock_technical.py 600519 250
+.\.venv\Scripts\python.exe strategies/stock/market_overview.py      # 部分脚本支持命令行参数
+.\.venv\Scripts\python.exe strategies/stock/stock_technical.py 600519 250
 ```
 
 如果 akshare 版本较老报了错（最常见是 stock_us_hist 参数或字段列名变化），直接升级即可：
@@ -265,7 +263,7 @@ pip install -U akshare
 ```
 
 > 各脚本支持的具体参数(交易日数、股票代码、年份等)见脚本文件头部的说明注释。  
-> 部分数据源(如东方财富部分接口)在本机存在限流,脚本已按注释中的说明改用申万、、生意社、中证指数等替代源。
+> 部分数据源(如东方财富部分接口)在本机存在限流,脚本已按注释中的说明改用申万、生意社、中证指数等替代源。
 
 ## 工作流程
 
@@ -299,7 +297,7 @@ pip install -U akshare
 | 取数请求失败          | 确认通达信客户端(`TdxW.exe`)已启动并登录到主界面   |
 | 端口 `17709` 连接被拒 | 客户端未完全启动,或本地 HTTP 服务未就绪,重启客户端后重试    |
 | `tqcenter` 导入失败 | 将通达信 `PYPlugins\user` 目录加入 `sys.path`,并优先使用 `sys.path.insert(0, ...)`   |
-| `talib` 导入报错    | 使用本项目的 `TA-Lib 0.8.2`(PyPI 预编译 wheel),`pip install -r requirements.txt` 即可,无需单独安装 C 库 |
+| `talib` 导入报错    | 使用本项目的 `TA-Lib 0.8.3`(PyPI 预编译 wheel),`pip install -r requirements.txt` 即可,无需单独安装 C 库 |
 | 数据缺失            | 如实标注缺失项,**不得编造**；必要时改用 Akshare 补充数据源   |
 
 ## 更新记录

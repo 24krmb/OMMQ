@@ -1,6 +1,25 @@
 # OMMQ 更新日志
 
 
+## 2026-11-08
+
+### 问题修复(目录重构遗留清理)
+- 修复 4 个期货脚本无法运行的问题:`plot_paths.py` 上移至 `strategies/`(与文档声明一致),stock/futures 共 20 个脚本统一加入 `sys.path` 引导;`report_dir` 改为锚定仓库根,不再依赖运行时 CWD
+- 同步 README 与 `market-close-analysis` 技能中重构后的脚本路径;修正运行示例、目录结构(移除从未存在的 `backtest/run.py`、`screening/screen.py`)、重复段落与笔误
+- 重建损坏的 `.venv`(原基于已卸载的第三方 Python 创建,无法启动);`requirements.txt` 补充 `pyarrow==26.0.1`(`fetch_daily.py` 落盘 parquet 必需)并去除 BOM
+- 数据源边界标注:`sector_equal_weight_curve.py` 需本机通达信客户端取板块成分,README 表格与脚本头注释已标注;`.gitignore` 为 `neff_value_strategy_tdx.py` 补充说明
+- 新增脚本导入冒烟验证:strategies 下 24 个脚本全部通过,期货 TOP5 脚本端到端跑通
+
+### 回测目录合并
+- `backtest_xflt/` 与 `backtest_scqlt/` 两套重复脚本合并为参数化 `backtest/equal_weight_backtest.py`:`fetch / process / all` 三阶段,`--board xflt|scqlt` 一键切换;成分股改为实时读取通达信自定义板块(不再依赖 %TEMP% 下已被清理的临时 JSON),基准修正为 `000300.SH`,支持断点续传,process 阶段无需通达信在线
+- 验证:XFLT 迁移旧数据重算,全部统计指标与原结果**逐位一致**;SCQLT 全新拉取(204 只,0 缺失),与原结果差异仅为前复权数据正常重算(累计收益 0.04pp)
+- 历史回测报告与图迁移至 `backtest/archive/{xflt,scqlt}/`(入库案例),原两目录删除;用法见 `backtest/README.md`
+
+### 归档策略统一(.gitignore)
+- 移除全局 `*.csv` / `*.html` 忽略(及被其覆盖的 `backtest_*/quotes_long.csv` 冗余规则),改为按产物目录排除:`reports/`、`strategies/output/`、`backtest/data|output/`、`data/`;技能 HTML 报告模板、财务 CSV 等共享资产不再被误伤
+- `git rm -r --cached` 取消跟踪 `reports/` 与 `strategies/output/` 中历史产物(文件保留本地);README 案例图仍保留于 `.opencode/Example/`
+- 确认 `neff_value_strategy_tdx.py` 开发中、暂不入库,`.gitignore` 注释同步
+
 ## 2026-11-07
 
 新增：近三年“费半”、“七姐妹”走势对比图一键生成脚本  `trend_charts.py`

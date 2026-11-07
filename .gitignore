@@ -20,16 +20,21 @@ desktop.ini
 .workbuddy/
 .kilo/
 .zcode/
-# 临时与日志
+
+# 日志与临时文件
 *.log
 *.tmp
-*.csv
-*.html
 .cache/
 
-# 行情历史数据不入库
+# ===== 产物归档策略(按目录排除,不再全局忽略 *.csv / *.html)=====
+# 以下均为脚本运行产物(报告/图表/行情缓存),仅本地保留、不入库;
+# 需要长期保留的案例统一放 .opencode/Example/(入库)或 backtest/archive/(入库)。
+reports/
+strategies/output/
+backtest/data/
+backtest/output/
+data/
 *.parquet
-backtest_*/quotes_long.csv
 
 # 通达信备份数据(本地二进制数据,不入库)
 TdxBak_*/
@@ -38,7 +43,5 @@ TdxBak_*/
 自定义数据/
 自定义指标/
 
-# 报告与图表产物(本地生成,不入库、不推送)
-reports/
-
+# 内夫策略通达信版(开发中,暂不入库)
 neff_value_strategy_tdx.py
