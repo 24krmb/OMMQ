@@ -1,0 +1,2 @@
+# 天勤量化 SDK(strategies/tqsdk/ 专用,按需安装,不进主 requirements.txt)
+tqsdk==3.10.4
