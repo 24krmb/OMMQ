@@ -14,7 +14,7 @@
     - 涨跌家数:乐咕乐股 ak.stock_market_activity_legu
 说明:东方财富接口限流,故全部改用 / 中证指数 / 乐咕数据源。
 输出:reports/YYYYMMDD/01.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/market_overview.py [交易日数]
+运行:uv run python strategies/stock/market_overview.py [交易日数]
 """
 
 from __future__ import annotations
@@ -28,6 +28,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

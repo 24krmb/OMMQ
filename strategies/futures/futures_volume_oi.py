@@ -10,7 +10,7 @@
 数据源:主力连续 ak.futures_main_sina(symbol="RB0"/"I0"/…)
 口径:取国内商品期货主力连续合约；持仓量 = 未平仓合约量,日增仓 = 持仓量日变化。
 输出:reports/YYYYMMDD/07.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/futures_volume_oi.py [品种代码] [交易日数]   # 默认 RB0 120
+运行:uv run python strategies/futures/futures_volume_oi.py [品种代码] [交易日数]   # 默认 RB0 120
 """
 
 from __future__ import annotations
@@ -24,6 +24,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

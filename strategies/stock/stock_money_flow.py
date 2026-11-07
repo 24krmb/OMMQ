@@ -13,7 +13,7 @@
     - 本图采用「同花顺 资金流」口径:以资金流入/流出净额刻画个股资金动向,
       并给出全市场横向排行,替代主力资金历史曲线。
 输出:reports/YYYYMMDD/11_<代码>.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/stock_money_flow.py [股票代码]   # 默认 600519
+运行:uv run python strategies/stock/stock_money_flow.py [股票代码]   # 默认 600519
 """
 
 from __future__ import annotations
@@ -24,6 +24,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

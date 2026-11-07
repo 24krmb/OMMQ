@@ -12,7 +12,7 @@
     - 有效月末日期:ak.index_analysis_week_month_sw(symbol="month")
 口径:历史分位 = 该行业当前 PE/PB 在其近 5 年月频序列中的分位数(0~100,越高越贵)。
 输出:reports/YYYYMMDD/09_industry_valuation.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/industry_valuation_percentile.py [历史年数]   # 默认 5
+运行:uv run python strategies/stock/industry_valuation_percentile.py [历史年数]   # 默认 5
 """
 
 from __future__ import annotations
@@ -24,6 +24,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

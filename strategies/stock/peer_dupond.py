@@ -14,7 +14,7 @@
     - 估值(PE-TTM / PB / 名称):腾讯 ak.stock_zh_a_spot_tx 全A快照
 说明:东方财富接口在本机被限流,故财务走、估值走腾讯源。
 输出:reports/YYYYMMDD/14_<主代码>.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/peer_dupond.py [主代码] [同业代码,逗号分隔]
+运行:uv run python strategies/stock/peer_dupond.py [主代码] [同业代码,逗号分隔]
       默认:600519 000858,000568,600809,002304,000596
 """
 
@@ -28,6 +28,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

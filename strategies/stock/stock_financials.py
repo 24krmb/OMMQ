@@ -9,7 +9,7 @@
 说明:东方财富接口在本机被限流,故采用同花顺 + 源。
 输出:strategies/output/financials/<代码>/*.csv(utf-8-sig,Excel 可直接打开)
       reports/YYYYMMDD/12_<代码>.png(中文图表；CSV 数据仍存 strategies/output/)
-运行:uv run python strategies/stock_financials.py [股票代码]   # 默认 600519
+运行:uv run python strategies/stock/stock_financials.py [股票代码]   # 默认 600519
 """
 
 from __future__ import annotations
@@ -21,6 +21,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]

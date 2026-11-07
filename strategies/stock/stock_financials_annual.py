@@ -11,7 +11,7 @@
         (年报口径,营收/净利为全年累计值)
 说明:与 stock_financials.py 的**季度**概览图互补,本图按**年度**呈现长周期趋势。
 输出:reports/YYYYMMDD/13_<代码>.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
+运行:uv run python strategies/stock/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
 """
 
 from __future__ import annotations
@@ -24,6 +24,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

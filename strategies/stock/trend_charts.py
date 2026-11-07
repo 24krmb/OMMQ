@@ -19,7 +19,7 @@
   reports/YYYYMMDD/18_费半SOX.png
   reports/YYYYMMDD/19_创业板指vs纳指.png
   reports/YYYYMMDD/20_沪深300vs标普500.png
-  (编号规则见 strategies/stock/plot_paths.py,01–16 已被现有脚本占用)
+  (编号规则见 strategies/plot_paths.py,01–16 已被现有脚本占用)
 
 数据源(自动重试 + 自动降级):
   美股个股:东方财富 stock_us_hist(前复权) → 失败自动切新浪 stock_us_daily(前复权)
@@ -35,6 +35,10 @@ import sys
 import time
 
 import pandas as pd
+
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plot_paths import report_dir, report_image_path
 

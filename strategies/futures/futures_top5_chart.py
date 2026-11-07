@@ -8,7 +8,7 @@
     - 仅取商品期货(dce/czce/shfe/gfex/ine),剔除中金所金融期货(字段布局不同)。
     - 东方财富 clist 接口在本机被限流,故直接走行情接口并按字段索引解析。
 输出:reports/YYYYMMDD/06.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/futures_top5_chart.py
+运行:uv run python strategies/futures/futures_top5_chart.py
 """
 
 from __future__ import annotations
@@ -21,6 +21,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 import requests
 

@@ -24,20 +24,20 @@ description: A 股收盘分析工作流:运行 strategies 全套脚本(市场全
 **批次 A —— A 股核心**(按序执行):
 
 ```powershell
-uv run python strategies/market_overview.py
-uv run python strategies/market_sentiment.py
-uv run python strategies/money_flow_trend.py
-uv run python strategies/sector_top5_chart.py
-uv run python strategies/sector_rotation_heatmap.py
+uv run python strategies/stock/market_overview.py
+uv run python strategies/stock/market_sentiment.py
+uv run python strategies/stock/money_flow_trend.py
+uv run python strategies/stock/sector_top5_chart.py
+uv run python strategies/stock/sector_rotation_heatmap.py
 ```
 
 **批次 B —— 行业估值与期货**(与批次 A 并行):
 
 ```powershell
-uv run python strategies/industry_valuation_percentile.py
-uv run python strategies/futures_top5_chart.py
-uv run python strategies/futures_volume_oi.py
-uv run python strategies/futures_basis_spread.py
+uv run python strategies/stock/industry_valuation_percentile.py
+uv run python strategies/futures/futures_top5_chart.py
+uv run python strategies/futures/futures_volume_oi.py
+uv run python strategies/futures/futures_basis_spread.py
 ```
 
 注意:

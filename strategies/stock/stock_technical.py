@@ -10,7 +10,7 @@
 数据源:个股日线 ak.stock_zh_a_daily(adjust="qfq")(前复权)
 指标计算:ta-lib(MACD 12/26/9,RSI 14)
 输出:reports/YYYYMMDD/10_<代码>.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
+运行:uv run python strategies/stock/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
 """
 
 from __future__ import annotations
@@ -22,6 +22,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

@@ -13,7 +13,7 @@
     - 北向资金“当日净买入”自 2024-08-19 起交易所停止逐日披露,数据已停更,故本图不含北向；
     - 因此本图以「两融(杠杆资金)」作为当期资金流主口径,与主流终端口径一致。
 输出:reports/YYYYMMDD/05.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/money_flow_trend.py [交易日数]   # 默认 60
+运行:uv run python strategies/stock/money_flow_trend.py [交易日数]   # 默认 60
 """
 
 from __future__ import annotations
@@ -27,6 +27,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

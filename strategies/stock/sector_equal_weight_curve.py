@@ -16,9 +16,13 @@
     - 按“当前”板块成分回溯,存在幸存者偏差,结果偏乐观。
 
 用法:
-    python strategies/sector_equal_weight_curve.py
-    python strategies/sector_equal_weight_curve.py --block XFLT --name 细分龙头 --years 5
-    python strategies/sector_equal_weight_curve.py --end 20261026 --refresh
+    python strategies/stock/sector_equal_weight_curve.py
+    python strategies/stock/sector_equal_weight_curve.py --block XFLT --name 细分龙头 --years 5
+    python strategies/stock/sector_equal_weight_curve.py --end 20261026 --refresh
+
+依赖:
+    需本机运行通达信客户端(经 PYPlugins/tqcenter 读取自定义板块成分);
+    无通达信环境不可运行。其余 strategies 脚本均为纯 Akshare 取数,不受影响。
 """
 
 from __future__ import annotations
@@ -36,6 +40,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.ticker import FuncFormatter
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_dir, report_image_path
 
 warnings.filterwarnings("ignore")
@@ -494,7 +502,7 @@ def _write_report(result: dict, stats: dict, bh_stats: dict, bench_stats: dict,
         "4. 后复权价格已包含分红送转,但除权处理以通达信数据为准；"
         "极端异常日收益(绝对值 >500%)已按缺失处理。",
         "",
-        f"*数据与图表由 `strategies/sector_equal_weight_curve.py` 生成；"
+        f"*数据与图表由 `strategies/stock/sector_equal_weight_curve.py` 生成；"
         f"明细见 `{csv_name}`。*",
     ]
 

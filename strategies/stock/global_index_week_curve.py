@@ -8,7 +8,7 @@
     - 标普500:ak.index_us_stock_sina(".INX")
     说明:恒指/标普停市日无数据(如节假日),曲线自动跳过该日。
 输出:reports/YYYYMMDD/15_global_index_week.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/global_index_week_curve.py [起始日 YYYYMMDD] [结束日 YYYYMMDD]
+运行:uv run python strategies/stock/global_index_week_curve.py [起始日 YYYYMMDD] [结束日 YYYYMMDD]
 """
 
 from __future__ import annotations
@@ -20,6 +20,10 @@ import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

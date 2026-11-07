@@ -14,7 +14,7 @@
     - 现货指数(沪深300/上证50/中证500/中证1000):中证指数官网 ak.stock_zh_index_hist_csindex
 说明:东方财富接口在本机被限流,故全部改用生意社 /  / 中证指数源。
 输出:reports/YYYYMMDD/08.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/futures_basis_spread.py [历史交易日数]   # 默认 15
+运行:uv run python strategies/futures/futures_basis_spread.py [历史交易日数]   # 默认 15
 """
 
 from __future__ import annotations
@@ -28,6 +28,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

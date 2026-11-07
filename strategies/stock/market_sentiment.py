@@ -15,7 +15,7 @@
 说明:东方财富 push2/push2his 资金流接口在本机被限流,故资金流类指标改由其他源提供；
       涨停/跌停池走 push2ex 接口,本机可正常返回。
 输出:reports/YYYYMMDD/02.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/market_sentiment.py [交易日数]   # 默认 15
+运行:uv run python strategies/stock/market_sentiment.py [交易日数]   # 默认 15
 """
 
 from __future__ import annotations
@@ -29,6 +29,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")

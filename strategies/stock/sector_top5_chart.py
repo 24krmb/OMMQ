@@ -10,7 +10,7 @@
 
 说明:东方财富 clist 接口在限流,故行业改用申万一级、概念改用源。
 输出:reports/YYYYMMDD/03.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/sector_top5_chart.py
+运行:uv run python strategies/stock/sector_top5_chart.py
 """
 
 from __future__ import annotations
@@ -21,6 +21,10 @@ import akshare as ak
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 
 warnings.filterwarnings("ignore")  # 抑制申万接口 verify=False 的 InsecureRequestWarning

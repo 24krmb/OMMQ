@@ -9,7 +9,7 @@
     涨跌幅 = 当日收盘 / 前一日收盘 - 1
 说明:口径为申万一级行业(与 Wind 一致)；东方财富接口在本机被限流,故走申万源。
 输出:reports/YYYYMMDD/04.png(编号规则见 strategies/plot_paths.py)
-运行:uv run python strategies/sector_rotation_heatmap.py [交易日数]   # 默认 20
+运行:uv run python strategies/stock/sector_rotation_heatmap.py [交易日数]   # 默认 20
 """
 
 from __future__ import annotations
@@ -24,6 +24,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_image_path
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 

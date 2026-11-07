@@ -18,6 +18,10 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)).rsplit("strategies", 1)[0].rstrip("\\/"))
 import plot_utils as pm
+# 将 strategies/ 目录加入 sys.path,确保能导入共享模块 plot_paths
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from plot_paths import report_dir
 
 OUT = report_dir()
