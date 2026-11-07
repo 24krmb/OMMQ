@@ -109,7 +109,7 @@ def main() -> None:
 
     fig.suptitle(
         f"全球三大指数累计收益曲线({start:%Y-%m-%d} ~ {end:%Y-%m-%d})"
-        f"　基准=区间前一交易日收盘　来源:24K-Claw",
+        f"　基准=区间前一交易日收盘　来源:OMMQ",
         fontsize=15, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.93))

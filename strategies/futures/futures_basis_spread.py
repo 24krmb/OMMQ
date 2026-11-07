@@ -225,7 +225,7 @@ def main() -> None:
     draw_index(axes[1, 1], idx_fut)
 
     fig.suptitle(
-        f"期货基差 / 跨期价差(数据日期 {date},历史回溯 {n} 个交易日)　来源:24K-Claw",
+        f"期货基差 / 跨期价差(数据日期 {date},历史回溯 {n} 个交易日)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

@@ -202,7 +202,7 @@ def main() -> None:
     ax.grid(axis="y", linestyle="--", alpha=0.3)
 
     fig.suptitle(
-        f"{main_code} {names.get(main_code,'')} 杜邦分析 / 同业财务估值对比　来源:24K-Claw",
+        f"{main_code} {names.get(main_code,'')} 杜邦分析 / 同业财务估值对比　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

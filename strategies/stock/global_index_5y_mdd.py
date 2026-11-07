@@ -140,7 +140,7 @@ def main() -> None:
 
     fig.suptitle(
         f"标普500 vs 沪深300 · 近5年累计收益与最大回撤({start:%Y-%m-%d} ~ {end:%Y-%m-%d})"
-        f"　来源:24K-Claw",
+        f"　来源:OMMQ",
         fontsize=15, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))

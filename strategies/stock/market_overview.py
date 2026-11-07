@@ -195,7 +195,7 @@ def main() -> None:
 
     stat = breadth.get("统计日期", "")
     fig.suptitle(
-        f"A股市场全景日报(数据日期 {date},活跃度统计 {stat})　来源:24K-Claw",
+        f"A股市场全景日报(数据日期 {date},活跃度统计 {stat})　来源:OMMQ",
         fontsize=16, fontweight="bold", y=0.995,
     )
     # rect 不传:让 tight_layout 走自然路径自动预留 suptitle 空间(传 rect 会双重预留)

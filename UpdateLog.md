@@ -20,6 +20,16 @@
 - `git rm -r --cached` 取消跟踪 `reports/` 与 `strategies/output/` 中历史产物(文件保留本地);README 案例图仍保留于 `.opencode/Example/`
 - 确认 `neff_value_strategy_tdx.py` 开发中、暂不入库,`.gitignore` 注释同步
 
+### 天勤量化(tqsdk)接入
+- 新增技能 `tqsdk-trading-and-data`(行情/回测/交易专题参考 + 环境体检脚本)与子代理 Futures(天勤任务路由)
+- 新增 `strategies/tqsdk/` 脚本目录并统一 snake_case 命名:`trix_strategy.py`(主连行情 + 自动换月移仓)、`trix_strategy_index.py`(单合约对照版)、`vwap_order.py`(VWAP 算法单示例)
+- 修复:Futures 权限模式大小写(`TqSdk-*` → `tqsdk-*`,否则技能加载被拒)、工作流程指向不存在的 `trading-strategy` 目录、过期合约回测(MA701/fu2701 → 运行时解析主连 `underlying_symbol`)、`TqAuth` 占位符硬编码 → 环境变量 `TQ_ACCOUNT`/`TQ_PASSWORD` 友好校验
+- 补充 `strategies/tqsdk/README.md`(前置条件/脚本清单)与 `requirements.txt`(`tqsdk==3.10.4`,按需安装,不进主 requirements);README 技能清单/Agent 目录/目录结构/环境要求同步
+
+### 来源标注统一
+- 图表/报告来源标注一律 `OMMQ`(取代 24K-Claw / 24KRMB.COM / "数据来源:通达信 tqcenter" 等写法);通过 Akshare 等公开源取数时**不标注具体上游来源**,只显示 `来源:OMMQ`
+- 覆盖:12 个策略脚本图注、backtest 回测图脚注(口径信息保留)、2 个技能 HTML 报告模板、归档回测报告、README 输出规范、TdxQuant/Futures Agent 绘图铁律、market-close-analysis 技能输出规范
+
 ## 2026-11-07
 
 新增：近三年“费半”、“七姐妹”走势对比图一键生成脚本  `trend_charts.py`

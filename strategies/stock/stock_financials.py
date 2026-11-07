@@ -186,7 +186,7 @@ def plot_overview(code: str, ind: pd.DataFrame, out_dir: str) -> str | None:
     ax.grid(linestyle="--", alpha=0.35)
 
     fig.suptitle(
-        f"{code} 财务概览(近 {len(labels)} 个季度)　来源:24K-Claw",
+        f"{code} 财务概览(近 {len(labels)} 个季度)　来源:OMMQ",
         fontsize=16,
         fontweight="bold",
     )

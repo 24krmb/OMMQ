@@ -96,7 +96,7 @@ def main() -> None:
     draw(axes[0], ind, f"行业板块(申万一级)涨跌幅 TOP{TOP_N}")
     draw(axes[1], con, f"概念板块涨跌幅 TOP{TOP_N}")
     fig.suptitle(
-        f"A股 最新交易日({date})板块涨跌幅 TOP{TOP_N}　来源:24K-Claw",
+        f"A股 最新交易日({date})板块涨跌幅 TOP{TOP_N}　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))

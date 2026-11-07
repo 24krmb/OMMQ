@@ -120,7 +120,7 @@ def draw_heatmap(mat: pd.DataFrame, dates: list[str], out: str) -> None:
     first, last = mat.columns[0], mat.columns[-1]
     fig.suptitle(
         f"申万一级行业轮动热力图({first:%Y-%m-%d} ~ {last:%Y-%m-%d},共 {len(dates)} 个交易日)"
-        f"　来源:24K-Claw",
+        f"　来源:OMMQ",
         fontsize=15, fontweight="bold",
     )
     # rect 不传:让 tight_layout 走自然路径自动预留 suptitle 空间(传 rect 会双重预留,

@@ -114,7 +114,7 @@ def main() -> None:
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.2))
     draw(axes[0], top, f"商品期货主力 · 涨幅 TOP{TOP_N}", UP_COLOR)
     draw(axes[1], bot, f"商品期货主力 · 跌幅 TOP{TOP_N}", DOWN_COLOR)
-    fig.suptitle(f"国内商品期货主力合约 涨跌幅 TOP{TOP_N}({date})　来源:24K-Claw",
+    fig.suptitle(f"国内商品期货主力合约 涨跌幅 TOP{TOP_N}({date})　来源:OMMQ",
                  fontsize=16, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 

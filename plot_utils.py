@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""plot_utils — 策略脚本统一绘图工具(24K-Claw 配色)
+"""plot_utils — 策略脚本统一绘图工具(OMMQ 配色)
 供 strategies/ 下脚本复用的快速出图函数,统一中文字体、配色与落盘格式:
     - plot_line    折线图(时间序列)
     - plot_bar     柱状图(红涨绿跌,按数值正负自动着色)

@@ -129,7 +129,7 @@ def main() -> None:
     plot_buy(axes[2], margin)
 
     fig.suptitle(
-        f"A股资金流趋势(杠杆资金·两融,数据日期 {date})　来源:24K-Claw",
+        f"A股资金流趋势(杠杆资金·两融,数据日期 {date})　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))

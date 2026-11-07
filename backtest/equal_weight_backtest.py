@@ -361,7 +361,7 @@ def cmd_process(args) -> None:
     ax2.set_xlabel("日期")
     ax2.legend(loc="lower right", frameon=False, fontsize=9)
     ax2.grid(alpha=0.25)
-    fig.text(0.99, 0.005, "数据来源:通达信 tqcenter | 等权·每日再平衡 | 前复权 | 24K-Claw",
+    fig.text(0.99, 0.005, "来源:OMMQ | 等权·每日再平衡 | 前复权",
              ha="right", fontsize=8, color=GRAY)
     fig.tight_layout()
     fig.savefig(os.path.join(out_dir, "fig1_nav_drawdown.png"), bbox_inches="tight")
@@ -387,7 +387,7 @@ def cmd_process(args) -> None:
     ax.set_xticks(yy)
     ax.legend(frameon=False)
     ax.grid(alpha=0.25, axis="y")
-    fig2.text(0.99, 0.005, "数据来源:通达信 tqcenter | 24K-Claw", ha="right", fontsize=8, color=GRAY)
+    fig2.text(0.99, 0.005, "来源:OMMQ", ha="right", fontsize=8, color=GRAY)
     fig2.tight_layout()
     fig2.savefig(os.path.join(out_dir, "fig2_yearly.png"), bbox_inches="tight")
     plt.close(fig2)

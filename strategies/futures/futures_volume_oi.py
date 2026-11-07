@@ -177,7 +177,7 @@ def main() -> None:
 
     date = latest_trade_date()
     fig.suptitle(
-        f"{label(sym)} 期货量仓图(主力连续,近 {n} 交易日)　来源:24K-Claw",
+        f"{label(sym)} 期货量仓图(主力连续,近 {n} 交易日)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))

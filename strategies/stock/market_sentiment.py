@@ -200,7 +200,7 @@ def main() -> None:
     stat = breadth.get("统计日期", "")
     fig.suptitle(
         f"A股市场情绪图(数据日期 {date},活跃度统计 {stat})｜"
-        f"涨停 {n_zt} · 跌停 {n_dt} · 最高 {max_lv} 板 · 封板率 {seal_rate:.1f}%　来源:24K-Claw",
+        f"涨停 {n_zt} · 跌停 {n_dt} · 最高 {max_lv} 板 · 封板率 {seal_rate:.1f}%　来源:OMMQ",
         fontsize=15, fontweight="bold",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
