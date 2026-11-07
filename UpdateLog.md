@@ -1,11 +1,13 @@
 # OMMQ 更新日志
 
+
+## 2026-11-07
+
+新增：近三年“费半”、“七姐妹”走势对比图一键生成脚本  `trend_charts.py`
+
 ## 2026-10-28
 
-### 功能新增
 - 新增本地日线行情缓存 `data/daily/`(parquet,按证券代码分文件)与增量更新脚本 `quant/fetch_daily.py`(数据源,同日去重覆盖,支持 `--refresh` 全量重拉)
-
-### 杂项
 - `requirements.txt` 补充 `pyarrow`(parquet 读写引擎)
 
 ## 2026-10-26

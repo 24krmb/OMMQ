@@ -10,7 +10,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 
 ## 部分案例
 
-以下图表均由项目脚本自动生成(数据日期 2026-10-19,来源:24K-Claw):
+以下图表均由项目脚本自动生成(数据日期 2026-10-19,来源:OMMQ):
 
 **A 股市场全景日报**(`market_overview.py`)
 
@@ -86,6 +86,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | fetch_daily.py                | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet)                     |
 | sector_equal_weight_curve.py     | 自定义板块收益回测分析案例                     |
 | neff_value_strategy.py           | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面|
+| trend_charts.py                  | 近三年“费半”、“七姐妹”走势对比图|
 
 ## 技能清单
 
@@ -189,7 +190,7 @@ OMMQ/
 ├── .opencode/
 │   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
 │   └── skills/                   # 技能集(取数 + 分析)
-├── reports/                      # 生成的研报与图表产物/选股结果、复盘报告输出目录
+├── reports/                      # 生成的输出目录
 ├── strategies/                   # 量化策略与图表脚本
 │   ├── futures/                  # 期货相关脚本
 │   ├── stock/                    # A 股相关脚本
@@ -255,6 +256,12 @@ python -m venv .venv
 ```powershell
 .\.venv\Scripts\python.exe strategies/market_overview.py        # 部分脚本支持命令行参数
 .\.venv\Scripts\python.exe strategies/stock_technical.py 600519 250
+```
+
+如果 akshare 版本较老报了错（最常见是 stock_us_hist 参数或字段列名变化），直接升级即可：
+
+```
+pip install -U akshare
 ```
 
 > 各脚本支持的具体参数(交易日数、股票代码、年份等)见脚本文件头部的说明注释。  
