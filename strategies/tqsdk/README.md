@@ -1,4 +1,4 @@
-# 天勤量化脚本(tqsdk)
+# 期货实盘量化脚本(tqsdk)
 
 基于天勤 TqSdk 的期货回测 / 交易脚本。与 `strategies/stock|futures`,**本目录脚本需要额外的包与快期账号**:
 

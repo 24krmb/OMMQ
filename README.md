@@ -2,11 +2,11 @@
 
 让小白用户也能通过AI助手从行情数据、财报分析到个股深度研究、估值与龙虎榜博弈的全流程投研任务,输出结构化研报。
 
-> 本项目输出仅供研究与学习参考,不构成任何投资建议。
+> README.md 面向人类,AGENTS.md面向 Agent;两者冲突时以文件 AGENTS.md为准。
 
 ## 项目简介
 
-OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不依赖MCP服务,不依赖靠积分充值的范办公工具。内置各类绘图脚本、量化策略。由 Agent 与 SubAgent 按任务类型调度,最终产出结构化、可落盘的研报、量化选股池子、量化回测结果等。
+OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不依赖MCP服务,不依赖靠积分充值的范办公工具。内置各类绘图脚本、量化策略。由 Agent 与 SubAgent 按任务类型调度,最终产出结构化、可落盘的研报、量化选股池子、量化回测结果等。并支持期货实盘交易(CTP);
 
 ## 部分案例
 
@@ -304,6 +304,20 @@ pip install -U akshare
 | `tqcenter` 导入失败 | 将通达信 `PYPlugins\user` 目录加入 `sys.path`,并优先使用 `sys.path.insert(0, ...)`   |
 | `talib` 导入报错    | 使用本项目的 `TA-Lib 0.8.3`(PyPI 预编译 wheel),`pip install -r requirements.txt` 即可,无需单独安装 C 库 |
 | 数据缺失            | 如实标注缺失项,**不得编造**；必要时改用 Akshare 补充数据源   |
+
+## 提交信息规范
+
+1.使用约定式提交（Conventional Commits）：
+
+feat: 新功能，fix: 修复 bug，docs: 文档更新，refactor: 重构，test: 测试相关，chore: 构建过程或辅助工具变动，build: 打包构建相关修改，ci: 持续集成相关修改，style: 代码格式调整
+
+2.提交信息格式：
+```
+<type>: <subject>
+```
+- type：提交类型，例如：feat、fix、docs、style、refactor、perf、test、build、ci、chore
+- subject：提交主题，简洁明了地描述本次提交的内容
+
 
 ## 更新记录
 
