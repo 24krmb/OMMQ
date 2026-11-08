@@ -202,6 +202,7 @@ OMMQ/
 │   └── archive/                  # 历史回测报告(入库案例)
 ├── plot_utils.py                 # 绘图通用工具
 ├── requirements.txt              # Python 依赖锁定文件
+├── pyproject.toml                # 项目元数据与工具配置(不构建发行包)
 ├── data/daily/                   # fetch_daily.py 首次运行自动创建(已忽略,不入库)
 ├── .venv/                        # 项目虚拟环境(已忽略,不入库)
 └── .gitignore

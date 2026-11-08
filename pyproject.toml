@@ -1,0 +1,21 @@
+[project]
+name = "ommq"
+version = "0.1.0"
+description = "Oh My Mini Quant — 本地优先的 A股/期货投研工作台(脚本集 + OpenCode 技能/Agent 工作区)"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "24krmb" }]
+requires-python = ">=3.12"
+# 依赖以根目录 requirements.txt 为准(全量锁定);本文件仅元数据与工具配置,不构建发行包
+
+[project.optional-dependencies]
+# tqsdk 为可选依赖(strategies/tqsdk/ 专用):非打包项目,按需
+# .\.venv\Scripts\python.exe -m pip install -r strategies/tqsdk/requirements.txt
+tqsdk = ["tqsdk==3.10.4"]
+
+[tool.uv]
+package = false  # 非打包项目:uv 只管理环境,不安装本仓库
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"

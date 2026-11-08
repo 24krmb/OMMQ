@@ -30,6 +30,9 @@
 - 图表/报告来源标注一律 `OMMQ`(取代 24K-Claw / 24KRMB.COM / "数据来源:通达信 tqcenter" 等写法);通过 Akshare 等公开源取数时**不标注具体上游来源**,只显示 `来源:OMMQ`
 - 覆盖:12 个策略脚本图注、backtest 回测图脚注(口径信息保留)、2 个技能 HTML 报告模板、归档回测报告、README 输出规范、TdxQuant/Futures Agent 绘图铁律、market-close-analysis 技能输出规范
 
+### 工程化
+- 新增轻量 `pyproject.toml`:仅项目元数据(name / version / requires-python>=3.12 / license)与工具配置(`[tool.uv] package=false` 非打包声明、`[tool.ruff]` 预留),不构建发行包;依赖仍以 `requirements.txt` 全量锁定为准,tqsdk 建模为可选依赖
+
 ## 2026-11-07
 
 新增：近三年“费半”、“七姐妹”走势对比图一键生成脚本  `trend_charts.py`
