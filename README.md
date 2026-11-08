@@ -8,56 +8,13 @@
 
 OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不依赖MCP服务,不依赖靠积分充值的范办公工具。内置各类绘图脚本、量化策略。由 Agent 与 SubAgent 按任务类型调度,最终产出结构化、可落盘的研报、量化选股池子、量化回测结果等。并支持期货实盘交易(CTP);
 
-## 部分案例
-
-以下图表均由项目脚本自动生成(数据日期 2026-10-19,来源:OMMQ):
-
-**A 股市场全景日报**(`market_overview.py`)
-
-![A 股市场全景日报](.opencode/Example/01.png)
-
-**市场情绪**(`market_sentiment.py`)
-
-![市场情绪](.opencode/Example/2.png)
-
-**板块涨跌幅 TOP5**(`sector_top5_chart.py`)
-
-![板块涨跌幅 TOP5](.opencode/Example/3.png)
-
-**申万一级行业轮动热力图**(`sector_rotation_heatmap.py`)
-
-![申万一级行业轮动热力图](.opencode/Example/4.png)
-
-**资金流趋势(两融)**(`money_flow_trend.py`)
-
-![资金流趋势(两融)](.opencode/Example/5.png)
-
-**商品期货主力合约涨跌幅 TOP5**(`futures_top5_chart.py`)
-
-![商品期货主力合约涨跌幅 TOP5](.opencode/Example/6.png)
-
-**期货量仓**(`futures_volume_oi.py`)
-
-![期货量仓](.opencode/Example/7.png)
-
-**技术分析**(`stock_technical.py`)
-
-![技术分析](.opencode/Example/601398.png)
-
-**股指期货期现基差与升贴水分析**(`stock_index_basis.py`)
-![股指期货期现基差与升贴水分析](.opencode/Example/IM_中证1000_基差分析.png)
-
-
-**细分龙头(XFLT)等权组合 · 近5年收益与最大回撤**(`sector_equal_weight_curve.py`)
-![细分龙头(XFLT)等权组合 · 近5年收益与最大回撤](.opencode/Example/9.png)
-
 ## 核心能力:
 
-- **取数**:通过通达信接口获取行情、K 线、财务、龙虎榜等原始数据
+- **实盘**:支持实盘策略，模拟策略，回测，分析账户等
+- **策略**:`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
+- **取数**:获取行情、K 线、财务、龙虎榜等原始数据
 - **分析**:财报速读、个股深度研究、公司质地打分、估值研判、龙虎榜掘金、业绩预告博弈
 - **交互**:推荐 `OpenCode`  开源工具及内置的免费模型,实现 0 费用对话与分析；
-- **补充数据源**:第三方数据补充(`strategies/` 下脚本除标注通达信依赖外,均基于 Akshare 取数)
-- **量化策略**:`strategies/` 提供市场全景、情绪、资金流、板块轮动、期货、个股财务与技术面等可独立运行的图表脚本
 - **量化计算与绘图**:pandas / numpy / scipy / TA-Lib 计算,matplotlib / seaborn 出图
 - **产出归档**:正式报告与图表统一落盘至 `reports/`
 
@@ -167,19 +124,6 @@ You are in code review mode. Focus on:
 Provide constructive feedback without making direct changes.
 ```
 
-
-## 技术栈
-
-| 类别    | 组件                       | 说明                           |
-| ----- | ------------------------ | ---------------------------- |
-| 运行平台  | OpenCode        | 加载 `.opencode` 下的 Agent 与技能  |
-| 数据接口  | 通达信 TdxQuant(`tqcenter`) | 本地客户端取数,主数据源                 |
-| 第三方数据 | Akshare                  | 补充行情与宏观数据  |
-| 数据处理  | pandas、numpy、scipy       | 数据清洗、统计与计算                   |
-| 技术指标  | TA-Lib                   | 常用技术指标计算(预编译 wheel,无需额外 C 库) |
-| 可视化   | matplotlib、seaborn       | 研报图表输出                       |
-| 运行环境  | Python 3.12              | Windows                      |
-
 ## 目录结构
 
 ```
@@ -192,7 +136,7 @@ OMMQ/
 ├── strategies/                   # 量化策略与图表脚本
 │   ├── stock/                    # A 股相关脚本(除标注外基于 Akshare)
 │   ├── futures/                  # 期货相关脚本(含股指期现基差)
-│   ├── tqsdk/                    # 天勤量化脚本(需 tqsdk + 快期账号,见该目录 README)
+│   ├── tqsdk/                    # 期货量化脚本(需 tqsdk + 快期账号,见该目录 README)
 │   ├── plot_paths.py             # 产物编号归档共享模块
 │   ├── fetch_daily.py            # 本地日线行情缓存(写入 data/daily/,parquet)
 │   └── output/                   # 脚本生成的图表与数据产物
@@ -209,9 +153,52 @@ OMMQ/
 └── .gitignore
 ```
 
+## 部分案例
+
+以下图表均由项目脚本自动生成(数据日期 2026-10-19,来源:OMMQ):
+
+**A 股市场全景日报**(`market_overview.py`)
+
+![A 股市场全景日报](.opencode/Example/01.png)
+
+**市场情绪**(`market_sentiment.py`)
+
+![市场情绪](.opencode/Example/2.png)
+
+**板块涨跌幅 TOP5**(`sector_top5_chart.py`)
+
+![板块涨跌幅 TOP5](.opencode/Example/3.png)
+
+**申万一级行业轮动热力图**(`sector_rotation_heatmap.py`)
+
+![申万一级行业轮动热力图](.opencode/Example/4.png)
+
+**资金流趋势(两融)**(`money_flow_trend.py`)
+
+![资金流趋势(两融)](.opencode/Example/5.png)
+
+**商品期货主力合约涨跌幅 TOP5**(`futures_top5_chart.py`)
+
+![商品期货主力合约涨跌幅 TOP5](.opencode/Example/6.png)
+
+**期货量仓**(`futures_volume_oi.py`)
+
+![期货量仓](.opencode/Example/7.png)
+
+**技术分析**(`stock_technical.py`)
+
+![技术分析](.opencode/Example/601398.png)
+
+**股指期货期现基差与升贴水分析**(`stock_index_basis.py`)
+![股指期货期现基差与升贴水分析](.opencode/Example/IM_中证1000_基差分析.png)
+
+
+**细分龙头(XFLT)等权组合 · 近5年收益与最大回撤**(`sector_equal_weight_curve.py`)
+![细分龙头(XFLT)等权组合 · 近5年收益与最大回撤](.opencode/Example/9.png)
+
 ## 依赖安装
 
-项目使用 `.venv` 虚拟环境管理 Python 依赖(akshare 等)。`.venv/` 不入库。
+项目使用 `.venv` 虚拟环境管理 Python 依赖。`.venv/` 不入库。
 
 ```powershell
 # 激活虚拟环境
@@ -253,7 +240,7 @@ python -m venv .venv
 - 本机已安装并**启动**通达信客户端(TdxQuant 平台)
 - `PYPlugins\user\tqcenter.py` 模块可用(Python 取数方式)
 - 本地 HTTP 服务可达:`http://127.0.0.1:17709/`(JSON-RPC 取数方式)
-- 天勤量化脚本(`strategies/tqsdk/`,**可选**):需安装 tqsdk 并配置快期账号环境变量 `TQ_ACCOUNT`/`TQ_PASSWORD`,见该目录 README
+- 期货实盘量化脚本(`strategies/tqsdk/`,**可选**):需安装 tqsdk 并配置快期账号环境变量 `TQ_ACCOUNT`/`TQ_PASSWORD`,见该目录 README
 
 运行方式(**需在项目根目录执行**;产物路径已由 `strategies/plot_paths.py` 锚定仓库根):
 
