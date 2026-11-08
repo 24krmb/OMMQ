@@ -20,8 +20,9 @@
 - `git rm -r --cached` 取消跟踪 `reports/` 与 `strategies/output/` 中历史产物(文件保留本地);README 案例图仍保留于 `.opencode/Example/`
 - 确认 `neff_value_strategy_tdx.py` 开发中、暂不入库,`.gitignore` 注释同步
 
-### 天勤量化(tqsdk)接入
-- 新增技能 `tqsdk-trading-and-data`(行情/回测/交易专题参考 + 环境体检脚本)与子代理 Futures(天勤任务路由)
+### 量化(tqsdk)接入与技能新增
+- 新技能 `tqsdk-trading-and-data`(行情/回测/交易专题参考 + 环境体检脚本)与子代理 Futures(天勤任务路由)；
+- 新技能 `a-market-hotspot-discovery`热点资讯/热门板块/热门股票多维监测 → 结构化热点报告；
 - 新增 `strategies/tqsdk/` 脚本目录并统一 snake_case 命名:`trix_strategy.py`(主连行情 + 自动换月移仓)、`trix_strategy_index.py`(单合约对照版)、`vwap_order.py`(VWAP 算法单示例)
 - 修复:Futures 权限模式大小写(`TqSdk-*` → `tqsdk-*`,否则技能加载被拒)、工作流程指向不存在的 `trading-strategy` 目录、过期合约回测(MA701/fu2701 → 运行时解析主连 `underlying_symbol`)、`TqAuth` 占位符硬编码 → 环境变量 `TQ_ACCOUNT`/`TQ_PASSWORD` 友好校验
 - 补充 `strategies/tqsdk/README.md`(前置条件/脚本清单)与 `requirements.txt`(`tqsdk==3.10.4`,按需安装,不进主 requirements);README 技能清单/Agent 目录/目录结构/环境要求同步
