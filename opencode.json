@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "gildata-aidata": {
+        "type": "remote",
+        "url": "https://dashscope.aliyuncs.com/api/v1/mcps/market-cmgjmcp00074952/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:GILDATA_API_KEY}"
+        }
+      }
+    }
+  }
+}
