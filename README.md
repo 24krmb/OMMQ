@@ -145,6 +145,11 @@ OMMQ/
 │   ├── data/                     # 取数缓存(不入库)
 │   ├── output/                   # 统计与图表产物(不入库)
 │   └── archive/                  # 历史回测报告(入库案例)
+├── opencode.json                 
+├── .opencode/
+    └── memory/
+        ├── data-gotchas.md       # 取数备忘
+        └── backtest-lessons.md   # 回测教训(入口/断点续传/产物归档/约束)
 ├── plot_utils.py                 # 绘图通用工具
 ├── requirements.txt              # Python 依赖锁定文件
 ├── pyproject.toml                # 项目元数据与工具配置(不构建发行包)

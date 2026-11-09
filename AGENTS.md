@@ -1,17 +1,23 @@
-# OMMQ 项目指南
+# Agent
 
 > 给 AI Agent 的持久化项目指引。README.md 面向人类,本文件面向 Agent;两者冲突时以本文件为准。
 
-## 项目定位
+## 执行任务前的铁律
 
-- 本地优先的 A股/期货投研工作台:行情取数 → 分析 → 结构化研报,产物统一落盘 `reports/`
+1. If the user's question or request is too broad, vague, unclear, or contains factual conflicts, it is necessary to clarify the vague request through `question` and let the user decide among multiple implementation options to determine the user's preference;
+2. Multi-step tasks must be executed through the sub-agent `general`;
+3. OpenCode CLI The version must be ≥ `2.2.6`; otherwise, it won't run, and the user will be informed to upgrade or helped to upgrade to the latest version.
 
-## 环境
+## Agent目录
 
-- Python 3.12,虚拟环境 `.venv/`(不入库),Windows 平台
-- 运行脚本:`.\.venv\Scripts\python.exe <script>`
-- 依赖全量锁定 `requirements.txt`;TqSdk 为可选依赖:`.\.venv\Scripts\python.exe -m pip install -r strategies/tqsdk/requirements.txt`
-- 代码风格:Ruff,`line-length = 120`
+| Agent      | 类别          | 用途                  |
+| -------------| --------------| ----------------------------|
+| Build | 主Agent| 启用了所有工具,适合需要完整文件操作和系统命令访问权限的日常工作|
+| Plan | 主Agent| 专为代码分析和规划设计的受限代理。|
+| TdxQuant | 子Agent | 通过通达信获取数,输出结构化研报。|
+| Futures | 子Agent | 期货实盘量化任务路由:期货行情/回测/交易程序。|
+| General | 子Agent| 适用于研究复杂问题和执行多步骤任务,也可以并行运行多个独立的工作单元。|
+| Explore | 主Agent| 适合快速查找文件、搜索代码关键字或回答关于代码库结构的问题,速度快且不会产生副作用。|
 
 ## 脚本与产物
 
@@ -20,24 +26,33 @@
 - 财务 CSV 输出 `strategies/output/financials/`;
 - 日线缓存 `data/daily/`(parquet,`fetch_daily.py` 生成)
 - 大体积产物不入库:`data/`、`backtest/data/`、`backtest/output/` 已在 `.gitignore`
-- 正式报告落盘为 Markdown 至 `reports/`,须含结构化结论、关键数据表格与风险提示
+- 产物、正式报告落盘至 `reports/`,须含结构化结论、关键数据表格与风险提示
 
 ## 绘图铁律
 
-1. 每张图必须有标题、图例、坐标轴标签,不能用颜色或形状单独表达数据
-2. 红涨绿跌;指定颜色:红 `#F36`、绿 `#0C9`、蓝 `#99F`、黄 `#FC3`、字体色 `#9999FF`
-3. 不同数据系列用不同颜色,相同数据系列用相同颜色
-4. 图表来源一律标注 `OMMQ`,不标注具体上游数据源
+1. Each figure must have a title, legend, and axis labels, and data cannot be expressed solely by color or shape.
+2. Red rises, green falls; specified colors: red `#F36`, green `#0C9`, blue `#99F`, yellow `#FC3`, font color `#9999FF`
+3. Different data series use different colors, and the same data series uses the same color.
+4. All charts should be labeled `OMMQ`, without specifying the exact upstream data source.
 5. 优先复用根目录 `plot_utils.py` 与 `strategies/plot_paths.py` 的既有工具,勿重复造轮子
-6. 所有面向用户的文本、图表必须使用**中文**;报告结尾注明"仅供参考,不构成投资建议"
+6. All user-facing text and charts must be in **Chinese**; at the end of the report, indicate "For reference only, not investment advice"
 
 ## 数据与安全硬规则
 
-- 期货凭证走环境变量 `TQ_ACCOUNT` / `TQ_PASSWORD`,**严禁写入任何文件、示例、日志或聊天**
-- 期货当前行情优先 `KQ.m@` 主连;主连不能直接下单,交易需真实合约;历史回测按目标日期核实合约覆盖,不得用今天的 `expired` 状态排除历史合约
-- API 会话(TqSdk 等)必须用上下文管理器或 `finally: api.close()` 释放
+- Futures credentials use the environment variables `TQ_ACCOUNT` / `TQ_PASSWORD`, **strictly prohibited from writing to any files, examples, logs, or chats**
+- For the current futures market, give priority to `KQ.m@` main continuous contract; you cannot place orders directly on the main continuous contract, trading requires real contracts; for historical backtesting, verify contract coverage according to the target date, and do not use today's `expired` status to exclude historical contracts
+- API sessions (TqSdk, etc.) must be released using a context manager or `finally: api.close()`
 - `insert_order()` 返回不代表成交,`FINISHED` 也可能是撤单/拒单;以 `volume_left`、`last_msg`、成交记录为准
-- 取数失败先排查(网络/账号/合约存续状态),仍失败则如实报告;**任何情况下不得编造数据**
+- If data retrieval fails, first check (network/account/contract status). If it still fails, report truthfully; **under no circumstances should data be fabricated**
+
+## memory 记忆
+
+| 场景 | 做法 |
+| --- | --- |
+| 新经验 / 新坑 | 用户说“记一下：xxx”,按 `结论 \| 证据 \| 对策` 格式追加，带日期 |
+| 旧知识失效 | 告诉我，我会删掉对应条目(记忆库约定：过时即删) |
+| 新主题 | 想分门别类时新建 `.opencode/memory/<主题>.md` 即可自动纳入 glob(下次配置变更后生效) |
+| AGENTS.md vs 记忆库 | **规则/铁律**写 `AGENTS.md`(全文覆盖)；**事实/经验/结论**进 memory(增量追加) |
 
 ## 验证要求
 
