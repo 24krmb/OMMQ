@@ -81,7 +81,7 @@ import math
 import os
 from tqsdk import TqApi, TqAuth, TqAccount, TqScenario
 
-account = TqAccount(os.environ["TQ_BROKER_ID"], os.environ["TQ_ACCOUNT_ID"], os.environ["TQ_ACCOUNT_PASSWORD"])
+account = TqAccount(os.environ["TQ_BROKER_ID"], os.environ["YOUR_ACCOUNT_ID"], os.environ["YOUR_ACCOUNT_PASSWORD"])
 with TqApi(account, auth=TqAuth(os.environ["TQ_AUTH_USER"], os.environ["TQ_AUTH_PASSWORD"])) as api:
     symbol = api.get_quote("KQ.m@SHFE.rb").underlying_symbol
     if not symbol:

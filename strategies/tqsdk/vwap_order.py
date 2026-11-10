@@ -12,10 +12,10 @@ import os
 from tqsdk import TqApi, TqAuth, TqSim, TargetPosTask
 
 # 从环境变量读取快期账户凭据(凭据不入库、不写入任何文件)
-TQ_ACCOUNT = os.environ.get("TQ_ACCOUNT", "")
-TQ_PASSWORD = os.environ.get("TQ_PASSWORD", "")
-if not TQ_ACCOUNT or not TQ_PASSWORD:
-    raise SystemExit("缺少快期账号凭据:请先设置环境变量 TQ_ACCOUNT / TQ_PASSWORD 后重试。")
+YOUR_ACCOUNT = os.environ.get("YOUR_ACCOUNT", "")
+YOUR_PASSWORD = os.environ.get("YOUR_PASSWORD", "")
+if not YOUR_ACCOUNT or not YOUR_PASSWORD:
+    raise SystemExit("缺少快期账号凭据:请先设置环境变量 YOUR_ACCOUNT / YOUR_PASSWORD 后重试。")
 
 TIME_CELL = 5*60  # 等时长下单的时间单元, 单位: 秒
 TARGET_VOLUME = 300  # 目标交易手数 (>0: 多头, <0: 空头)
@@ -24,7 +24,7 @@ HISTORY_DAY_LENGTH = 20  # 使用多少天的历史数据用来计算每个时�
 START_HOUR, START_MINUTE = 9, 35  # 计划交易时段起始时间点
 END_HOUR, END_MINUTE = 10, 50  # 计划交易时段终点时间点
 
-api = TqApi(TqSim(), auth=TqAuth(TQ_ACCOUNT, TQ_PASSWORD))  # TqSim 模拟盘演示
+api = TqApi(TqSim(), auth=TqAuth(YOUR_ACCOUNT, YOUR_PASSWORD))  # TqSim 模拟盘演示
 print("策略开始运行")
 # 解析当前主力真实合约(原示例的 fu2701 早已到期,改为运行时解析)
 quote_main = api.get_quote(MAIN_SYMBOL)

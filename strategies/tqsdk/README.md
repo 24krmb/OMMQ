@@ -1,6 +1,6 @@
 # 期货实盘量化脚本(tqsdk)
 
-基于天勤 TqSdk 的期货回测 / 交易脚本。与 `strategies/stock|futures`,**本目录脚本需要额外的包与快期账号**:
+基于TqSdk 的期货回测 / 交易脚本。与 `strategies/stock|futures`,**本目录脚本需要额外的包与账号**:
 
 ## 前置条件
 
@@ -8,10 +8,17 @@
    ```powershell
    .\.venv\Scripts\python.exe -m pip install -r strategies/tqsdk/requirements.txt
    ```
-2. **快期账号**,凭据通过环境变量提供,不写入任何文件:
+
+**要求:** Python >= 3.8(推荐 3.10+)，使用国内镜像(推荐,速度更快):
+
+```bash
+pip install tqsdk -U -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host=pypi.tuna.tsinghua.edu.cn
+```
+
+2. **账号**,凭据通过环境变量提供,不写入任何文件:
    ```powershell
-   $env:TQ_ACCOUNT = "账号"
-   $env:TQ_PASSWORD = "密码"
+   $env:YOUR_ACCOUNT = "账号"
+   $env:YOUR_PASSWORD = "密码"
    ```
 3. 运行示例:
    ```powershell
@@ -25,6 +32,10 @@
 | trix_strategy.py | TRIX 趋势策略回测(主连行情,自动换月移仓,ATR 止损止盈) |
 | trix_strategy_index.py | 同策略**单合约对照版**(不处理换月,用于评估换月贡献) |
 | vwap_order.py | VWAP 算法单示例(按历史成交量占比拆单,默认 TqSim 模拟盘) |
+
+## 账号注册地址
+
+https://account.shinnytech.com/
 
 ## 说明
 

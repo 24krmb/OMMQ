@@ -16,10 +16,10 @@ from tqsdk import TqApi, TqAuth, TqBacktest, TargetPosTask, BacktestFinished
 from tqsdk.ta import ATR
 
 # 从环境变量读取快期账户凭据(凭据不入库、不写入任何文件)
-TQ_ACCOUNT = os.environ.get("TQ_ACCOUNT", "")
-TQ_PASSWORD = os.environ.get("TQ_PASSWORD", "")
-if not TQ_ACCOUNT or not TQ_PASSWORD:
-    raise SystemExit("缺少快期账号凭据:请先设置环境变量 TQ_ACCOUNT / TQ_PASSWORD 后重试。")
+YOUR_ACCOUNT = os.environ.get("YOUR_ACCOUNT", "")
+YOUR_PASSWORD = os.environ.get("YOUR_PASSWORD", "")
+if not YOUR_ACCOUNT or not YOUR_PASSWORD:
+    raise SystemExit("缺少快期账号凭据:请先设置环境变量 YOUR_ACCOUNT / YOUR_PASSWORD 后重试。")
 
 # ===== 全局参数设置 =====
 SYMBOL_MAIN = "KQ.m@CZCE.MA"  # 甲醇主连(行情与指标用;主连不能直接下单)
@@ -59,7 +59,7 @@ print(f"TRIX参数: 周期={TRIX_PERIOD}, 信号线周期={SIGNAL_PERIOD}")
 
 # 创建API实例
 api = TqApi(backtest=TqBacktest(start_dt=START_DATE, end_dt=END_DATE),
-            auth=TqAuth(TQ_ACCOUNT, TQ_PASSWORD))
+            auth=TqAuth(YOUR_ACCOUNT, YOUR_PASSWORD))
 klines = api.get_kline_serial(SYMBOL_MAIN, 60 * 60 * 24)  # 主连日线数据
 
 # 解析回测开始时的真实主力合约,全程持有(不处理换月)

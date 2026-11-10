@@ -113,7 +113,7 @@ from tqsdk import TqApi, TqAuth, TqAccount, TqKq, TqMultiAccount
 
 import os
 
-real_acc = TqAccount(os.environ["TQ_BROKER_ID"], os.environ["TQ_ACCOUNT_ID"], os.environ["TQ_ACCOUNT_PASSWORD"])
+real_acc = TqAccount(os.environ["TQ_BROKER_ID"], os.environ["YOUR_ACCOUNT_ID"], os.environ["YOUR_ACCOUNT_PASSWORD"])
 sim_acc = TqKq()
 
 api = TqApi(TqMultiAccount([real_acc, sim_acc]), auth=TqAuth("账户", "账户密码"))

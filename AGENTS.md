@@ -39,7 +39,7 @@
 
 ## 数据与安全硬规则
 
-- Futures credentials use the environment variables `TQ_ACCOUNT` / `TQ_PASSWORD`, **strictly prohibited from writing to any files, examples, logs, or chats**
+- Futures credentials use the environment variables `YOUR_ACCOUNT` / `YOUR_PASSWORD`, **strictly prohibited from writing to any files, examples, logs, or chats**
 - For the current futures market, give priority to `KQ.m@` main continuous contract; you cannot place orders directly on the main continuous contract, trading requires real contracts; for historical backtesting, verify contract coverage according to the target date, and do not use today's `expired` status to exclude historical contracts
 - API sessions (TqSdk, etc.) must be released using a context manager or `finally: api.close()`
 - `insert_order()` 返回不代表成交,`FINISHED` 也可能是撤单/拒单;以 `volume_left`、`last_msg`、成交记录为准

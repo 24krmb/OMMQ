@@ -10,10 +10,10 @@ from tqsdk.ta import ATR
 
 # ===== 全局参数设置 =====
 # 从环境变量读取快期账户凭据(凭据不入库、不写入任何文件)
-TQ_ACCOUNT = os.environ.get("TQ_ACCOUNT", "")
-TQ_PASSWORD = os.environ.get("TQ_PASSWORD", "")
-if not TQ_ACCOUNT or not TQ_PASSWORD:
-    raise SystemExit("缺少快期账号凭据:请先设置环境变量 TQ_ACCOUNT / TQ_PASSWORD 后重试。")
+YOUR_ACCOUNT = os.environ.get("YOUR_ACCOUNT", "")
+YOUR_PASSWORD = os.environ.get("YOUR_PASSWORD", "")
+if not YOUR_ACCOUNT or not YOUR_PASSWORD:
+    raise SystemExit("缺少快期账号凭据:请先设置环境变量 YOUR_ACCOUNT / YOUR_PASSWORD 后重试。")
 SYMBOL = "KQ.m@CZCE.MA"  # 甲醇主力连续合约（行情与指标用；主连不能直接下单，下单个为其underlying_symbol）
 POSITION_SIZE = 10  # 基础持仓手数
 START_DATE = date(2023, 10, 30)  # 回测开始日期（近3年）
@@ -105,7 +105,7 @@ print(f"TRIX参数: 周期={TRIX_PERIOD}, 信号线周期={SIGNAL_PERIOD}")
 
 # 创建API实例
 api = TqApi(backtest=TqBacktest(start_dt=START_DATE, end_dt=END_DATE),
-            auth=TqAuth(TQ_ACCOUNT, TQ_PASSWORD))
+            auth=TqAuth(YOUR_ACCOUNT, YOUR_PASSWORD))
 
 # 订阅主连K线与主连行情
 klines = api.get_kline_serial(SYMBOL, 60 * 60 * 24)  # 主连日线数据

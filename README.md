@@ -245,7 +245,7 @@ python -m venv .venv
 - 本机已安装并**启动**通达信客户端(TdxQuant 平台)
 - `PYPlugins\user\tqcenter.py` 模块可用(Python 取数方式)
 - 本地 HTTP 服务可达:`http://127.0.0.1:17709/`(JSON-RPC 取数方式)
-- 期货实盘量化脚本(`strategies/tqsdk/`,**可选**):需安装 tqsdk 并配置快期账号环境变量 `TQ_ACCOUNT`/`TQ_PASSWORD`,见该目录 README
+- 期货实盘量化脚本(`strategies/tqsdk/`,**可选**):需安装 tqsdk 并配置快期账号环境变量 `YOUR_ACCOUNT`/`YOUR_PASSWORD`,见该目录 README
 
 运行方式(**需在项目根目录执行**;产物路径已由 `strategies/plot_paths.py` 锚定仓库根):
 
