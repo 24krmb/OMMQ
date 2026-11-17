@@ -137,7 +137,7 @@ OMMQ/
 ├── strategies/                   # 量化策略与图表脚本
 │   ├── stock/                    # A 股相关脚本(除标注外基于 Akshare)
 │   ├── futures/                  # 期货相关脚本(含股指期现基差)
-│   ├── tqsdk/                    # 期货量化脚本(需 tqsdk + 快期账号,见该目录 README)
+│   ├── tqsdk/                    # 期货量化脚本(需 tqsdk + 账户)
 │   ├── plot_paths.py             # 产物编号归档共享模块
 │   ├── fetch_daily.py            # 本地日线行情缓存(写入 data/daily/,parquet)
 │   └── output/                   # 脚本生成的图表与数据产物
@@ -146,7 +146,7 @@ OMMQ/
 │   ├── data/                     # 取数缓存(不入库)
 │   ├── output/                   # 统计与图表产物(不入库)
 │   └── archive/                  # 历史回测报告(入库案例)
-├── opencode.json                 
+├── opencode.json                 # OpenCode 配置文件(项目级)
 ├── .opencode/
 │   └── memory/
 │   ├── data-gotchas.md           # 取数备忘
@@ -165,43 +165,34 @@ OMMQ/
 以下图表均由项目脚本自动生成(数据日期 2026-10-19,来源:OMMQ):
 
 **A 股市场全景日报**(`market_overview.py`)
-
 ![A 股市场全景日报](.opencode/Example/01.png)
 
-**市场情绪**(`market_sentiment.py`)
+**细分龙头(XFLT)等权组合 · 近5年收益与最大回撤**(`sector_equal_weight_curve.py`)
+![细分龙头(XFLT)等权组合 · 近5年收益与最大回撤](.opencode/Example/9.png)
 
+**期货量仓**(`futures_volume_oi.py`)
+![期货量仓](.opencode/Example/7.png)
+
+**市场情绪**(`market_sentiment.py`)
 ![市场情绪](.opencode/Example/2.png)
 
 **板块涨跌幅 TOP5**(`sector_top5_chart.py`)
-
 ![板块涨跌幅 TOP5](.opencode/Example/3.png)
 
 **申万一级行业轮动热力图**(`sector_rotation_heatmap.py`)
-
 ![申万一级行业轮动热力图](.opencode/Example/4.png)
 
 **资金流趋势(两融)**(`money_flow_trend.py`)
-
 ![资金流趋势(两融)](.opencode/Example/5.png)
 
 **商品期货主力合约涨跌幅 TOP5**(`futures_top5_chart.py`)
-
 ![商品期货主力合约涨跌幅 TOP5](.opencode/Example/6.png)
 
-**期货量仓**(`futures_volume_oi.py`)
-
-![期货量仓](.opencode/Example/7.png)
-
 **技术分析**(`stock_technical.py`)
-
 ![技术分析](.opencode/Example/601398.png)
 
 **股指期货期现基差与升贴水分析**(`stock_index_basis.py`)
 ![股指期货期现基差与升贴水分析](.opencode/Example/IM_中证1000_基差分析.png)
-
-
-**细分龙头(XFLT)等权组合 · 近5年收益与最大回撤**(`sector_equal_weight_curve.py`)
-![细分龙头(XFLT)等权组合 · 近5年收益与最大回撤](.opencode/Example/9.png)
 
 ## 依赖安装
 
@@ -218,14 +209,14 @@ pip install -r requirements.txt
 .\.venv\Scripts\python.exe your_script.py
 ```
 
-首次创建虚拟环境(基于本机 Python 3.12):
+首次创建虚拟环境。并安装依赖时,建议使用 `python -m venv .venv` 创建虚拟环境,并使用 `.\.venv\Scripts\python.exe` 运行脚本。:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -U pip -r requirements.txt
 ```
 
-依赖清单见 [requirements.txt](./requirements.txt),已包含 akshare、pandas、numpy、scipy、TA-Lib、matplotlib、seaborn 等。
+依赖清单见 [requirements.txt](./requirements.txt),已包含pandas、numpy、scipy、TA-Lib、matplotlib、seaborn 等。
 
 ## 快速开始
 
@@ -275,20 +266,22 @@ pip install -U akshare
 
 ## 常用提问示例
 
-| 想做什么   | 参考问法                                 | 触发技能                       |
+| 想做什么   | 参考问法                                 | 触发技能               |
 | ------ | ------------------------------------ | -------------------------- |
+| A股市场热点发现综合能力 | “今日热点是什么”“最近哪些板块最热”“当前热股有哪些”  | `a-market-hotspot-discovery` |
+| A 股收盘分析工作流 | 收盘分析、收盘复盘、今日行情分析、执行收盘(日期)分析  | `market-close-analysis` |
 | 快速看财报  | "看看 XX 的财报"、"XX 最近业绩怎么样"、"XX 现金流健康吗" | `tdx-financial-quick-read` |
 | 个股深度研究 | "XX 股票怎么样"、"XX 投资逻辑"、"帮我研究一下 XX"     | `tdx-stock-analysis`       |
-| 判断公司质地 | "公司质地"、"这家公司好不好"、"是不是好公司"、"壁垒强不强"    | `tdx-gszddf`               |
-| 估值研判   | "XX 估值贵不贵"、"业绩超预期"、"增速下滑要不要杀估值"      | `tdx-valuation-navigator`  |
-| 龙虎榜拆解  | "XX 上龙虎榜了吗"、"游资追踪"、"机构买了什么"、"三日榜"    | `tdx-dragon-tiger-miner`   |
-| 业绩预告博弈 | "业绩预告"、"超预期还能涨吗"、"利空出尽"、"预告后还能买吗"    | `tdx-yjygby`               |
+| 判断公司质地 | "公司质地"、"这家公司好不好"、"是不是好公司"、"壁垒强不强"    | `tdx-gszddf`          |
+| 估值研判   | "XX 估值贵不贵"、"业绩超预期"、"增速下滑要不要杀估值"      | `tdx-valuation-navigator` |
+| 龙虎榜拆解  | "XX 上龙虎榜了吗"、"游资追踪"、"机构买了什么"、"三日榜"    | `tdx-dragon-tiger-miner` |
+| 业绩预告博弈 | "业绩预告"、"超预期还能涨吗"、"利空出尽"、"预告后还能买吗"    | `tdx-yjygby`           |
 
 ## 输出规范
 
 - 所有文本使用中文；图表必须包含标题、图例、坐标轴标签,不能仅靠颜色或形状区分数据。
 - 同一数据系列用相同颜色,不同系列用不同颜色；遵循红涨绿跌。
-- 配色统一:红色 `#F36`、绿色 `#0C9`、蓝色 `#99F`、黄色 `#FC3`、字体色 `#9999FF`；图表来源一律标注 `OMMQ`(通过公开源取数时不标注具体上游来源)。
+- 配色统一:红色 `#F36`、绿色 `#0C9`、蓝色 `#99F`、黄色 `#FC3`、字体色 `#9999FF`；图表来源一律标注 `OMMQ`。
 
 ## 故障排查
 
