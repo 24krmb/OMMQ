@@ -148,14 +148,15 @@ OMMQ/
 │   └── archive/                  # 历史回测报告(入库案例)
 ├── opencode.json                 
 ├── .opencode/
-    └── memory/
-        ├── data-gotchas.md       # 取数备忘
-        └── backtest-lessons.md   # 回测教训(入口/断点续传/产物归档/约束)
+│   └── memory/
+│   ├── data-gotchas.md           # 取数备忘
+│   └── backtest-lessons.md       # 回测教训(入口/断点续传/产物归档/约束)
 ├── plot_utils.py                 # 绘图通用工具
 ├── requirements.txt              # Python 依赖锁定文件
 ├── pyproject.toml                # 项目元数据与工具配置(不构建发行包)
-├── data/daily/                   # fetch_daily.py 首次运行自动创建(已忽略,不入库)
-├── .venv/                        # 项目虚拟环境(已忽略,不入库)
+├── 24krmb.html                   # Markdown → 24KRMB.COM 社区代码转换
+├── data/daily/                   # 数据缓存，自动创建(不入库)
+├── .venv/                        # 项目虚拟环境(不入库)
 └── .gitignore
 ```
 
