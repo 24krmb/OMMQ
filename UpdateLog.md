@@ -1,5 +1,11 @@
 # OMMQ 更新日志
 
+## 2026-11-17 (V1.2.0)
+
+1. 适配 akshare 1.20.65 接口重构:17 个接口改名/参数变更,财务脚本适配器同步更新
+2. 更新依赖锁定版本(requirements.txt)
+3. README 完善 macOS/Linux 说明
+
 ## 2026-11-17
 
 ### 问题修复
@@ -8,12 +14,6 @@
 - `.gitignore` 纳入 `strategies/stock/neff_output/`(内夫策略运行产物不入库)
 - `stock_technical.py` 改为在全历史上计算 MA/MACD/RSI 后再截取展示窗口,消除指标热身期缺失;头注释 MACD 参数与代码对齐(快8.39/慢17.52/信号9.05)
 - `backtest/equal_weight_backtest.py` 断点续传加固:取数区间参数(--end/--years)变更时中止并提示 `--refresh`;自动丢弃上次崩溃留下的截断残行并补取;process 阶段读取 fetch_errors.json 告警缺失成分;process 按 `<board>_codes.json` 过滤 CSV 中已移出板块的过期成分
-
-## 2026-11-17 (V1.2.0)
-
-1. 适配 akshare 1.20.65 接口重构:17 个接口改名/参数变更,财务脚本适配器同步更新
-2. 更新依赖锁定版本(requirements.txt)
-3. README 完善 macOS/Linux 说明
 
 ## 2026-11-09 (V1.1.0)
 
