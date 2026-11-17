@@ -1,5 +1,20 @@
 # OMMQ 更新日志
 
+## 2026-11-17
+
+### 问题修复
+- `stock_index_basis.py` 补 macOS 字体回退(原仅配置 Windows 字体,macOS 下中文渲染为方块)
+- 扩展图编号撞号治理(全库编号恢复唯一):`sector_equal_weight_curve.py` 09→21、`global_index_5y_mdd.py` 15→22、`futures_sector_review.py` 09/10/11/12→23/24/25/26;`industry_valuation_percentile.py` 保持 09 不变
+- `.gitignore` 纳入 `strategies/stock/neff_output/`(内夫策略运行产物不入库)
+- `stock_technical.py` 改为在全历史上计算 MA/MACD/RSI 后再截取展示窗口,消除指标热身期缺失;头注释 MACD 参数与代码对齐(快8.39/慢17.52/信号9.05)
+- `backtest/equal_weight_backtest.py` 断点续传加固:取数区间参数(--end/--years)变更时中止并提示 `--refresh`;自动丢弃上次崩溃留下的截断残行并补取;process 阶段读取 fetch_errors.json 告警缺失成分;process 按 `<board>_codes.json` 过滤 CSV 中已移出板块的过期成分
+
+## 2026-11-17 (V1.2.0)
+
+1. 适配 akshare 1.20.65 接口重构:17 个接口改名/参数变更,财务脚本适配器同步更新
+2. 更新依赖锁定版本(requirements.txt)
+3. README 完善 macOS/Linux 说明
+
 ## 2026-11-09 (V1.1.0)
 
 1. 完善持久化记忆机制

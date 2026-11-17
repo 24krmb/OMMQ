@@ -38,11 +38,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 N_HIST = 15          # 基差率历史回溯交易日数
 N_CROSS = 18         # 横截面展示品种数(按 |基差率| 取前 N)
@@ -210,6 +210,19 @@ def main() -> None:
     date = latest_trade_date()
 
     cross = fetch_cross(date)
+    if cross.empty:
+        # 生意社当日现货数据收盘后才发布,白天跑时为空 -> 回退最近有数据的交易日
+        try:
+            tdates = sorted(pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date,
+                            reverse=True)
+            past = [d for d in tdates if d < date][:5]
+        except Exception:  # noqa: BLE001
+            past = [date - dt.timedelta(days=i) for i in range(1, 6)]
+        for d in past:
+            cross = fetch_cross(d)
+            if not cross.empty:
+                date = d
+                break
     hist = fetch_hist(n)
     idx_fut = fetch_index_futures()
 
@@ -228,7 +241,7 @@ def main() -> None:
         f"期货基差 / 跨期价差(数据日期 {date},历史回溯 {n} 个交易日)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
 
     out = report_image_path(8)
     fig.savefig(out, dpi=150, bbox_inches="tight")

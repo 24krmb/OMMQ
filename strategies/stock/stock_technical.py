@@ -8,7 +8,8 @@
     4. RSI(14) 折线(含 30 / 70 参考线)
 
 数据源:个股日线 ak.stock_zh_a_hist_sina(adjust="qfq")(前复权)
-指标计算:ta-lib(MACD 12/26/9,RSI 14)
+指标计算:ta-lib(MACD 快8.39/慢17.52/信号9.05,RSI 14)——先在全历史上计算指标(保证热身期),
+再截取展示窗口
 输出:reports/YYYYMMDD/10_<代码>.png(编号规则见 strategies/plot_paths.py)
 运行:uv run python strategies/stock/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
 """
@@ -31,12 +32,12 @@ from plot_paths import report_image_path
 warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-# 统一配色 OMMQ:红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #27254c
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+# 统一配色 OMMQ:红 #F36 / 绿 #0C9 / 蓝 #99F / 黄 #FC3；字体色 #9999FF
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 DEFAULT_CODE = "600519"
 DEFAULT_DAYS = 120
@@ -55,12 +56,12 @@ def sina_prefix(code: str) -> str:
     return "sh" + c
 
 
-def fetch_daily(code: str, days: int):
-    """前复权日线(近 days 个交易日)。"""
+def fetch_daily(code: str):
+    """前复权日线(全历史;指标热身需要足够长窗口,展示窗口由 main 截取)。"""
     df = ak.stock_zh_a_hist_sina(symbol=sina_prefix(code), adjust="qfq")
     df["date"] = df["date"].astype(str)
     df = df.sort_values("date").reset_index(drop=True)
-    return df.tail(days).reset_index(drop=True)
+    return df
 
 
 def add_indicators(df):
@@ -137,7 +138,10 @@ def main() -> None:
     code = sys.argv[1].strip() if len(sys.argv) > 1 else DEFAULT_CODE
     days = int(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_DAYS
 
-    df = add_indicators(fetch_daily(code, days))
+    # 指标必须先在全历史上计算(热身期),再截取展示窗口;否则 MA60 前 59 根、
+    # MACD/RSI 起始段会因窗口截断而缺失或失真
+    df = add_indicators(fetch_daily(code))
+    df = df.tail(days).reset_index(drop=True)
     name = ""
     try:
         info = ak.stock_individual_info_em(symbol=code)

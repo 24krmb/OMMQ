@@ -31,6 +31,7 @@ desktop.ini
 # 需要长期保留的案例统一放 .opencode/Example/(入库)或 backtest/archive/(入库)。
 reports/
 strategies/output/
+strategies/stock/neff_output/
 backtest/data/
 backtest/output/
 data/

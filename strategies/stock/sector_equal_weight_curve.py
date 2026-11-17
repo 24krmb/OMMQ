@@ -50,11 +50,11 @@ warnings.filterwarnings("ignore")
 
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 UP_COLOR = "#F36"      # 涨 / 组合
 DOWN_COLOR = "#0C9"    # 跌 / 回撤
@@ -350,14 +350,14 @@ def _plot(result: dict, stats: dict, block: str, name: str,
     # 最大回撤标注
     ax1.plot([peak, trough], [nav.loc[peak], nav.loc[trough]],
              color=DOWN_COLOR, lw=1.0, ls=":", zorder=6)
-    ax1.scatter([peak], [nav.loc[peak]], color="#27254c", s=28, zorder=7)
+    ax1.scatter([peak], [nav.loc[peak]], color="#9999FF", s=28, zorder=7)
     ax1.scatter([trough], [nav.loc[trough]], color=DOWN_COLOR, s=42, zorder=7)
     span = float(nav.max() - nav.min())
     ax1.annotate(
         f"最大回撤 {stats['mdd']:.1%}\n{peak:%Y-%m-%d} → {trough:%Y-%m-%d}",
         xy=(trough, nav.loc[trough]),
         xytext=(peak + pd.Timedelta(days=120), float(nav.max() - span * 0.40)),
-        textcoords="data", fontsize=9.5, color="#27254c",
+        textcoords="data", fontsize=9.5, color="#9999FF",
         bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=DOWN_COLOR,
                   lw=0.8, alpha=0.92),
         arrowprops=dict(arrowstyle="-", color=DOWN_COLOR, lw=0.8,
@@ -596,7 +596,7 @@ def main() -> None:
         print(f"  {year}   {v['port']:+9.2%}  {v['bh']:+9.2%}  {v['bench']:+9.2%}")
 
     # 产物
-    image_path = report_image_path(9, f"{args.block}_equal_weight_{int(round(args.years))}y")
+    image_path = report_image_path(21, f"{args.block}_equal_weight_{int(round(args.years))}y")
     image_name = os.path.basename(image_path)
     _plot(result, stats, args.block, args.name,
           len(codes), used, image_path)

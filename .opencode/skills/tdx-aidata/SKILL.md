@@ -1,6 +1,6 @@
 ---
 name: 通达信AiData
-version: 1.2.2(2026-09-30)
+version: 1.2.2
 description: 通达信 TdxAiData Python 数据接口(跨平台:Windows / macOS / Linux)。用 tqs 类从 TdxAiData 动态库(Windows 用 TdxAiData.dll、macOS 用 libTdxAiData.dylib、Linux 用 libTdxAiData.so)获取行情、基础信息、专业数据、分笔、集合竞价、批量取数,订阅实时行情；生成、修改、审查基于 tqs 的跨平台 Python 数据脚本。不适用 tqcenter/TPyth/公式/交易/通达信客户端交互。
 ---
 

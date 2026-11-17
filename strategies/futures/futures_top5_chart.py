@@ -3,7 +3,11 @@
 
 数据源:财经期货实时行情(hq.sinajs.cn,nf_ 前缀)
     合约清单:AKShare ak.futures_display_main_sina()(主力连续合约一览)
-    涨跌幅 = 最新价 / 昨结算 - 1
+    涨跌幅 = 最新价 / 昨收盘 - 1(应口径要求采用昨收盘基准;行业公示惯例为昨结算,
+        二者差异来自结算价是全天加权均价、收盘价是收盘时刻最新成交价)
+    昨收盘取法:ak.futures_main_sina(symbol="XX0", start_date=近 7 天, end_date=今日)
+        窄窗口日线,取"日期 < 今日"最后一根的收盘价(新浪 T 日 bar 结算后才生成,
+        今日 bar 不可用);逐品种请求间 sleep(0.3) 防限流。
 说明:
     - 仅取商品期货(dce/czce/shfe/gfex/ine),剔除中金所金融期货(字段布局不同)。
     - 东方财富 clist 接口在本机被限流,故直接走行情接口并按字段索引解析。
@@ -31,11 +35,11 @@ import requests
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 TOP_N = 5
 UP_COLOR = "#F36"    # 红涨
@@ -47,7 +51,7 @@ HEADERS = {
     "Referer": "https://vip.stock.finance.sina.com.cn/",
 }
 
-# 商品期货 nf_ 字段索引:0=名称, 8=最新价, 10=昨结算
+# 商品期货 nf_ 字段索引:0=名称, 8=最新价, 10=昨结算(仅留档,涨跌幅不用)
 IDX_NAME, IDX_CURRENT, IDX_SETTLE = 0, 8, 10
 
 
@@ -83,9 +87,30 @@ def fetch_quotes(symbols: list[str]) -> pd.DataFrame:
         rows.append({
             "合约": parts[IDX_NAME],
             "代码": symbol,
-            "涨跌幅": (current / settle - 1) * 100,
+            "最新价": current,
         })
     return pd.DataFrame(rows)
+
+
+def fetch_prev_closes(symbols: list[str], today: dt.date) -> tuple[dict[str, float], list[str]]:
+    """昨收盘:窄窗口日线取"日期 < 今日"最后一根收盘价(新浪 T 日 bar 结算后才生成)。"""
+    closes: dict[str, float] = {}
+    failed: list[str] = []
+    start = (today - dt.timedelta(days=7)).strftime("%Y%m%d")
+    for symbol in symbols:
+        try:
+            d = ak.futures_main_sina(symbol=symbol, start_date=start, end_date=f"{today:%Y%m%d}")
+            d["日期"] = pd.to_datetime(d["日期"])
+            d["收盘价"] = pd.to_numeric(d["收盘价"], errors="coerce")
+            d = d[(d["日期"].dt.date < today) & d["收盘价"].notna()]
+            if len(d):
+                closes[symbol] = float(d["收盘价"].iloc[-1])
+            else:
+                failed.append(symbol)
+        except Exception:  # noqa: BLE001
+            failed.append(symbol)
+        time.sleep(0.3)  # 防限流
+    return closes, failed
 
 
 def draw(ax, df: pd.DataFrame, title: str, color: str) -> None:
@@ -93,7 +118,7 @@ def draw(ax, df: pd.DataFrame, title: str, color: str) -> None:
     ax.barh(df["合约"], df["涨跌幅"], color=color)
     ax.axvline(0, color="#888888", linewidth=0.8)
     ax.set_title(title, fontsize=14, pad=12)
-    ax.set_xlabel("涨跌幅 (%)")
+    ax.set_xlabel("涨跌幅 (%)(最新价/昨收盘-1)")
     ax.margins(x=0.22)
     ax.grid(axis="x", linestyle="--", alpha=0.35)
     for y, v in enumerate(df["涨跌幅"]):
@@ -104,7 +129,15 @@ def draw(ax, df: pd.DataFrame, title: str, color: str) -> None:
 
 
 def main() -> None:
-    df = fetch_quotes(main_contracts()["symbol"].tolist())
+    codes = main_contracts()["symbol"].tolist()
+    df = fetch_quotes(codes)
+    closes, failed = fetch_prev_closes(codes, dt.date.today())
+    if failed:
+        print(f"  [剔除] 昨收盘取不到、涨跌幅置空的品种(不用昨结算顶替): {', '.join(failed)}")
+    df = df[df["代码"].isin(closes)].copy()
+    df["昨收盘"] = df["代码"].map(closes)
+    df["涨跌幅"] = (df["最新价"] / df["昨收盘"] - 1) * 100
+
     # 涨幅:升序(数值最大者排最后 -> 显示在最上方)
     top = df.nlargest(TOP_N, "涨跌幅").sort_values("涨跌幅").reset_index(drop=True)
     # 跌幅:降序(跌幅最大者排最后 -> 显示在最上方)

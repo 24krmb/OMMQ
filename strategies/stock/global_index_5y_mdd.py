@@ -8,7 +8,7 @@
     口径说明:
         - 累计收益:基准 = 窗口前一交易日收盘(与 global_index_week_curve.py 同口径)
         - 最大回撤:窗口内收盘价相对其滚动前高的最大跌幅(均为价格指数口径,不含分红)
-输出:reports/YYYYMMDD/15_global_index_5y.png(编号规则见 strategies/plot_paths.py)
+输出:reports/YYYYMMDD/22_global_index_5y.png(编号规则见 strategies/plot_paths.py)
 运行:.\\.venv\\Scripts\\python.exe strategies/stock/global_index_5y_mdd.py [起始日 YYYYMMDD] [结束日 YYYYMMDD]
 """
 
@@ -145,7 +145,7 @@ def main() -> None:
     )
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
-    out = report_image_path(15, "global_index_5y")
+    out = report_image_path(22, "global_index_5y")
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"\n图表已保存: {out}")

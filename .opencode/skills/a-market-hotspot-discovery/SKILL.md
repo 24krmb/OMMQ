@@ -20,7 +20,7 @@ description: 面向A股市场热点发现的综合能力。适用于用户提出
 | `FinQuery` | **板块热度排序** | 获取行业/概念/地域板块列表，按涨跌幅、换手率等排序 |
 | akshare `ak.stock_individual_fund_flow(stock="600519", market="sh")` | **板块资金流向** | 按主力资金流向对板块进行排序，识别资金主攻方向 |
 | akshare `ak.stock_lhb_detail_em(start_date=, end_date=)` | **龙虎榜/热门股** | 获取当日龙虎榜上榜个股明细、异动原因及主力买卖额 |
-| akshare `ak.stock_telegraph_cls()`（财联社7×24电报）+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()` / akshare `ak.stock_telegraph_cls()`（财联社7×24电报）+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()` | **热点舆情资讯** | 检索全网/市场最新舆情，捕捉政策、事件、行业利好 |
+| akshare `ak.stock_telegraph_cls()`+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()` / akshare `ak.stock_telegraph_cls()`+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()` | **热点舆情资讯** | 检索全网/市场最新舆情，捕捉政策、事件、行业利好 |
 
 ## 工作流程
 
@@ -29,7 +29,7 @@ description: 面向A股市场热点发现的综合能力。适用于用户提出
     *   **板块热度**：调用 akshare `ak.stock_board_industry_name_em()` / `ak.stock_board_concept_name_em()`，查询“今日涨幅靠前的概念和行业板块”。
     *   **资金主攻**：调用 akshare `ak.stock_individual_fund_flow(stock="600519", market="sh")`，查询“今日主力资金净流入排名靠前的板块”。
     *   **个股异动**：调用 akshare `ak.stock_lhb_detail_em(start_date=, end_date=)`，查询“今日龙虎榜上榜股票及原因”。
-    *   **舆情驱动**：调用 akshare `ak.stock_telegraph_cls()`（财联社7×24电报）+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()`，查询“今日A股市场热点资讯或重大新闻”。
+    *   **舆情驱动**：调用 akshare `ak.stock_telegraph_cls()`+ `ak.news_cctv(date=)` + `ak.stock_info_global_sina()`，查询“今日A股市场热点资讯或重大新闻”。
 3.  **交叉验证**：将资讯驱动的题材与板块涨幅、资金流向进行匹配，找出逻辑自洽的“真热点”。
 4.  **报告生成**：按照标准模板输出 Markdown 报告。
 

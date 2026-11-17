@@ -38,11 +38,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 DEFAULT_MAIN = "600519"
 DEFAULT_PEERS = ["000858", "000568", "600809", "002304", "000596"]
@@ -187,12 +187,12 @@ def main() -> None:
         xl.append(f"{names.get(c,c)}\n{c}")
     xi = list(range(len(codes)))
     ax.bar([i - w / 2 for i in xi], pe, w, color="#FC3", label="PE-TTM(左轴)")
-    ax.set_ylabel("PE-TTM", color="#27254c")
-    ax.tick_params(axis="y", labelcolor="#27254c")
+    ax.set_ylabel("PE-TTM", color="#9999FF")
+    ax.tick_params(axis="y", labelcolor="#9999FF")
     ax3 = ax.twinx()
     ax3.bar([i + w / 2 for i in xi], pb, w, color="#0C9", label="PB(右轴)")
-    ax3.set_ylabel("PB", color="#27254c")
-    ax3.tick_params(axis="y", labelcolor="#27254c")
+    ax3.set_ylabel("PB", color="#9999FF")
+    ax3.tick_params(axis="y", labelcolor="#9999FF")
     ax.set_xticks(xi)
     ax.set_xticklabels(xl, fontsize=8)
     ax.set_title("同业估值对比(PE-TTM / PB)", fontsize=13)

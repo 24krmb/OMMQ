@@ -3,7 +3,8 @@
 
 流程(与原两阶段脚本一致):
     fetch    经通达信 tqcenter 取交易日历、板块成分、成分股前复权收盘、沪深300基准,
-             断点续传写入 backtest/data/<board>/quotes_long.csv
+             断点续传写入 backtest/data/<board>/quotes_long.csv(区间参数与已有数据
+             不一致时中止,需 --refresh;上次崩溃的截断残行自动丢弃)
     process  等权·每日再平衡合成净值,计算收益/回撤统计并出图,
              产物写入 backtest/output/<board>/
     all      依次执行 fetch + process
@@ -188,17 +189,53 @@ def cmd_fetch(args) -> None:
 
     csv_path = os.path.join(data_dir, "quotes_long.csv")
     err_path = os.path.join(data_dir, "fetch_errors.json")
+    meta_path = os.path.join(data_dir, "fetch_meta.json")
     if args.refresh and os.path.exists(csv_path):
         os.remove(csv_path)
         print("[refresh] 已删除旧 quotes_long.csv,全量重拉", flush=True)
 
-    # 断点续传:已在 CSV 中的股票跳过
+    # 续传参数一致性:已有数据的区间与本次不同时,续传会让新区间被 process 的
+    # ffill 用旧价格填充(收益恒 0),结果静默失真 -> 中止并给出出路
+    if os.path.exists(csv_path) and os.path.exists(meta_path) and not args.refresh:
+        with open(meta_path, encoding="utf-8") as f:
+            meta = json.load(f)
+        if meta.get("end") != end or meta.get("cal_start") != cal_start:
+            raise SystemExit(
+                f"[中止] 已有数据的取数区间({meta.get('cal_start')}~{meta.get('end')})与本次"
+                f"({cal_start}~{end})不一致,直接续传会产生失真净值;"
+                "请加 --refresh 全量重拉,或改回原参数续传。")
+        if meta.get("codes") != len(codes):
+            print(f"[提示] 成分股数量与上次不同({meta.get('codes')} -> {len(codes)}),"
+                  "仅增量补取新增成员;移出板块的旧成员由 process 阶段按 codes.json 过滤", flush=True)
+
+    # 断点续传:已在 CSV 中的股票跳过;上次崩溃留下的截断残行自动丢弃并补取
     done: set[str] = set()
     if os.path.exists(csv_path):
         with open(csv_path, encoding="utf-8") as f:
             f.readline()
-            for line in f:
-                done.add(line.split(",", 1)[0])
+            lines = f.readlines()
+        fixed = False
+        if lines:
+            parts = lines[-1].rstrip("\n").split(",")
+            ok = len(parts) == 3
+            if ok:
+                try:
+                    float(parts[2])
+                except ValueError:
+                    ok = False
+            if not ok:                          # 残行不完整:丢弃,该股重新补取
+                lines = lines[:-1]
+                fixed = True
+                print("[续传] 丢弃上次运行留下的截断残行,该股将重新补取", flush=True)
+            elif not lines[-1].endswith("\n"):  # 末行完整但缺换行:补齐,避免续传拼接成脏行
+                lines[-1] += "\n"
+                fixed = True
+        if fixed:
+            with open(csv_path, "w", encoding="utf-8") as f:
+                f.write("code,date,close\n")
+                f.writelines(lines)
+        for line in lines:
+            done.add(line.split(",", 1)[0])
     todo = [c for c in codes if c not in done]
     print(f"[续传] 已完成 {len(done)} 只, 待取 {len(todo)} 只", flush=True)
 
@@ -233,6 +270,9 @@ def cmd_fetch(args) -> None:
 
     with open(err_path, "w", encoding="utf-8") as f:
         json.dump(errors, f, ensure_ascii=False)
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump({"board": args.board, "cal_start": cal_start, "bt_start": bt_start,
+                   "end": end, "years": args.years, "codes": len(codes)}, f, ensure_ascii=False)
     print(f"[完成] 回测起点 {bt_start},缺失/异常 {len(errors)} 个,总耗时 {time.time() - t0:.0f}s", flush=True)
     print("[下一步] 运行 process 阶段合成净值并出图", flush=True)
 
@@ -301,6 +341,32 @@ def cmd_process(args) -> None:
     wide = wide[~wide.index.duplicated(keep="last")]
     wide = wide.reindex(cal).ffill()   # 对齐日历;停牌沿用前值→当日收益0(上市前/退市后保持NaN)
     print(f"[close矩阵] 交易日 {wide.shape[0]}, 成分股 {wide.shape[1]}", flush=True)
+
+    # 过滤过期成分:CSV 可能残留已移出板块的旧成员(--codes-file/板块调整后),不得静默计入组合
+    codes_path = os.path.join(data_dir, f"{args.board}_codes.json")
+    fetch_errors: list = []
+    if os.path.exists(codes_path):
+        with open(codes_path, encoding="utf-8") as f:
+            member_codes = list(dict.fromkeys(json.load(f)))
+        stale = [c for c in wide.columns if c not in set(member_codes)]
+        if stale:
+            print(f"[过滤] 剔除 {len(stale)} 只非当前板块成分(历史遗留): "
+                  f"{', '.join(stale[:20])}{' ...' if len(stale) > 20 else ''}", flush=True)
+        wide = wide[[c for c in member_codes if c in wide.columns]]
+        if wide.empty:
+            raise SystemExit("[中止] 过滤后无任何成分股数据,请检查 quotes_long.csv 与 codes.json 是否匹配。")
+    else:
+        print("[警告] 缺少 <board>_codes.json,无法过滤过期成分,使用 CSV 全部列", flush=True)
+
+    # 消费 fetch 阶段的失败清单:缺失成分不再静默缺席
+    err_path = os.path.join(data_dir, "fetch_errors.json")
+    if os.path.exists(err_path):
+        with open(err_path, encoding="utf-8") as f:
+            fetch_errors = json.load(f)
+        if fetch_errors:
+            miss = sorted({str(e.get("code", "?")) for e in fetch_errors})
+            print(f"[警告] fetch 阶段有 {len(miss)} 只成分股取数失败、未计入组合: "
+                  f"{', '.join(miss[:20])}{' ...' if len(miss) > 20 else ''}", flush=True)
 
     # 等权·每日再平衡
     ret = wide / wide.shift(1) - 1
@@ -395,7 +461,8 @@ def cmd_process(args) -> None:
 
     # 导出统计与序列
     out = {"板块": f"{name}({args.board.upper()})", "方式": "等权·每日再平衡", "复权": "前复权",
-           "成分股数": int(wide.shape[1]), "回测起点": p_nav.index[0], "回测终点": p_nav.index[-1],
+           "成分股数": int(wide.shape[1]), "取数失败成分股数": len(fetch_errors),
+           "回测起点": p_nav.index[0], "回测终点": p_nav.index[-1],
            "每个交易日有效成分股中位数": int(valid_cnt.median()),
            "板块统计": {k: (v if not isinstance(v, float) else float(v)) for k, v in p_st.items()},
            BENCH_NAME: {k: (v if not isinstance(v, float) else float(v)) for k, v in b_st.items()},

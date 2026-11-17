@@ -34,11 +34,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#27254c"
-matplotlib.rcParams["axes.labelcolor"] = "#27254c"
-matplotlib.rcParams["axes.titlecolor"] = "#27254c"
-matplotlib.rcParams["xtick.color"] = "#27254c"
-matplotlib.rcParams["ytick.color"] = "#27254c"
+matplotlib.rcParams["text.color"] = "#9999FF"
+matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
+matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
+matplotlib.rcParams["xtick.color"] = "#9999FF"
+matplotlib.rcParams["ytick.color"] = "#9999FF"
 
 MAIN_SYM = "RB0"      # 主图品种(主力连续)
 N = 120               # 主图展示交易日数
@@ -86,8 +86,8 @@ def plot_price_vol(ax, df: pd.DataFrame, sym: str) -> None:
     ax.tick_params(axis="y", labelcolor=UP_COLOR)
     ax2 = ax.twinx()
     ax2.bar(d["日期"], d["成交量"], width=1.0, color="#99F", alpha=0.7, label="成交量")
-    ax2.set_ylabel("成交量(手)", color="#27254c")
-    ax2.tick_params(axis="y", labelcolor="#27254c")
+    ax2.set_ylabel("成交量(手)", color="#9999FF")
+    ax2.tick_params(axis="y", labelcolor="#9999FF")
     ax.set_title(f"{label(sym)} 主力连续 · 收盘价 / 成交量(近 {len(d)} 交易日)", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
@@ -100,13 +100,13 @@ def plot_oi(ax, df: pd.DataFrame, sym: str) -> None:
     d = df.tail(N).copy()
     d["日增仓"] = d["持仓量"].diff()
     ax.bar(d["日期"], d["持仓量"], width=1.0, color="#99F", label="持仓量")
-    ax.set_ylabel("持仓量(手)", color="#27254c")
-    ax.tick_params(axis="y", labelcolor="#27254c")
+    ax.set_ylabel("持仓量(手)", color="#9999FF")
+    ax.tick_params(axis="y", labelcolor="#9999FF")
     ax2 = ax.twinx()
     colors = [UP_COLOR if v >= 0 else DOWN_COLOR for v in d["日增仓"].fillna(0)]
     ax2.bar(d["日期"], d["日增仓"], width=1.0, color=colors, alpha=0.9, label="日增仓")
     ax2.axhline(0, color="#888", linewidth=0.8)
-    ax2.set_ylabel("日增仓(手)", color="#27254c")
+    ax2.set_ylabel("日增仓(手)", color="#9999FF")
     ax.set_title(f"{label(sym)} 主力连续 · 持仓量 / 日增仓", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
@@ -180,7 +180,7 @@ def main() -> None:
         f"{label(sym)} 期货量仓图(主力连续,近 {n} 交易日)　来源:OMMQ",
         fontsize=16, fontweight="bold",
     )
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
 
     out = report_image_path(7)
     fig.savefig(out, dpi=150, bbox_inches="tight")
