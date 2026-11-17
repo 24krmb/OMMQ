@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Markdown → 24KRMB.COM 社区代码转换</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='3' fill='%23A93B26'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='15' font-family='serif' fill='%23F4EFE3'%3E码%3C/text%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --paper:#F4EFE3; --paper-2:#FBF7EC; --paper-3:#ECE5D2;
+  --ink:#25211A; --ink-2:#8A8170;
+  --line:#D6CDB6; --line-2:#B9AE93;
+  --red:#A93B26; --red-2:#7E2C1B;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Consolas,monospace;
+  --serif:'Noto Serif SC','Songti SC',serif;
+}
+html.dark{
+  --paper:#191512; --paper-2:#221D17; --paper-3:#131010;
+  --ink:#E8DFC9; --ink-2:#93876F;
+  --line:#3B342A; --line-2:#4C4436;
+  --red:#C8663F; --red-2:#D97D57;
+}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);display:flex;flex-direction:column;overflow:hidden}
+::selection{background:var(--red);color:#F7F1E4}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border:3px solid var(--paper-2)}
+::-webkit-scrollbar-track{background:transparent}
+.masthead{display:flex;align-items:center;gap:20px;padding:16px 28px 13px;border-bottom:1px double var(--line)}
+.seal{width:54px;height:54px;flex-shrink:0;transform:rotate(-3deg);transition:transform .25s;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
+.seal:hover{transform:rotate(-1deg) scale(1.06)}
+.mast-title{display:flex;align-items:stretch;gap:14px}
+.mast-title h1{font-family:var(--serif);font-weight:900;font-size:clamp(28px,3.4vw,40px);letter-spacing:3px;line-height:1}
+.mast-arrow{color:var(--red);margin-left:8px}
+.mast-en{display:flex;flex-direction:column;justify-content:space-between;border-left:1px solid var(--line-2);padding-left:12px;padding-top:2px;padding-bottom:2px}
+.mast-en b{font-size:10px;letter-spacing:2.5px;font-weight:700}
+.mast-en span{font-size:10px;letter-spacing:1.5px;color:var(--ink-2)}
+.mast-sub{flex:1;text-align:center;font-family:var(--serif);font-size:13px;color:var(--ink-2);letter-spacing:1px;max-width:46ch}
+.mast-sub em{font-style:normal;color:var(--red)}
+
+button{font-family:var(--mono)}
+.ghost-btn,.solid-btn{font-size:12px;padding:5px 12px;cursor:pointer;border:1px solid var(--ink);background:transparent;color:var(--ink);letter-spacing:1px;transition:background .12s,color .12s,border-color .12s;white-space:nowrap}
+.ghost-btn:hover{background:var(--ink);color:var(--paper)}
+.ghost-btn:active,.solid-btn:active{transform:translateY(1px)}
+.ghost-btn.danger{border-color:var(--red);color:var(--red)}
+.ghost-btn.danger:hover{background:var(--red);color:#F7F1E4}
+.solid-btn{background:var(--red);border-color:var(--red);color:#F7F1E4}
+.solid-btn:hover{background:var(--red-2);border-color:var(--red-2)}
+#themeBtn{min-width:56px}
+main{flex:1;display:flex;min-height:0;padding:14px 28px}
+.pane{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.pane.left{flex:0 0 50%}
+.divider{width:12px;cursor:col-resize;position:relative;flex-shrink:0;touch-action:none}
+.divider::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-2)}
+.divider:hover::before,.divider.drag::before{width:2px;background:var(--red)}
+.pane-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+.pane-title{font-family:var(--serif);font-weight:900;font-size:15px;letter-spacing:2px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.pane-title::before{content:'';width:8px;height:8px;background:var(--red);flex-shrink:0}
+.pane-actions{display:flex;gap:8px}
+textarea{flex:1;width:100%;min-height:0;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:13px;line-height:1.75;padding:14px 16px;resize:none;outline:none;caret-color:var(--red)}
+textarea:focus{border-color:var(--ink-2)}
+textarea::placeholder{color:var(--ink-2)}
+.pane.drop textarea{border-color:var(--red)}
+.pane-foot{display:flex;justify-content:space-between;gap:12px;padding-top:8px;font-size:11px;color:var(--ink-2);letter-spacing:.5px}
+.hidden{display:none!important}
+.tabs{display:flex;gap:18px}
+.tab{font-size:12px;letter-spacing:1px;background:none;border:0;color:var(--ink-2);cursor:pointer;padding:2px 0 4px;border-bottom:2px solid transparent}
+.tab.on{color:var(--ink);border-bottom-color:var(--red);font-weight:700}
+.tab:not(.on):hover{color:var(--ink)}
+.pv{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);background:var(--paper-2);padding:20px 24px;font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.85}
+.pv-note{font-family:var(--mono);font-size:11px;color:var(--ink-2);border-bottom:1px dashed var(--line-2);padding-bottom:8px;margin-bottom:14px;letter-spacing:1px}
+.pv-note b{color:var(--red)}
+.pv pre{font-family:var(--mono);font-size:12.5px;background:var(--paper-3);border:1px solid var(--line);padding:12px 14px;overflow:auto;white-space:pre-wrap;margin:10px 0}
+.pv blockquote{border-left:4px solid var(--line-2);background:var(--paper-3);padding:8px 14px;margin:10px 0;color:var(--ink-2)}
+.pv blockquote blockquote{margin-left:6px}
+.pv ul,.pv ol{margin:10px 0;padding-left:26px}
+.pv li{margin:3px 0}
+.pv table{border-collapse:collapse;margin:10px 0}
+.pv td{border:1px solid var(--line-2);padding:6px 12px;font-size:14px}
+.pv img{max-width:100%;vertical-align:middle;margin:6px 0}
+.pv img.pv-broken{display:inline-block;border:1px dashed var(--red);min-width:90px;text-align:center;padding:8px 12px;color:var(--red);font-size:12px}
+.pv hr{border:0;border-top:1px dashed var(--line-2);margin:14px 0}
+
+/* ── 状态栏 ───────────────────────── */
+.statusbar{display:flex;justify-content:space-between;gap:12px;padding:8px 28px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-2);letter-spacing:.5px;background:var(--paper-2);flex-wrap:wrap}
+
+@media (max-width:900px){
+  .masthead{flex-wrap:wrap;gap:12px}
+  .mast-sub{display:none}
+  main{flex-direction:column;overflow:auto;gap:0}
+  .pane.left{flex:none;height:42vh}
+  .pane.right{flex:none;height:52vh;margin-top:14px}
+  .divider{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mast-title" style="align-items:center;gap:16px">
+    <div class="seal">
+      <svg viewBox="0 0 64 64" width="54" height="54" aria-hidden="true">
+        <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter>
+        <g filter="url(#rough)">
+          <rect x="4" y="4" width="56" height="56" rx="4" fill="#A93B26"/>
+          <text x="32" y="30" text-anchor="middle" font-size="21" fill="#F4EFE3" font-family="'Noto Serif SC',serif" font-weight="900">码</text>
+          <text x="32" y="53" text-anchor="middle" font-size="21" fill="#F4EFE3" font-family="'Noto Serif SC',serif" font-weight="900">坊</text>
+        </g>
+      </svg>
+    </div>
+    <h1>码坊</h1>
+  </div>
+  <p class="mast-sub">将 Markdown 原稿铸为 <em>24KRMB.COM</em> 社区代码。</p><button id="themeBtn" class="ghost-btn">夜读</button>
+</header>
+<main id="split">
+  <section class="pane left" id="leftPane">
+    <div class="pane-head">
+      <span class="pane-title">Markdown 原稿</span>
+      <div class="pane-actions">
+        <button id="btnClear" class="ghost-btn">清空</button>
+      </div>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder="在此粘贴 Markdown，或把 .md 文件直接拖进来……"></textarea>
+    <div class="pane-foot"><span>支持拖入 .md / .markdown 文件 · Tab 可缩进</span><span id="srcCount"></span></div>
+  </section>
+  <div class="divider" id="divider" title="左右拖动，调整两侧宽度"></div>
+  <section class="pane right">
+    <div class="pane-head">
+      <div class="tabs" id="tabs">
+        <button class="tab on" data-tab="code">转换后的代码</button>
+        <button class="tab" data-tab="preview">发帖效果模拟</button>
+      </div>
+      <div class="pane-actions">
+        <button id="btnDownload" class="ghost-btn">下载</button>
+        <button id="btnCopy" class="solid-btn">复制全部</button>
+      </div>
+    </div>
+    <textarea id="output" readonly spellcheck="false" placeholder="转换结果将出现在这里"></textarea>
+    <div id="preview" class="pv hidden"></div>
+    <div class="pane-foot"><span id="hitInfo"></span><span id="dstCount"></span></div>
+  </section>
+</main>
+<footer class="statusbar">
+  <span id="statLeft"></span>
+  <span id="statRight">Ctrl / Cmd + Enter 快速复制 · 内容与设置仅存于本地浏览器</span>
+</footer>
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const input = $('#input'), output = $('#output'), preview = $('#preview');
+const hitInfo = $('#hitInfo'), dstCount = $('#dstCount'), srcCount = $('#srcCount');
+const statLeft = $('#statLeft'), statRight = $('#statRight');
+const btnCopy = $('#btnCopy'), btnClear = $('#btnClear'), btnDownload = $('#btnDownload');
+const leftPane = $('#leftPane'), divider = $('#divider'), tabs = $('#tabs');
+function renderHeading(depth, text){
+  const txt = (text||'').trim();
+  if(!txt) return '';
+  if(depth === 1) return '[color=red][b]' + txt + '[/b][/color]';
+  if(depth === 2) return '[color=orange][b]' + txt + '[/b][/color]';
+  return '[b]' + txt + '[/b]';
+}
+function inline(tokens, hits){
+  let out = '';
+  for(const t of (tokens||[])){
+    switch(t.type){
+      case 'escape': case 'text':
+        out += t.tokens ? inline(t.tokens, hits) : (t.text||'');
+        break;
+      case 'strong': hits.b++; out += '[b]' + inline(t.tokens||[], hits) + '[/b]'; break;
+      case 'em': hits.i++; out += inline(t.tokens||[], hits); break;
+      case 'del': hits.s++; out += '[s]' + inline(t.tokens||[], hits) + '[/s]'; break;
+      case 'codespan': {
+        hits.cs++;
+        out += '[backcolor=#EEEEEE]' + (t.text || '') + '[/backcolor]';
+        break;
+      }
+      case 'link': {
+        hits.link++;
+        out += '[url=' + (t.href||'') + ']' + inline(t.tokens||[], hits).trim() + '[/url]';
+        break;
+      }
+      case 'image': hits.img++; out += '[img]' + (t.href||'') + '[/img]'; break;
+      case 'br': out += '\n'; break;
+      case 'html': out += (t.raw||t.text||'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/?[^>]+>/g,''); break;
+      default: out += t.text || ''; break;
+    }
+  }
+  return out;
+}
+
+function renderList(t, hits, depth){
+  hits.list++;
+  const pad = '  '.repeat(depth || 0);
+  const lines = [];
+  let idx = t.start || 1;
+  for(const it of (t.items||[])){
+    const itemBlocks = [];
+    let prefix = '';
+    if(it.task) prefix = it.checked ? '\u2714 ' : '\u2718 ';
+    for(const tk of (it.tokens||[])){
+      switch(tk.type){
+        case 'space': break;
+        case 'text': {
+          const s = tk.tokens ? inline(tk.tokens, hits) : (tk.text||'');
+          if(s.trim()){ itemBlocks.push(prefix + s.trim()); prefix = ''; }
+          break;
+        }
+        case 'paragraph': {
+          const s = inline(tk.tokens||[], hits);
+          if(s.trim()){ itemBlocks.push(prefix + s.trim()); prefix = ''; }
+          break;
+        }
+        case 'list': itemBlocks.push(renderList(tk, hits, (depth||0) + 1)); break;
+        case 'code': {
+          hits.code++;
+          itemBlocks.push('[code]\n' + tk.text.replace(/\n+$/,'') + '\n[/code]');
+          break;
+        }
+        case 'blockquote': {
+          hits.quote++;
+          itemBlocks.push(convertBlocks(tk.tokens||[], hits).join('\n\n').split('\n').map(l => '> ' + l).join('\n'));
+          break;
+        }
+        case 'heading': {
+          hits.h++;
+          itemBlocks.push(renderHeading(tk.depth, inline(tk.tokens||[], hits)));
+          break;
+        }
+        case 'hr': break;
+        case 'table': itemBlocks.push(renderTable(tk, hits)); break;
+        case 'html': {
+          const s = (tk.text||'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/?[^>]+>/g,'').trim();
+          if(s) itemBlocks.push(s);
+          break;
+        }
+        default: {
+          const raw = tk.text || '';
+          if(raw.trim()){ itemBlocks.push(prefix + raw.trim()); prefix = ''; }
+          break;
+        }
+      }
+    }
+    if(prefix && itemBlocks.length === 0) itemBlocks.push(prefix.trim());
+    const first = itemBlocks.shift() || '';
+    const rest = itemBlocks.join('\n');
+    const mark = t.ordered ? (idx + '. ') : '- ';
+    if(t.ordered) idx++;
+    lines.push(rest ? (pad + mark + first + '\n' + rest) : (pad + mark + first));
+  }
+  return lines.join('\n');
+}
+
+function renderTable(t, hits){
+  hits.table++;
+  const open = '[table=100%]';
+  const rows = [];
+  rows.push('[tr]' + (t.header||[]).map(c =>
+    '[td][b]' + inline(c.tokens, hits) + '[/b][/td]').join('') + '[/tr]');
+  for(const r of (t.rows||[])){
+    rows.push('[tr]' + r.map(c =>
+      '[td]' + inline(c.tokens, hits) + '[/td]').join('') + '[/tr]');
+  }
+  return open + '\n' + rows.join('\n') + '\n[/table]';
+}
+
+function convertBlocks(tokens, hits){
+  const blocks = [];
+  for(const t of (tokens||[])){
+    switch(t.type){
+      case 'space': break;
+      case 'heading': {
+        hits.h++;
+        blocks.push(renderHeading(t.depth, inline(t.tokens, hits)));
+        break;
+      }
+      case 'paragraph': {
+        const s = inline(t.tokens, hits);
+        if(s.trim()) blocks.push(s);
+        break;
+      }
+      case 'text': {
+        const s = t.tokens ? inline(t.tokens, hits) : (t.text||'');
+        if(s.trim()) blocks.push(s);
+        break;
+      }
+      case 'hr':
+        break;
+      case 'code': {
+        hits.code++;
+        blocks.push('[code]\n' + t.text.replace(/\n+$/,'') + '\n[/code]');
+        break;
+      }
+      case 'blockquote': {
+        hits.quote++;
+        blocks.push(convertBlocks(t.tokens||[], hits).join('\n\n').split('\n').map(l => '> ' + l).join('\n'));
+        break;
+      }
+      case 'list': blocks.push(renderList(t, hits)); break;
+      case 'table': blocks.push(renderTable(t, hits)); break;
+      case 'html': {
+        const s = t.text.replace(/<br\s*\/?>/gi,'\n').replace(/<\/?[^>]+>/g,'').trim();
+        if(s) blocks.push(s);
+        break;
+      }
+    }
+  }
+  return blocks;
+}
+
+function md2discuz(md){
+  const t0 = performance.now();
+  const hits = { h:0, b:0, i:0, s:0, cs:0, link:0, img:0, code:0, quote:0, table:0, list:0 };
+  if(typeof marked === 'undefined'){
+    return { text:'[解析库加载失败：请检查网络后刷新页面]', hits, ms:0 };
+  }
+  const tokens = marked.lexer(md);
+  const blocks = convertBlocks(tokens, hits);
+  const parts = blocks.filter(b => b && b.trim() !== '');
+  let text = '';
+  for(let i = 0; i < parts.length; i++){
+    if(i > 0){
+      const tight = parts[i-1].trimEnd().endsWith('[/table]') || parts[i].trimStart().startsWith('[table');
+      text += (tight ? '\n' : '\n\n');
+    }
+    text += parts[i];
+  }
+  return { text, hits, ms: performance.now() - t0 };
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function sizePx(n){ return ({1:'10px',2:'12px',3:'14px',4:'17px',5:'21px',6:'27px',7:'34px'})[n] || '15px'; }
+function renderBBCode(src){
+  let s = esc(src);
+  const codes = [];
+  s = s.replace(/\[code([^\]]*)\]([\s\S]*?)\[\/code\]/g, (m, at, body) => {
+    codes.push('<pre>' + body + '</pre>');
+    return '\u0001' + (codes.length - 1) + '\u0001';
+  });
+  const qr = /\[quote\]((?:(?!\[quote\]|\[\/quote\])[\s\S])*)\[\/quote\]/;
+  while(qr.test(s)) s = s.replace(qr, (m, b) => '<blockquote>' + b + '</blockquote>');
+  const lr = /\[list(?:=([^\]]*))?\]((?:(?!\[\/?list)[\s\S])*)\[\/list\]/;
+  while(lr.test(s)) s = s.replace(lr, (m, type, body) => {
+    const items = body.split(/\[\*\]/).slice(1)
+      .map(i => '<li>' + i.replace(/^\s+|\s+$/g,'') + '</li>').join('');
+    return /^(1|a|A|i|I)$/.test((type||'').trim())
+      ? '<ol>' + items + '</ol>' : '<ul>' + items + '</ul>';
+  });
+  s = s.replace(/\[table([^\]]*)\]([\s\S]*?)\[\/table\]/g, (m, at, body) => {
+    const trs = [];
+    const trRe = /\[tr\]([\s\S]*?)\[\/tr\]/g;
+    let m2;
+    while((m2 = trRe.exec(body))){
+      const tds = [];
+      const tdRe = /\[td\]([\s\S]*?)\[\/td\]/g;
+      let m3;
+      while((m3 = tdRe.exec(m2[1]))) tds.push('<td>' + m3[1] + '</td>');
+      trs.push('<tr>' + tds.join('') + '</tr>');
+    }
+    return '<table>' + trs.join('') + '</table>';
+  });
+  s = s.replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/g, '<a href="$1" target="_blank" rel="noopener">$2</a>');
+  s = s.replace(/\[url\]([\s\S]*?)\[\/url\]/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\[img\]([\s\S]*?)\[\/img\]/g,
+    '<img src="$1" alt="[图片]" onerror="this.classList.add(\'pv-broken\')">');
+  s = s.replace(/\[size=(\d)\]([\s\S]*?)\[\/size\]/g, (m,n,b) => '<span style="font-size:' + sizePx(n) + '">' + b + '</span>');
+  s = s.replace(/\[color=([^\]]+)\]([\s\S]*?)\[\/color\]/g, '<span style="color:$1">$2</span>');
+  s = s.replace(/\[backcolor=([^\]]+)\]([\s\S]*?)\[\/backcolor\]/g, '<span style="background:$1;padding:0 4px">$2</span>');
+  s = s.replace(/\[font=([^\]]+)\]([\s\S]*?)\[\/font\]/g, '<span style="font-family:$1">$2</span>');
+  s = s.replace(/\[b\]([\s\S]*?)\[\/b\]/g, '<strong>$1</strong>');
+  s = s.replace(/\[i\]([\s\S]*?)\[\/i\]/g, '<em>$1</em>');
+  s = s.replace(/\[s\]([\s\S]*?)\[\/s\]/g, '<del>$1</del>');
+  s = s.replace(/\[u\]([\s\S]*?)\[\/u\]/g, '<u>$1</u>');
+  s = s.replace(/\[hr\]/g, '<hr>');
+  s = s.replace(/\n/g, '<br>');
+  s = s.replace(/\u0001(\d+)\u0001/g, (m,i) => codes[+i] || '');
+  return s;
+}
+
+function renderPreview(){
+  if(!output.value.trim()){
+    preview.innerHTML = '<div class="pv-note"><b>效果模拟</b> —— 左侧尚无内容可转换</div>';
+    return;
+  }
+  preview.innerHTML =
+    '<div class="pv-note"><b>效果模拟</b> —— 近似渲染，实际样式取决于论坛版本与模板</div>' +
+    renderBBCode(output.value);
+}
+
+const HIT_NAMES = { h:'标题', b:'加粗', i:'斜体', s:'删除', cs:'行内码', link:'链接', img:'图片', code:'代码块', quote:'引用', table:'表格', list:'列表' };
+
+function run(){
+  const r = md2discuz(input.value);
+  output.value = r.text;
+  srcCount.textContent = input.value.length.toLocaleString() + ' 字';
+  dstCount.textContent = r.text.length.toLocaleString() + ' 字';
+  const parts = [];
+  for(const k in HIT_NAMES){ if(r.hits[k]) parts.push(HIT_NAMES[k] + ' ' + r.hits[k]); }
+  hitInfo.textContent = parts.length ? ('命中 · ' + parts.join(' · ')) : '暂无命中';
+  statLeft.textContent = '源 ' + input.value.length.toLocaleString() + ' 字 → 出 ' + r.text.length.toLocaleString() + ' 字 · 转换用时 ' + r.ms.toFixed(1) + ' ms';
+  if(!preview.classList.contains('hidden')) renderPreview();
+}
+
+let saveTimer = null;
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => localStorage.setItem('mfz_input', input.value), 500);
+}
+
+input.addEventListener('input', () => { run(); scheduleSave(); });
+input.addEventListener('keydown', e => {
+  if(e.key === 'Tab'){
+    e.preventDefault();
+    const s = input.selectionStart, en = input.selectionEnd;
+    input.value = input.value.slice(0, s) + '  ' + input.value.slice(en);
+    input.selectionStart = input.selectionEnd = s + 2;
+    run(); scheduleSave();
+  }
+});
+
+async function doCopy(){
+  if(!output.value) return;
+  try{ await navigator.clipboard.writeText(output.value); }
+  catch(err){
+    output.removeAttribute('readonly');
+    output.select(); document.execCommand('copy');
+    output.setAttribute('readonly','');
+    window.getSelection().removeAllRanges();
+  }
+  btnCopy.textContent = '已复制';
+  setTimeout(() => { btnCopy.textContent = '复制全部'; }, 1400);
+}
+btnCopy.addEventListener('click', doCopy);
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); doCopy(); }
+});
+
+let clearArmed = false, clearTimer = null;
+function disarmClear(){ clearArmed = false; btnClear.textContent = '清空'; btnClear.classList.remove('danger'); }
+btnClear.addEventListener('click', () => {
+  if(!clearArmed){
+    clearArmed = true;
+    btnClear.textContent = '确认清空?';
+    btnClear.classList.add('danger');
+    clearTimer = setTimeout(disarmClear, 2200);
+    return;
+  }
+  clearTimeout(clearTimer); disarmClear();
+  input.value = ''; run(); localStorage.removeItem('mfz_input');
+});
+
+btnDownload.addEventListener('click', () => {
+  if(!output.value) return;
+  const blob = new Blob([output.value], { type:'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'discuz-bbcode.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+tabs.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  tabs.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+  const isPv = t.dataset.tab === 'preview';
+  preview.classList.toggle('hidden', !isPv);
+  output.classList.toggle('hidden', isPv);
+  if(isPv) renderPreview();
+}));
+
+['dragover','dragenter'].forEach(ev => leftPane.addEventListener(ev, e => {
+  e.preventDefault(); leftPane.classList.add('drop');
+}));
+['dragleave','drop'].forEach(ev => leftPane.addEventListener(ev, e => {
+  e.preventDefault(); leftPane.classList.remove('drop');
+}));
+leftPane.addEventListener('drop', async e => {
+  const f = e.dataTransfer && e.dataTransfer.files[0]; if(!f) return;
+  input.value = await f.text();
+  run(); scheduleSave();
+});
+
+let dragging = false;
+divider.addEventListener('pointerdown', e => {
+  dragging = true; divider.classList.add('drag');
+  divider.setPointerCapture(e.pointerId);
+});
+divider.addEventListener('pointermove', e => {
+  if(!dragging) return;
+  const rect = $('#split').getBoundingClientRect();
+  const pct = Math.min(72, Math.max(28, (e.clientX - rect.left) / rect.width * 100));
+  leftPane.style.flexBasis = pct + '%';
+});
+divider.addEventListener('pointerup', () => { dragging = false; divider.classList.remove('drag'); });
+const themeBtn = $('#themeBtn');
+function applyTheme(dark){
+  document.documentElement.classList.toggle('dark', dark);
+  themeBtn.textContent = dark ? '日光' : '夜读';
+  localStorage.setItem('mfz_theme', dark ? 'dark' : 'light');
+}
+themeBtn.addEventListener('click', () =>
+  applyTheme(!document.documentElement.classList.contains('dark')));
+applyTheme(localStorage.getItem('mfz_theme') === 'dark');
+input.value = localStorage.getItem('mfz_input') || '';
+run();
+})();
+
+</script>
+</body> </html>
