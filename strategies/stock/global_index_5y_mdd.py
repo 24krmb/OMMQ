@@ -3,8 +3,8 @@
 内容:
     复用 global_index_week_curve.py 的取数与累计收益逻辑(fetch_index_close / window_cum_return),
     在 5 年长窗口下重绘(x 轴按年刻度;日线脚本为短窗口逐日刻度,长窗口下不可用),并计算窗口内最大回撤:
-        - 沪深300:ak.stock_zh_index_daily("sh000300")
-        - 标普500:ak.index_us_stock_sina(".INX")
+        - 沪深300:ak.index_zh_daily_sina("sh000300")
+        - 标普500:ak.index_us_daily_sina(".INX")
     口径说明:
         - 累计收益:基准 = 窗口前一交易日收盘(与 global_index_week_curve.py 同口径)
         - 最大回撤:窗口内收盘价相对其滚动前高的最大跌幅(均为价格指数口径,不含分红)

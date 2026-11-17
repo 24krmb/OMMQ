@@ -8,9 +8,9 @@
     3. 全市场 涨停 / 跌停(含真实涨停 / 真实跌停)家数
 
 数据源:
-    - 指数日线(收盘): ak.stock_zh_index_daily
+    - 指数日线(收盘): ak.index_zh_daily_sina
       sh000001 上证综指 / sz399001 深证成指 / sz399006 创业板指 / sh000300 沪深300
-    - 成交额:中证指数官网 ak.stock_zh_index_hist_csindex("000001")(上证综指成交金额,亿元)
+    - 成交额:中证指数官网 ak.index_hist_csindex("000001")(上证综指成交金额,亿元)
     - 涨跌家数:乐咕乐股 ak.stock_market_activity_legu
 说明:东方财富接口限流,故全部改用 / 中证指数 / 乐咕数据源。
 输出:reports/YYYYMMDD/01.png(编号规则见 strategies/plot_paths.py)
@@ -67,7 +67,7 @@ LINE_COLORS = {
 def latest_trade_date() -> dt.date:
     """最近一个已收盘交易日(含今天)。"""
     try:
-        dates = ak.tool_trade_date_hist_sina()["trade_date"]
+        dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
         today = dt.date.today()
         past = [d for d in dates if d <= today]
         return past[-1].date() if past else today
@@ -77,7 +77,7 @@ def latest_trade_date() -> dt.date:
 
 def fetch_index(symbol: str, n: int) -> pd.Series:
     """指数日收盘(近 n 个交易日)。"""
-    df = ak.stock_zh_index_daily(symbol=symbol)
+    df = ak.index_zh_daily_sina(symbol=symbol)
     df["date"] = pd.to_datetime(df["date"])
     return df.set_index("date")["close"].tail(n)
 
@@ -86,7 +86,7 @@ def fetch_sh_turnover(n: int) -> pd.Series:
     """上证综指成交额(亿元,近 n 个交易日,中证指数官网)。"""
     end = dt.date.today()
     start = end - dt.timedelta(days=int(n * 2.2) + 30)
-    df = ak.stock_zh_index_hist_csindex(
+    df = ak.index_hist_csindex(
         symbol="000001",
         start_date=start.strftime("%Y%m%d"),
         end_date=end.strftime("%Y%m%d"),

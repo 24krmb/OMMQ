@@ -3,9 +3,9 @@
 内容:
     取指定日期区间内三大指数的日收盘,以区间前一交易日收盘为基准,
     绘制逐日累计收益曲线(基准日 = 0%),区间内每个交易日均已计入。
-    - 沪深300:ak.stock_zh_index_daily("sh000300")
-    - 恒生指数:ak.stock_hk_index_daily_sina("HSI")
-    - 标普500:ak.index_us_stock_sina(".INX")
+    - 沪深300:ak.index_zh_daily_sina("sh000300")
+    - 恒生指数:ak.index_hk_daily_sina("HSI")
+    - 标普500:ak.index_us_daily_sina(".INX")
     说明:恒指/标普停市日无数据(如节假日),曲线自动跳过该日。
 输出:reports/YYYYMMDD/15_global_index_week.png(编号规则见 strategies/plot_paths.py)
 运行:uv run python strategies/stock/global_index_week_curve.py [起始日 YYYYMMDD] [结束日 YYYYMMDD]
@@ -52,11 +52,11 @@ LINE_COLORS = {
 def fetch_index_close(symbol: str) -> pd.DataFrame:
     """指数历史日线收盘。返回 Date(index)/Close。"""
     if symbol == "sh000300":
-        df = ak.stock_zh_index_daily(symbol=symbol)
+        df = ak.index_zh_daily_sina(symbol=symbol)
     elif symbol == "HSI":
-        df = ak.stock_hk_index_daily_sina(symbol=symbol)
+        df = ak.index_hk_daily_sina(symbol=symbol)
     else:
-        df = ak.index_us_stock_sina(symbol=symbol)
+        df = ak.index_us_daily_sina(symbol=symbol)
     df["date"] = pd.to_datetime(df["date"])
     df = df.rename(columns={"close": "Close"}).set_index("date")
     return df[["Close"]]

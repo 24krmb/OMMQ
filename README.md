@@ -254,7 +254,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe strategies/stock/stock_technical.py 600519 250
 ```
 
-如果 akshare 版本较老报了错（最常见是 stock_us_hist 参数或字段列名变化），直接升级即可：
+如果 akshare 版本较老报了错（最常见是 stock_us_hist_em 参数或字段列名变化），直接升级即可：
 
 ```
 pip install -U akshare

@@ -61,15 +61,15 @@ def _norm_daily(df: pd.DataFrame) -> pd.DataFrame:
     })
     return out.dropna().sort_values("date").reset_index(drop=True)
 def fetch_spot(index_code: str, start: dt.date, end: dt.date) -> pd.DataFrame:
-    """现货指数日线: 优先东财 index_zh_a_hist, 失败则退回 stock_zh_index_daily。"""
+    """现货指数日线: 优先东财 index_zh_hist_em, 失败则退回 index_zh_daily_sina。"""
     start_s, end_s = start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
     try:
-        df = ak.index_zh_a_hist(symbol=index_code, period="daily",
-                                start_date=start_s, end_date=end_s)
+        df = ak.index_zh_hist_em(symbol=index_code, period="daily",
+                                 start_date=start_s, end_date=end_s)
         return _norm_daily(df)
     except Exception:
         pass
-    df = ak.stock_zh_index_daily(symbol="sh" + index_code)
+    df = ak.index_zh_daily_sina(symbol="sh" + index_code)
     out = _norm_daily(df)
     return out[(out["date"] >= start) & (out["date"] <= end)].reset_index(drop=True)
 def fetch_fut_continuous(product: str, start: dt.date, end: dt.date) -> pd.DataFrame:

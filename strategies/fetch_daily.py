@@ -25,14 +25,14 @@ BASE_COLS = ["date", "open", "high", "low", "close", "volume"]
 # ---------------------------------------------------------------------------
 def fetch_index(symbol: str) -> pd.DataFrame:
     """拉取指数全历史日线。symbol 形如 sh000001 / sz399001。"""
-    df = ak.stock_zh_index_daily(symbol=symbol)
+    df = ak.index_zh_daily_sina(symbol=symbol)
     df = df[BASE_COLS]
     df["amount"] = float("nan")
     return df
 def fetch_stock(symbol: str, adjust: str) -> pd.DataFrame:
     """拉取个股全历史日线。symbol 形如 sh600519 / sz000001。"""
     kwargs: dict = {"adjust": adjust} if adjust and adjust != "none" else {}
-    df = ak.stock_zh_a_daily(symbol=symbol, **kwargs)
+    df = ak.stock_zh_a_hist_sina(symbol=symbol, **kwargs)
     if "amount" not in df.columns:
         df["amount"] = float("nan")
     cols = BASE_COLS + ["amount"]

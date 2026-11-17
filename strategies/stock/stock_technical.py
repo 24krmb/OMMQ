@@ -7,7 +7,7 @@
     3. MACD(DIF / DEA 折线 + 红绿柱)
     4. RSI(14) 折线(含 30 / 70 参考线)
 
-数据源:个股日线 ak.stock_zh_a_daily(adjust="qfq")(前复权)
+数据源:个股日线 ak.stock_zh_a_hist_sina(adjust="qfq")(前复权)
 指标计算:ta-lib(MACD 12/26/9,RSI 14)
 输出:reports/YYYYMMDD/10_<代码>.png(编号规则见 strategies/plot_paths.py)
 运行:uv run python strategies/stock/stock_technical.py [股票代码] [交易日数]   # 默认 600519 120
@@ -57,7 +57,7 @@ def sina_prefix(code: str) -> str:
 
 def fetch_daily(code: str, days: int):
     """前复权日线(近 days 个交易日)。"""
-    df = ak.stock_zh_a_daily(symbol=sina_prefix(code), adjust="qfq")
+    df = ak.stock_zh_a_hist_sina(symbol=sina_prefix(code), adjust="qfq")
     df["date"] = df["date"].astype(str)
     df = df.sort_values("date").reset_index(drop=True)
     return df.tail(days).reset_index(drop=True)

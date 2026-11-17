@@ -7,7 +7,7 @@
     3. 当日 全市场 资金净流入 TOP10 个股
     4. 当日 全市场 资金净流出 TOP10 个股
 
-数据源:同花顺 ak.stock_fund_flow_individual(symbol="即时"/"3日排行"/…)
+数据源:同花顺 ak.stock_fund_flow_individual_ths(symbol="即时"/"3日排行"/…)
 口径说明 / 数据限制:
     - 东方财富 个股主力资金流向历史接口(push2his)在本机被限流,无法取数；
     - 本图采用「同花顺 资金流」口径:以资金流入/流出净额刻画个股资金动向,
@@ -64,7 +64,7 @@ def _to_yi(value) -> float | None:
         return None
 
 def fetch_instant() -> pd.DataFrame:
-    df = ak.stock_fund_flow_individual(symbol="即时")
+    df = ak.stock_fund_flow_individual_ths(symbol="即时")
     df = df.copy()
     df["股票代码"] = pd.to_numeric(df["股票代码"], errors="coerce").astype("Int64")
     df["净额亿"] = df["净额"].map(_to_yi)
@@ -73,7 +73,7 @@ def fetch_instant() -> pd.DataFrame:
     return df
 
 def fetch_window(symbol: str) -> pd.DataFrame:
-    df = ak.stock_fund_flow_individual(symbol=symbol)
+    df = ak.stock_fund_flow_individual_ths(symbol=symbol)
     df = df.copy()
     df["股票代码"] = pd.to_numeric(df["股票代码"], errors="coerce").astype("Int64")
     df["净额亿"] = df["资金流入净额"].map(_to_yi)

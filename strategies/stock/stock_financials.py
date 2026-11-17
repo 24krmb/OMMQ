@@ -2,9 +2,9 @@
 """获取个股各项财务数据:主要财务指标 + 三大报表
 
 数据源:
-    - 主要财务指标:同花顺 ak.stock_financial_abstract_ths(symbol, indicator="按报告期")
+    - 主要财务指标:ak.stock_financial_abstract(新浪源,重塑为旧同花顺财务摘要宽表口径)
     - 三大报表(利润表 / 资产负债表 / 现金流量表):
-      ak.stock_financial_report_sina(stock="sh600519", symbol="利润表")
+      ak.stock_financial_report_sina(symbol="sh600519", indicator="利润表")
 
 说明:东方财富接口在本机被限流,故采用同花顺 + 源。
 输出:strategies/output/financials/<代码>/*.csv(utf-8-sig,Excel 可直接打开)
@@ -54,14 +54,50 @@ def sina_prefix(code: str) -> str:
     return "sh" + c
 
 
+# akshare 1.20.65 移除了同花顺财务摘要 ak.stock_financial_abstract_ths,
+# 改用仍保留的新浪源 ak.stock_financial_abstract(透视表:每行一个指标、每列一个报告期),
+# 重塑回旧接口的宽表口径,保证图表/CSV 逻辑无需改动:
+#   - 报告期列格式 YYYY-MM-DD;金额换算为亿元(旧接口为"亿"字符串,数值口径一致);
+#   - 同花顺"净利润"为归母口径,对应新浪"归母净利润"行(已与同花顺页面数值核对)。
+_THS_WIDE_MAP = [
+    # (输出列名, 选项, 指标, 换算系数)
+    ("营业总收入", "常用指标", "营业总收入", 1e-8),
+    ("净利润", "常用指标", "归母净利润", 1e-8),
+    ("基本每股收益", "常用指标", "基本每股收益", 1.0),
+    ("每股经营现金流", "每股指标", "每股经营现金流", 1.0),
+    ("销售毛利率", "常用指标", "毛利率", 1.0),
+    ("销售净利率", "常用指标", "销售净利率", 1.0),
+    ("净资产收益率", "常用指标", "净资产收益率(ROE)", 1.0),
+    ("资产负债率", "常用指标", "资产负债率", 1.0),
+    ("营业总收入同比增长率", "成长能力", "营业总收入增长率", 1.0),
+    ("净利润同比增长率", "成长能力", "归属母公司净利润增长率", 1.0),
+]
+
+
+def _abstract_to_wide(raw: pd.DataFrame, annual: bool) -> pd.DataFrame:
+    """把新浪财务摘要透视表(指标行×报告期列)重塑为旧同花顺财务摘要宽表。"""
+    date_cols = sorted(str(c) for c in raw.columns
+                       if str(c).isdigit() and len(str(c)) == 8
+                       and (not annual or str(c).endswith("1231")))
+    out = pd.DataFrame({"报告期": [f"{c[:4]}-{c[4:6]}-{c[6:]}" for c in date_cols]})
+    for col, opt, name, mult in _THS_WIDE_MAP:
+        rows = raw[(raw["选项"] == opt) & (raw["指标"] == name)]
+        if rows.empty:
+            out[col] = float("nan")
+            continue
+        vals = pd.to_numeric(rows.iloc[0][date_cols], errors="coerce") * mult
+        out[col] = vals.round(4).values
+    return out
+
+
 def fetch_main_indicators(code: str) -> pd.DataFrame:
     """主要财务指标(按报告期)。"""
-    return ak.stock_financial_abstract_ths(symbol=code, indicator="按报告期")
+    return _abstract_to_wide(ak.stock_financial_abstract(symbol=code), annual=False)
 
 
 def fetch_report(stock: str, name: str) -> pd.DataFrame:
-    """三大报表之一。"""
-    return ak.stock_financial_report_sina(stock=stock, symbol=name)
+    """三大报表之一。(akshare 1.20.65 起参数改名:stock→symbol, symbol→indicator)"""
+    return ak.stock_financial_report_sina(symbol=stock, indicator=name)
 
 
 def _num(value) -> float | None:

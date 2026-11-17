@@ -10,8 +10,8 @@
 
 数据源:
     - 商品现货/近月/主力价格与基差:生意社 AKShare: ak.futures_spot_price(_daily)
-    - 股指期货主力合约行情: AKShare: ak.futures_zh_realtime
-    - 现货指数(沪深300/上证50/中证500/中证1000):中证指数官网 ak.stock_zh_index_hist_csindex
+    - 股指期货主力合约行情: AKShare: ak.futures_zh_realtime_sina
+    - 现货指数(沪深300/上证50/中证500/中证1000):中证指数官网 ak.index_hist_csindex
 说明:东方财富接口在本机被限流,故全部改用生意社 /  / 中证指数源。
 输出:reports/YYYYMMDD/08.png(编号规则见 strategies/plot_paths.py)
 运行:uv run python strategies/futures/futures_basis_spread.py [历史交易日数]   # 默认 15
@@ -83,7 +83,7 @@ NAME_MAP = {
 
 def latest_trade_date() -> dt.date:
     try:
-        dates = ak.tool_trade_date_hist_sina()["trade_date"]
+        dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
         today = dt.date.today()
         past = [d for d in dates if d <= today]
         return past[-1] if past else today
@@ -114,9 +114,9 @@ def fetch_hist(n: int) -> pd.DataFrame:
     end = latest_trade_date()
     start = end - dt.timedelta(days=int(n * 1.7) + 10)
     df = ak.futures_spot_price_daily(
-        start_day=start.strftime("%Y%m%d"),
-        end_day=end.strftime("%Y%m%d"),
-        vars_list=HIST_VARS,
+        start_date=start.strftime("%Y%m%d"),
+        end_date=end.strftime("%Y%m%d"),
+        symbols=HIST_VARS,
     )
     df = df[df["symbol"].isin(HIST_VARS)].copy()
     df["dom_basis_rate"] = pd.to_numeric(df["dom_basis_rate"], errors="coerce") * 100
@@ -134,13 +134,13 @@ def fetch_index_futures() -> list[dict]:
     start = end - dt.timedelta(days=30)
     for nm, code, idx_name in INDEX_FUT:
         try:
-            ft = ak.futures_zh_realtime(symbol=nm)
+            ft = ak.futures_zh_realtime_sina(symbol=nm)
             ft = ft[~ft["name"].str.contains("连续")]
             ft = ft.dropna(subset=["position"])
             main = ft.loc[ft["position"].idxmax()]
             fut_px = float(main["trade"])
             fut_ct = str(main["symbol"])
-            spot_df = ak.stock_zh_index_hist_csindex(
+            spot_df = ak.index_hist_csindex(
                 symbol=code, start_date=start.strftime("%Y%m%d"), end_date=end.strftime("%Y%m%d"),
             )
             spot_df = spot_df.dropna(subset=["收盘"])

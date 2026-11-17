@@ -7,8 +7,8 @@
     3. 年度 销售毛利率 / 销售净利率(折线,%)
     4. 年度 营业总收入 / 净利润 同比增长率(%,柱状)
 
-数据源:同花顺 ak.stock_financial_abstract_ths(symbol, indicator="按年度")
-        (年报口径,营收/净利为全年累计值)
+数据源:ak.stock_financial_abstract(新浪源,重塑为旧同花顺财务摘要"按年度"口径)
+        (年报口径,营收/净利为全年累计值;同花顺接口已于 akshare 1.20.65 移除)
 说明:与 stock_financials.py 的**季度**概览图互补,本图按**年度**呈现长周期趋势。
 输出:reports/YYYYMMDD/13_<代码>.png(编号规则见 strategies/plot_paths.py)
 运行:uv run python strategies/stock/stock_financials_annual.py [股票代码] [年数]   # 默认 600519 10
@@ -73,10 +73,9 @@ def _series(frame: pd.DataFrame, col: str) -> list[float]:
 
 
 def fetch_annual(code: str) -> pd.DataFrame:
-    df = ak.stock_financial_abstract_ths(symbol=code, indicator="按年度")
-    df["报告期"] = df["报告期"].astype(str)
-    df = df.sort_values("报告期").reset_index(drop=True)
-    return df
+    # akshare 1.20.65 移除同花顺 stock_financial_abstract_ths,改用新浪源重塑为同口径宽表
+    from stock_financials import _abstract_to_wide
+    return _abstract_to_wide(ak.stock_financial_abstract(symbol=code), annual=True)
 
 
 def main() -> None:

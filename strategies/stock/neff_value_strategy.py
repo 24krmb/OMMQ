@@ -586,10 +586,10 @@ def _tx_symbol(code: str) -> str:
     return ("sh" if code.startswith(("6", "9")) else "sz") + code
 
 
-@with_retry("个股日线-东财(stock_zh_a_hist)", swallow=True, default=None)
+@with_retry("个股日线-东财(stock_zh_a_hist_em)", swallow=True, default=None)
 def _fetch_hist_em(code: str, start: str, end: str, adjust: str) -> pd.DataFrame:
     """东财日行情主源,返回统一列[日期, 收盘]。adjust: ""=不复权, "qfq"=前复权。"""
-    df = ak.stock_zh_a_hist(symbol=code, period="daily",
+    df = ak.stock_zh_a_hist_em(symbol=code, period="daily",
                             start_date=start, end_date=end, adjust=adjust)
     if df is None or df.empty:
         raise RuntimeError(f"{code} 东财行情为空")
@@ -666,10 +666,10 @@ def fetch_earnings_with_fallback() -> pd.DataFrame:
     return pd.DataFrame(columns=["代码", "净利润同比", "报告期"])
 
 
-@with_retry("指数日线-东财(index_zh_a_hist)", swallow=True, default=None)
+@with_retry("指数日线-东财(index_zh_hist_em)", swallow=True, default=None)
 def _fetch_index_em(symbol: str, start: str, end: str) -> pd.DataFrame:
     """东财指数日线主源,返回[日期, 收盘]。"""
-    df = ak.index_zh_a_hist(symbol=symbol, period="daily",
+    df = ak.index_zh_hist_em(symbol=symbol, period="daily",
                             start_date=start, end_date=end)
     if df is None or df.empty:
         raise RuntimeError(f"指数{symbol}东财行情为空")
@@ -677,11 +677,11 @@ def _fetch_index_em(symbol: str, start: str, end: str) -> pd.DataFrame:
                          "收盘": to_num(df["收盘"])})
 
 
-@with_retry("指数日线-腾讯(stock_zh_index_daily_tx备源)", swallow=True, default=None)
+@with_retry("指数日线-腾讯(index_zh_daily_tx备源)", swallow=True, default=None)
 def _fetch_index_tx(symbol: str, start: str, end: str) -> pd.DataFrame:
     """腾讯指数日线备源:399开头=深市指数,其余按沪市处理。"""
     tx_sym = ("sz" if symbol.startswith("399") else "sh") + symbol
-    df = ak.stock_zh_index_daily_tx(symbol=tx_sym, start_date=start, end_date=end)
+    df = ak.index_zh_daily_tx(symbol=tx_sym, start_date=start, end_date=end)
     if df is None or df.empty:
         raise RuntimeError(f"指数{symbol}腾讯行情为空")
     return pd.DataFrame({"日期": pd.to_datetime(df["date"]),

@@ -5,7 +5,7 @@
      行 = 行业(按区间累计涨幅从高到低排序),列 = 交易日,颜色 红涨绿跌
 
 数据源:申万宏源研究-指数历史行情 AKShare: ak.index_hist_sw(逐行业)
-    行业清单:申万一级行业 ak.sw_index_first_info()
+    行业清单:申万一级行业 ak.index_first_info_sw()
     涨跌幅 = 当日收盘 / 前一日收盘 - 1
 说明:口径为申万一级行业(与 Wind 一致)；东方财富接口在本机被限流,故走申万源。
 输出:reports/YYYYMMDD/04.png(编号规则见 strategies/plot_paths.py)
@@ -48,7 +48,7 @@ CLaw_CMAP = LinearSegmentedColormap.from_list("claw", ["#0C9", "#FFFFFF", "#F36"
 
 def latest_trade_date() -> dt.date:
     try:
-        dates = ak.tool_trade_date_hist_sina()["trade_date"]
+        dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
         today = dt.date.today()
         past = [d for d in dates if d <= today]
         return past[-1] if past else today
@@ -58,7 +58,7 @@ def latest_trade_date() -> dt.date:
 
 def industry_list() -> list[tuple[str, str]]:
     """申万一级行业 (代码, 名称)。"""
-    df = ak.sw_index_first_info()
+    df = ak.index_first_info_sw()
     out = []
     for _, row in df.iterrows():
         code = str(row["行业代码"]).split(".")[0]

@@ -12,7 +12,7 @@
 
 用法:
   python strategies/stock/trend_charts.py
-  本脚本在 akshare 1.20.35 / Python 3.12 实测通过):
+  本脚本在 akshare 1.20.65 / Python 3.12 实测通过):
 
 输出:
   reports/YYYYMMDD/17_美股七巨头.png
@@ -22,9 +22,9 @@
   (编号规则见 strategies/plot_paths.py,01–16 已被现有脚本占用)
 
 数据源(自动重试 + 自动降级):
-  美股个股:东方财富 stock_us_hist(前复权) → 失败自动切新浪 stock_us_daily(前复权)
-  美股指数:新浪 index_us_stock_sina(.SOX 费半 / .IXIC 纳指 / .INX 标普500)
-  A股指数:东方财富 index_zh_a_hist → 失败自动切新浪 stock_zh_index_daily
+  美股个股:东方财富 stock_us_hist_em(前复权) → 失败自动切新浪 stock_us_hist_sina(前复权)
+  美股指数:新浪 index_us_daily_sina(.SOX 费半 / .IXIC 纳指 / .INX 标普500)
+  A股指数:东方财富 index_zh_hist_em → 失败自动切新浪 index_zh_daily_sina
 
 可选环境变量:
   AK_PREFER_SINA=1   跳过东方财富，直接使用新浪数据源(东财限流时使用)
@@ -123,7 +123,7 @@ def fetch_us_stock(name, em_symbol, sina_symbol, start, end):
     """美股个股(前复权):东方财富 → 新浪 自动降级"""
     if not PREFER_SINA:
         try:
-            df = _retry(lambda: ak.stock_us_hist(
+            df = _retry(lambda: ak.stock_us_hist_em(
                 symbol=em_symbol, period="daily",
                 start_date=start.strftime("%Y%m%d"), end_date=end.strftime("%Y%m%d"),
                 adjust=ADJUST), f"{name}[东财]")
@@ -131,7 +131,7 @@ def fetch_us_stock(name, em_symbol, sina_symbol, start, end):
                 return _to_series(df["日期"], df["收盘"]), "东方财富·前复权"
         except Exception as e:  # noqa: BLE001
             print(f"    · {name} 东方财富不可用({type(e).__name__})，自动切换新浪源")
-    df = _retry(lambda: ak.stock_us_daily(symbol=sina_symbol, adjust=ADJUST), f"{name}[新浪]")
+    df = _retry(lambda: ak.stock_us_hist_sina(symbol=sina_symbol, period="daily", adjust=ADJUST), f"{name}[新浪]")
     s = _to_series(df["date"], df["close"]).loc[start:end]
     if s.empty:
         raise ValueError("区间内无数据")
@@ -140,7 +140,7 @@ def fetch_us_stock(name, em_symbol, sina_symbol, start, end):
 
 def fetch_us_index(sina_symbol, start, end):
     """美股指数(新浪):.SOX / .IXIC / .INX / .NDX"""
-    df = _retry(lambda: ak.index_us_stock_sina(symbol=sina_symbol), f"美股指数{sina_symbol}")
+    df = _retry(lambda: ak.index_us_daily_sina(symbol=sina_symbol), f"美股指数{sina_symbol}")
     s = _to_series(df["date"], df["close"]).loc[start:end]
     if s.empty:
         raise ValueError("区间内无数据")
@@ -151,7 +151,7 @@ def fetch_cn_index(code, sina_symbol, start, end):
     """A股指数:东方财富 → 新浪 自动降级"""
     if not PREFER_SINA:
         try:
-            df = _retry(lambda: ak.index_zh_a_hist(
+            df = _retry(lambda: ak.index_zh_hist_em(
                 symbol=code, period="daily",
                 start_date=start.strftime("%Y%m%d"), end_date=end.strftime("%Y%m%d")),
                 f"{code}[东财]")
@@ -159,7 +159,7 @@ def fetch_cn_index(code, sina_symbol, start, end):
                 return _to_series(df["日期"], df["收盘"]), "东方财富"
         except Exception as e:  # noqa: BLE001
             print(f"    · {code} 东方财富不可用({type(e).__name__})，自动切换新浪源")
-    df = _retry(lambda: ak.stock_zh_index_daily(symbol=sina_symbol), f"{code}[新浪]")
+    df = _retry(lambda: ak.index_zh_daily_sina(symbol=sina_symbol), f"{code}[新浪]")
     s = _to_series(df["date"], df["close"]).loc[start:end]
     if s.empty:
         raise ValueError("区间内无数据")

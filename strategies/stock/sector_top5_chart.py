@@ -2,7 +2,7 @@
 """最新交易日 A 股 行业(申万一级)/ 概念 板块涨跌幅 TOP5 中文图表
 
 行业口径:申万一级行业(与 Wind 一致)
-    数据源:申万宏源研究-指数系列实时行情 AKShare: ak.index_realtime_sw("一级行业")
+    数据源:申万宏源研究-指数系列实时行情 AKShare: ak.index_spot_sw("一级行业")
     涨跌幅 = 最新价 / 昨收盘 - 1
 
 概念口径:概念板块
@@ -44,7 +44,7 @@ DOWN_COLOR = "#0C9"  # 绿跌
 def latest_trade_date() -> dt.date:
     """最近一个已收盘交易日(含今天)。"""
     try:
-        dates = ak.tool_trade_date_hist_sina()["trade_date"]
+        dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
         today = dt.date.today()
         past = [d for d in dates if d <= today]
         return past[-1] if past else today
@@ -54,7 +54,7 @@ def latest_trade_date() -> dt.date:
 
 def fetch_industry() -> pd.DataFrame:
     """申万一级行业最新涨跌幅。"""
-    df = ak.index_realtime_sw(symbol="一级行业")
+    df = ak.index_spot_sw(symbol="一级行业")
     df["涨跌幅"] = (df["最新价"] / df["昨收盘"] - 1) * 100
     df = df.rename(columns={"指数名称": "板块"})
     return df[["板块", "涨跌幅"]]

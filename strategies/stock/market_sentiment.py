@@ -53,7 +53,7 @@ FLAT_COLOR = "#99F"  # 平盘
 
 def latest_trade_date() -> dt.date:
     try:
-        dates = ak.tool_trade_date_hist_sina()["trade_date"]
+        dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
         today = dt.date.today()
         past = [d for d in dates if d <= today]
         return past[-1] if past else today
@@ -62,7 +62,7 @@ def latest_trade_date() -> dt.date:
 
 
 def trade_dates(n: int) -> list[dt.date]:
-    dates = ak.tool_trade_date_hist_sina()["trade_date"]
+    dates = pd.to_datetime(ak.calendar_trade_date_hist_sina()["trade_date"]).dt.date
     today = dt.date.today()
     past = [d for d in dates if d <= today]
     return past[-n:] if past else []
