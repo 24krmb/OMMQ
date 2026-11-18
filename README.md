@@ -125,6 +125,37 @@ You are in code review mode. Focus on:
 Provide constructive feedback without making direct changes.
 ```
 
+## OpenCode 文档(docs/)
+
+`docs/` 收录 OpenCode 官方文档的本地存档(英文原文),便于离线查阅与 Agent 按需引用;内容以 [opencode.ai/docs](https://opencode.ai/docs) 为准。项目自定义的 Agent、技能与规则见 `AGENTS.md` 与 `.opencode/`。
+
+| 文档 | 主题 |
+| --- | --- |
+| [platform.md](docs/platform.md) | 平台总览:CLI / 桌面 / Web 下载安装、Docker、接入 Provider |
+| [cli.md](docs/cli.md) | CLI 使用(命令与 TUI) |
+| [console.md](docs/console.md) | OpenCode Console 云端服务:工作区、模型推理、预算与团队策略 |
+| [config.md](docs/config.md) | `opencode.jsonc` 配置(全局/系统级位置与常用选项) |
+| [providers.md](docs/providers.md) | LLM Provider 接入与自定义配置 |
+| [models.md](docs/models.md) | 模型列表、切换与 variant 参数 |
+| [mcp-servers.md](docs/mcp-servers.md) | MCP 服务器接入配置 |
+| [agents.md](docs/agents.md) | 自定义 Agent:system prompt、模式、模型、权限、步骤数 |
+| [skills.md](docs/skills.md) | 技能:`SKILL.md` 编写、发现位置与触发机制 |
+| [commands.md](docs/commands.md) | 自定义斜杠命令(`/review` 等) |
+| [plugins.md](docs/plugins.md) | 插件开发与加载 |
+| [formatters.md](docs/formatters.md) | 代码格式化工具集成 |
+| [tools.md](docs/tools.md) | 内置工具总览与工具级配置 |
+| [permissions.md](docs/permissions.md) | 工具权限规则:`allow` / `ask` / `deny` |
+| [policies.md](docs/policies.md) | 策略:二元强制规则,只收紧权限、从不提示 |
+| [network.md](docs/network.md) | 代理(`HTTP_PROXY` / `NO_PROXY`)等网络设置 |
+| [websearch.md](docs/websearch.md) | 联网搜索:Provider 选择与用法 |
+| [instructions.md](docs/instructions.md) | `AGENTS.md` 项目级持久化指引 |
+| [references.md](docs/references.md) | 引用(别名挂载)项目外目录 |
+| [attachments.md](docs/attachments.md) | 向 prompt 附加本地文件(截图、CSV 等) |
+| [compaction.md](docs/compaction.md) | 长会话上下文压缩(摘要 + 保留近期对话) |
+| [warming.md](docs/warming.md) | 会话保温:暂停期间维持 Provider 侧 prompt 缓存 |
+| [snapshots.md](docs/snapshots.md) | 快照:`/undo` 一并回滚对话与文件改动 |
+| [themes.md](docs/themes.md) | 界面主题定制 |
+
 ## 目录结构
 
 ```
@@ -132,6 +163,9 @@ OMMQ/
 ├── .opencode/
 │   ├── agents/TdxQuant.md        # 投研分析 Agent 定义
 │   ├── skills/                   # 技能集(tdx 取数/分析技能 + 收盘工作流)
+│   ├── memory/
+│   │   ├── data-gotchas.md       # 取数备忘
+│   │   └── backtest-lessons.md   # 回测教训(入口/断点续传/产物归档/约束)
 │   └── Example/                  # README 案例图
 ├── reports/                      # 产物归档:reports/YYYYMMDD/(编号规则见 strategies/plot_paths.py)
 ├── strategies/                   # 量化策略与图表脚本
@@ -146,11 +180,8 @@ OMMQ/
 │   ├── data/                     # 取数缓存(不入库)
 │   ├── output/                   # 统计与图表产物(不入库)
 │   └── archive/                  # 历史回测报告(入库案例)
+├── docs/                         # OpenCode 官方文档本地存档(24 篇,索引见"OpenCode 文档"章节)
 ├── opencode.json                 # OpenCode 配置文件(项目级)
-├── .opencode/
-│   └── memory/
-│   ├── data-gotchas.md           # 取数备忘
-│   └── backtest-lessons.md       # 回测教训(入口/断点续传/产物归档/约束)
 ├── plot_utils.py                 # 绘图通用工具
 ├── requirements.txt              # Python 依赖锁定文件
 ├── pyproject.toml                # 项目元数据与工具配置(不构建发行包)

@@ -3,14 +3,14 @@
 > 给 AI Agent 的持久化项目指引。README.md 面向人类,本文件面向 Agent;两者冲突时以本文件为准。
 > 记忆库 `.opencode/memory/*.md` 由 opencode.json `instructions` 注入,每次会话自动生效(事实/经验/结论进记忆,规则/铁律写本文件)。
 
-## 首次检查
-如果项目根目录不存在 `.venv` 目录,则创建虚拟环境并且激活，安装依赖包。依赖清单见 [requirements.txt](./requirements.txt)。
+## First check
+If the `.venv` directory does not exist in the project root, create the virtual environment and activate it, then install the dependencies. The list of dependencies can be found in [requirements.txt](./requirements.txt).
 
-## 执行任务前的铁律
+## Regulations for carrying out tasks
 
-1. 用户需求宽泛、模糊、表达不清或事实冲突时,必须用 `question` 澄清,在多个实现方案间让用户做决定;
-2. 多步任务必须通过子代理 `general` 执行;
-3. OpenCode CLI 版本须 ≥ `2.2.7`,否则提示用户升级或协助升级。
+1. When user requirements are broad, vague, unclear, or factually conflicting, **you must use `question` to clarify** and let the user make decisions among multiple implementation options;
+2. Multi-step tasks **must be executed through the sub-agent `general`**;
+3. The OpenCode CLI version must be ≥ `2.3.0`, otherwise prompt the user to upgrade or assist with the upgrade.  Details:[platform](docs/platform)
 
 ## 环境(平台差异,最易踩坑)
 
