@@ -7,6 +7,12 @@
 - 双轴图中原随数据系列着色的轴标签/刻度(如 `futures_volume_oi.py`、`peer_dupond.py`)同步改为统一字体色
 - 同步更新文档中的配色规范:AGENTS.md、README.md、`.opencode/agents/TdxQuant.md`、`.opencode/agents/Futures.md`
 
+### 新增脚本
+| 脚本 | 用途 |
+| --- | --- |
+| stock/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
+| stock/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
+
 ### 文档
 - 新增 `docs/` 目录:本地收录 OpenCode 官方文档 24 篇(英文原文),覆盖平台/CLI/Console、配置与权限、Agent/技能/命令/插件、模型与 Provider、上下文与会话机制等主题
 - README 新增"OpenCode 文档(docs/)"章节作为 24 篇文档的中文索引;目录结构纳入 `docs/`,并合并目录树中重复列出的 `.opencode/` 块

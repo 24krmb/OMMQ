@@ -46,6 +46,8 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
 | stock/neff_value_strategy.py | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
 | stock/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
+| stock/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
+| stock/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。
 

@@ -30,17 +30,15 @@ If the `.venv` directory does not exist in the project root, create the virtual 
 
 ## Agent 调度
 
+- 投研任务优先复用 `strategies/` 下现成脚本,再走技能取数。
 - 主 Agent:Build(默认)/ Plan / Explore;子 Agent:TdxQuant(通达信投研)、Futures(TqSdk 期货)、General(多步任务)。定义在 `.opencode/agents/`。
 - 技能在 `.opencode/skills/`,按任务类型加载:取数 tdx-tq-local/tdx-quant/tdx-aidata;分析 tdx-financial-quick-read / tdx-stock-analysis / tdx-gszddf / tdx-valuation-navigator / tdx-dragon-tiger-miner / tdx-yjygby;收盘复盘 market-close-analysis;期货 tqsdk-trading-and-data;热点 a-market-hotspot-discovery(走 gildata-aidata)。
-- 投研任务优先复用 `strategies/` 下现成脚本,再走技能取数。
 
 ## 绘图铁律
 
-1. 每张图必须有标题、图例、坐标轴标签,不能仅靠颜色或形状表达数据;
-2. 红涨绿跌;配色统一:红 `#F36`、绿 `#0C9`、蓝 `#99F`、黄 `#FC3`,标题与坐标文字色 `#27254c`(rgb(39,37,76));
-3. 不同数据系列不同色,同一系列同色;
-4. 图表来源一律标注 `OMMQ`,不标注具体上游数据源;
-5. 所有面向用户的文本与图表用**中文**;报告结尾注明"仅供参考,不构成投资建议"。
+1. 红涨绿跌;配色统一:红 `#F36`、绿 `#0C9`、蓝 `#99F`、黄 `#FC3`,标题与坐标文字色 `#27254c`;
+2. 图表来源一律标注 `OMMQ`,不标注具体上游数据源;
+3. 所有面向用户的文本与图表用**中文**;
 
 ## 数据与安全硬规则
 
@@ -58,9 +56,3 @@ If the `.venv` directory does not exist in the project root, create the virtual 
 | 旧知识失效 | 告诉用户,由用户删除对应条目(过时即删) |
 | 新主题 | 新建 `.opencode/memory/<主题>.md` 即自动纳入 glob(下次配置变更后生效) |
 | AGENTS.md vs 记忆库 | **规则/铁律**写本文件(全文覆盖);**事实/经验/结论**进 memory(增量追加) |
-
-## 验证与提交
-
-- 修改任何取数/绘图脚本后,**实际运行一次**核对输出与图表,再宣称完成;
-- 涉及交易判断的内容附风险提示,不做确定性收益承诺;
-- 提交信息用约定式提交:`<type>: <subject>`(feat/fix/docs/refactor/test/chore/build/ci/style),主题用中文、简洁明了。
