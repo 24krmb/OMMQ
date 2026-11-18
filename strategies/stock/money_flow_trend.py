@@ -37,11 +37,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 60              # 展示最近多少个交易日
 UP_COLOR = "#F36"
@@ -76,8 +76,8 @@ def plot_balance(ax, df: pd.DataFrame) -> None:
     ax.bar(x, df["融资余额"], 0.6, color="#F36", label="融资余额")
     ax2 = ax.twinx()
     ax2.plot(x, df["融资融券余额"], color="#99F", linewidth=1.8, marker="", label="两融余额")
-    ax2.set_ylabel("两融余额(亿元)", color="#9999FF")
-    ax2.tick_params(axis="y", labelcolor="#9999FF")
+    ax2.set_ylabel("两融余额(亿元)", color="#27254c")
+    ax2.tick_params(axis="y", labelcolor="#27254c")
     idx = list(x)
     step = max(1, len(idx) // 8)
     ax.set_xticks(idx[::step])

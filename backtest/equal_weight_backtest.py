@@ -59,6 +59,12 @@ R_RED, G_GREEN, B_BLUE, Y_YELLOW, GRAY = "#F36", "#0C9", "#99F", "#FC3", "#99999
 
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Noto Sans SC", "PingFang SC"]
 plt.rcParams["axes.unicode_minus"] = False
+# 统一字体色 OMMQ rgb(39,37,76):标题 / 轴标签 / 刻度 / 图例
+plt.rcParams["text.color"] = "#27254c"
+plt.rcParams["axes.labelcolor"] = "#27254c"
+plt.rcParams["axes.titlecolor"] = "#27254c"
+plt.rcParams["xtick.color"] = "#27254c"
+plt.rcParams["ytick.color"] = "#27254c"
 
 
 # --------------------------------------------------------------------------- 通用

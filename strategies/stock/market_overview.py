@@ -38,11 +38,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 60  # 展示最近多少个交易日
 UP_COLOR = "#F36"    # 红涨
@@ -117,8 +117,8 @@ def plot_index(ax, closes: dict[str, pd.Series], turnover: pd.Series, n: int) ->
         turnover.index, turnover.values, width=1.0,
         color="#99F", alpha=0.55, label="上证综指成交额(右轴)",
     )
-    ax2.set_ylabel("成交额(亿元)", color="#9999FF", fontsize=11)
-    ax2.tick_params(axis="y", labelcolor="#9999FF")
+    ax2.set_ylabel("成交额(亿元)", color="#27254c", fontsize=11)
+    ax2.tick_params(axis="y", labelcolor="#27254c")
     ax2.set_ylim(0, turnover.max() * 3.2)
 
     for name, s in closes.items():
@@ -132,7 +132,7 @@ def plot_index(ax, closes: dict[str, pd.Series], turnover: pd.Series, n: int) ->
             f"{rebased.iloc[-1]:.1f}",
             xy=(rebased.index[-1], rebased.iloc[-1]),
             xytext=(5, 0), textcoords="offset points",
-            color="#9999FF", fontsize=10, va="center",
+            color="#27254c", fontsize=10, va="center",
         )
 
     ax.axhline(100, color="#bbb", linewidth=0.8, linestyle="--")

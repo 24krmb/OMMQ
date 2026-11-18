@@ -34,11 +34,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 YEARS = 10          # 展示最近多少个年度
 UP_COLOR = "#F36"

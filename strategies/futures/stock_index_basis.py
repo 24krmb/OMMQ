@@ -15,7 +15,7 @@
        - 左上: 基差(点数)近 1 年走势, 标注零轴与最新值、区间统计
        - 右上: 升贴水率(%)近 1 年走势, 标注零轴、区间均值与最新值
        - 下方: 最新截面期限结构 —— 当月/次月/当季/次季四个合约升贴水率柱状图
-      图表配色与字体遵循项目 OMMQ 规范(红#F36/绿#0C9/蓝#99F/黄#FC3/字体色#9999FF);
+      图表配色与字体遵循项目 OMMQ 规范(红#F36/绿#0C9/蓝#99F/黄#FC3/字体色#27254c);
       底部脚注为基于最新数据的自动生成专业解读(升贴水状态/基差分位/期限结构形态)。
 依赖: pip install akshare pandas matplotlib
 用法: python stock_index_basis.py [可选: 历史天数, 默认366]
@@ -43,11 +43,11 @@ COL_BLUE, COL_YELLOW, COL_RED, COL_GREEN, COL_GRAY = (
     "#99F", "#FC3", "#F36", "#0C9", "#bbb")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC", "Noto Sans SC", "Microsoft YaHei", "SimHei"]
 matplotlib.rcParams["axes.unicode_minus"] = False
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 # -------------------- 数据获取 --------------------
 def _norm_daily(df: pd.DataFrame) -> pd.DataFrame:
     """把不同接口返回的日线数据统一成 [date, close] 两列。"""
@@ -229,7 +229,7 @@ def plot_product(product: str, name: str, merged: pd.DataFrame,
     vols = [(c["close"] - spot_last) / spot_last * 100 for c in contracts] \
         if contracts else []
     fig.supxlabel(_professional_comment(name, basis, prem, vols),
-                  fontsize=9, color="#9999FF")
+                  fontsize=9, color="#27254c")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150)

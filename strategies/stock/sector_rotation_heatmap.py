@@ -35,11 +35,11 @@ warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 N = 20  # 展示最近多少个交易日
 # 统一配色热力图:绿 #0C9(跌)→ 白 → 红 #F36(涨)

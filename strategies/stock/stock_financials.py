@@ -30,11 +30,11 @@ from plot_paths import report_image_path
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-matplotlib.rcParams["text.color"] = "#9999FF"
-matplotlib.rcParams["axes.labelcolor"] = "#9999FF"
-matplotlib.rcParams["axes.titlecolor"] = "#9999FF"
-matplotlib.rcParams["xtick.color"] = "#9999FF"
-matplotlib.rcParams["ytick.color"] = "#9999FF"
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 OUT_DIR = "strategies/output/financials"
 
@@ -199,12 +199,12 @@ def plot_overview(code: str, ind: pd.DataFrame, out_dir: str) -> str | None:
     # (1,0) 毛利率 / 资产负债率(左右双轴折线)
     ax = axes[1, 0]
     ax.plot(labels, gm, marker="o", label="销售毛利率", color="#F36")
-    ax.set_ylabel("销售毛利率 (%)", color="#9999FF")
-    ax.tick_params(axis="y", labelcolor="#9999FF")
+    ax.set_ylabel("销售毛利率 (%)", color="#27254c")
+    ax.tick_params(axis="y", labelcolor="#27254c")
     ax2 = ax.twinx()
     ax2.plot(labels, debt, marker="s", label="资产负债率", color="#99F")
-    ax2.set_ylabel("资产负债率 (%)", color="#9999FF")
-    ax2.tick_params(axis="y", labelcolor="#9999FF")
+    ax2.set_ylabel("资产负债率 (%)", color="#27254c")
+    ax2.tick_params(axis="y", labelcolor="#27254c")
     ax.tick_params(axis="x", rotation=45, labelsize=9)
     ax.set_title("销售毛利率 / 资产负债率 (%)", fontsize=13)
     h1, l1 = ax.get_legend_handles_labels()

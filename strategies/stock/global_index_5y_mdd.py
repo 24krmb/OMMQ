@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 
+import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -25,6 +26,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plot_paths import report_image_path
 from global_index_week_curve import LINE_COLORS, fetch_index_close, window_cum_return
+
+# 统一字体色 OMMQ rgb(39,37,76):标题 / 轴标签 / 刻度 / 图例
+matplotlib.rcParams["text.color"] = "#27254c"
+matplotlib.rcParams["axes.labelcolor"] = "#27254c"
+matplotlib.rcParams["axes.titlecolor"] = "#27254c"
+matplotlib.rcParams["xtick.color"] = "#27254c"
+matplotlib.rcParams["ytick.color"] = "#27254c"
 
 FOCUS: dict[str, str] = {
     "沪深300": "sh000300",
