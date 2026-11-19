@@ -28,8 +28,9 @@
 | global/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
 | global/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
+| global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 
-**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(全球指数多源降级取数 + 中文字体回退,供 `global/` 下三个 60 日脚本复用);不属于脚本清单,不单独运行。
+**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(全球指数多源降级取数 + 中文字体回退,供 `global/` 下四个 60 日脚本复用);不属于脚本清单,不单独运行。
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。

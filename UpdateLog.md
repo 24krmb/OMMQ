@@ -6,11 +6,16 @@
 | 脚本 | 用途 |
 | --- | --- |
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差(ETF 代理:ACWI / VT) |
+| global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图(10 条,公共交易日对齐,编号 29 接 28 之后) |
 
 ### 取数备忘
 - MSCI ACWI、富时 All-World 均为授权指数:akshare 无对应接口,东财全球指数清单(56 个)亦不含;本机雅虎 403、markets.ft.com 连接超时、stooq 返回 JS 校验页,故改用**同在美国收盘定价**的两只 ETF 作代理——ACWI(iShares MSCI ACWI)、VT(Vanguard Total World;基准为 FTSE Global Small Cap,即在 All-World 大中盘之外另含小盘)
 - 代理序列取数:新浪 `stock_us_hist_sina` → StockAnalysis(`api.stockanalysis.com/api/symbol/e/<代码>/history`)依次降级;两源最新收盘一致,且都是未复权价(价格指数口径,不含分红),两序列取公共交易日交集对齐,不存在跨时区快照错位
 - 图例直接写 `VT(富时全球小型股)` 而非指数名,避免误读为富时 All-World 指数本身
+- 亚太 10 条一律**新浪优先、东财兜底**:一次连取 10 条会触发 push2 `Push2RateLimitError`(本机实测限流超过 30 分钟未恢复),而新浪 `index_global_hist_sina` / `index_hk_daily_sina` / `index_zh_daily_sina` 已覆盖台/日/韩/印度/澳/新西兰/印尼与港A;东财全球清单独有的只有东南亚几条(新加坡 STI、泰国 SET、马来 KLCI、越南 VNINDEX 等,本次未纳入)
+- `gindex_fetch.fetch_index()` 新增可选参数 `rows`(默认仍是 `WINDOW_ROWS=140`):10 个市场节假日互不重叠,公共交易日交集比单市场稀疏得多——回看 220 个交易日才凑满 60 个公共日(区间 2026-07-27~11-18,跨约 83 个自然工作日)
+- 停更保护 `MAX_STALE_DAYS = 10`:落后全场最新收盘超 10 天的序列直接剔除并在图注标"未纳入"。否则某条停更序列会把公共日交集整体拖到旧区间,"近60个交易日"就名不副实
+- 量级复核:韩国KOSPI 区间 -24.99%、恒生科技 -20.54% 看着离谱,已用独立源验证——EWJ 与日经225 近 120 日单日极值 -5.97% / -5.96% 几乎一致;EWY / EWT / EIDO 同区间 -15.18% / -9.28% / -13.59%,与本币指数 -24.99% / -7.88% / -15.16% 方向一致,差额来自汇率与美股收盘时点(韩股点位因东财限流未能做第二源比对)
 
 ### 重构
 - 抽出共享取数模块 `strategies/global/gindex_fetch.py`:参数 `N_DAYS` / `WINDOW_ROWS` / `EM_CALL_PAUSE` 与 `_series`、`em_global`、`sina_us`、`sina_global`、`sina_hk`、`sina_a`、`sina_eem`、`yahoo_chart`、`fetch_index`、`setup_font`.原先这些长在 `plot_global_indices_60d.py` 里,`plot_spx_vix_60d.py`、`plot_acwi_ftseaw_60d.py` 只能"脚本 import 脚本";现三个脚本统一 `from gindex_fetch import …`,各自只保留指数清单、配色与绘图

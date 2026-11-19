@@ -11,14 +11,11 @@
 """
 
 from __future__ import annotations
-
 import os
 import sys
 import time
 import warnings
-
 warnings.filterwarnings("ignore")
-
 import akshare as ak
 import pandas as pd
 import requests
@@ -26,9 +23,8 @@ import requests
 # ════════════════════════ 可调参数 ════════════════════════
 N_DAYS        = 60          # 公共交易日窗口长度(fetch_index 判定数据是否够用)
 WINDOW_ROWS   = 140         # 每个指数取最近140个交易日参与公共日求交集
-EM_CALL_PAUSE = 1.0         # 东财连续调用间隔(秒),过快会触发 push2 限流
+EM_CALL_PAUSE = 1.0
 # ══════════════════════════════════════════════════════════
-
 
 def _series(dates, closes) -> pd.Series:
     s = pd.Series(pd.to_numeric(pd.Series(closes), errors="coerce").values,
@@ -39,36 +35,29 @@ def _series(dates, closes) -> pd.Series:
     s = s[~s.index.duplicated(keep="last")].sort_index()
     return s.astype(float)
 
-
 def em_global(symbol: str) -> pd.Series:
     df = ak.index_global_hist_em(symbol=symbol)
     return _series(df["日期"], df["最新价"])
-
 
 def sina_us(symbol: str) -> pd.Series:
     df = ak.index_us_daily_sina(symbol=symbol)
     return _series(df["date"], df["close"])
 
-
 def sina_global(name: str) -> pd.Series:
     df = ak.index_global_hist_sina(symbol=name)
     return _series(df["date"], df["close"])
-
 
 def sina_hk(symbol: str) -> pd.Series:
     df = ak.index_hk_daily_sina(symbol=symbol)
     return _series(df["date"], df["close"])
 
-
 def sina_a(symbol: str) -> pd.Series:
     df = ak.index_zh_daily_sina(symbol=symbol)
     return _series(df["date"], df["close"])
 
-
 def sina_eem() -> pd.Series:
     df = ak.stock_us_hist_sina(symbol="EEM", period="daily")
     return _series(df["date"], df["close"])
-
 
 def yahoo_chart(ticker: str) -> pd.Series:
     last_err = None
@@ -87,15 +76,14 @@ def yahoo_chart(ticker: str) -> pd.Series:
     raise last_err
 
 
-def fetch_index(label: str, steps) -> tuple:
-    """按降级清单取一条指数序列,返回 (Series 或 None, 命中的来源名)。"""
+def fetch_index(label: str, steps, rows: int = WINDOW_ROWS) -> tuple:
     last_err = None
     for desc, fn in steps:
         for attempt in range(2):
             try:
                 s = fn()
                 if len(s) >= N_DAYS + 10:
-                    return s.tail(WINDOW_ROWS), desc
+                    return s.tail(rows), desc
                 raise ValueError(f"返回数据不足({len(s)}行)")
             except Exception as e:
                 last_err = e
@@ -105,9 +93,7 @@ def fetch_index(label: str, steps) -> tuple:
     print(f"  [失败] {label}: 全部来源均不可用，本图将不含该指数")
     return None, ""
 
-
 def setup_font():
-    """中文字体优先本机已安装字体,避免 Noto 变体字重回退成细体。"""
     from matplotlib import font_manager
     import matplotlib.pyplot as plt
     preferred = ["Microsoft YaHei", "SimHei", "PingFang SC", "Hiragino Sans GB",
@@ -115,7 +101,7 @@ def setup_font():
                  "WenQuanYi Micro Hei", "WenQuanYi Zen Hei", "Arial Unicode MS"]
     installed = {f.name for f in font_manager.fontManager.ttflist}
     chosen = [n for n in preferred if n in installed]
-    if not chosen:  # 常见字体文件路径兜底注册
+    if not chosen:
         for path in ("/usr/share/fonts/truetype/chinese/NotoSansSC-Regular.ttf",
                      "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
                      "C:/Windows/Fonts/msyh.ttc",
@@ -125,7 +111,7 @@ def setup_font():
                     font_manager.fontManager.addfont(path)
                     chosen = [font_manager.FontProperties(fname=path).get_name()]
                     break
-            except Exception:                                 # noqa: BLE001
+            except Exception:
                 pass
     if chosen:
         plt.rcParams["font.sans-serif"] = chosen + ["DejaVu Sans"]

@@ -10,17 +10,6 @@ venv/
 .env.*
 *.key
 
-# 系统与编辑器
-.DS_Store
-Thumbs.db
-desktop.ini
-.idea/
-.vscode/
-.trae/
-.workbuddy/
-.kilo/
-.zcode/
-
 # 日志与临时文件
 *.log
 *.tmp
@@ -38,12 +27,16 @@ backtest/output/
 data/
 *.parquet
 
-# 通达信备份数据(本地二进制数据,不入库)
-TdxBak_*/
-
-# 自定义指标与自定义数据(本地数据,不入库)
-自定义数据/
-自定义指标/
-
 # 内夫策略通达信版(开发中,暂不入库)
 neff_value_strategy_tdx.py
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+.trae/
+.workbuddy/
+.kilo/
+.zcode/
