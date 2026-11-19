@@ -5,7 +5,7 @@
 | 脚本 | 用途 |
 | --- | --- |
 | stock/market_overview.py | A 股市场全景日报:四大指数走势(归一化)+ 成交额 + 涨跌家数 |
-| stock/global_index_week_curve.py | 全球三大指数周度累计收益曲线:沪深300 / 恒生指数 / 标普500 |
+| global/global_index_week_curve.py | 全球三大指数周度累计收益曲线:沪深300 / 恒生指数 / 标普500 |
 | stock/market_sentiment.py | 市场情绪:涨停/跌停家数趋势、连板梯队、涨停行业分布 |
 | stock/money_flow_trend.py | 杠杆资金(两融)趋势:融资余额、两融余额、单日净增 |
 | stock/sector_top5_chart.py | 申万一级行业 / 概念板块 涨跌幅 TOP5 |
@@ -21,13 +21,13 @@
 | stock/stock_technical.py | 个股技术面:日 K + MA5/20/60 + 成交量 + MACD + RSI |
 | stock/peer_dupond.py | 同业杜邦分析 / 财务估值横向对比 |
 | stock/charts_demo.py | 绘图示例:折线、柱状、直方、热力图各一张 |
-| stock/global_index_5y_mdd.py | 标普500 vs 沪深300:近5年累计收益与最大回撤对比 |
+| global/global_index_5y_mdd.py | 标普500 vs 沪深300:近5年累计收益与最大回撤对比 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
 | stock/neff_value_strategy.py | John Neff低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
-| stock/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
-| stock/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
-| stock/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
-| stock/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
+| global/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
+| global/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
+| global/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
+| global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。

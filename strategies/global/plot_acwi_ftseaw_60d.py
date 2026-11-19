@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-"""MSCI ACWI 与富时 All-World 近60个交易日累计收益对比
+r"""MSCI ACWI 与富时 All-World 近60个交易日累计收益对比
 内容:
     主图:两大全球全市场指数近 N(默认60)个交易日累计收益曲线,区间首日统一归一化为 0%
     附图:两者累计收益之差(ACWI - VT),正值=ACWI 跑赢,负值=落后
 口径:两只 ETF 均以美元计价、美国收盘定价,
       交易日与估值时点一致,不存在跨时区快照错位;两序列取公共交易日交集后对齐
-用法:.\.venv\Scripts\python.exe strategies/stock/plot_acwi_ftseaw_60d.py [交易日数]
+用法:.\.venv\Scripts\python.exe strategies/global/plot_acwi_ftseaw_60d.py [交易日数]
       (交易日数默认60;复用上游取数链单次最多返回140个交易日,超出则按140天绘制并提示)
-输出:reports/YYYYMMDD/18_acwi_ftseaw_60d.png(编号规则见 strategies/plot_paths.py)
+输出:reports/YYYYMMDD/28_acwi_ftseaw_60d.png(编号规则见 strategies/plot_paths.py)
 依赖:akshare>=1.20  pandas  matplotlib  requests
 """
 
@@ -35,7 +35,7 @@ from plot_utils import DOWN_COLOR, UP_COLOR
 
 # ════════════════════════ 可调参数 ════════════════════════
 N_DAYS_DEFAULT = 60            # 交易日窗口长度(可用命令行参数覆盖)
-OUT_NO         = 18            # 扩展图编号(09 起),见 strategies/plot_paths.py
+OUT_NO         = 28            # 扩展图编号(09 起),见 strategies/plot_paths.py;17–20 属 trend_charts.py
 OUT_AUX        = "acwi_ftseaw_60d"
 SA_URL         = "https://api.stockanalysis.com/api/symbol/e/{sym}/history"
 TEXT_C   = "#27254c"

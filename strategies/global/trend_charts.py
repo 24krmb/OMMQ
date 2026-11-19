@@ -11,7 +11,7 @@
   4. 沪深300 vs 标普500
 
 用法:
-  python strategies/stock/trend_charts.py
+  python strategies/global/trend_charts.py
   本脚本在 akshare 1.20.65 / Python 3.12 实测通过):
 
 输出:

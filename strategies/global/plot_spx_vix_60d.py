@@ -7,9 +7,9 @@
 口径:价格指数口径(不含分红),累计收益 = 当日收盘 / 区间首日收盘 - 1
 取数:标普500 新浪 → 东财;VIX CBOE 官网 → 雅虎(均按顺序降级,复用
       plot_global_indices_60d.py 的 fetch_index 重试/降级逻辑)
-用法:.\\.venv\\Scripts\\python.exe strategies/stock/plot_spx_vix_60d.py [交易日数]
+用法:.\\.venv\\Scripts\\python.exe strategies/global/plot_spx_vix_60d.py [交易日数]
       (交易日数默认60;复用上游取数链单次最多返回140个交易日,超出则按140天绘制并提示)
-输出:reports/YYYYMMDD/17_spx_vix_60d.png(编号规则见 strategies/plot_paths.py)
+输出:reports/YYYYMMDD/27_spx_vix_60d.png(编号规则见 strategies/plot_paths.py)
 依赖:akshare>=1.20  pandas  matplotlib  requests
 """
 
@@ -43,7 +43,7 @@ from plot_utils import DOWN_COLOR, UP_COLOR
 
 # ════════════════════════ 可调参数 ════════════════════════
 N_DAYS_DEFAULT = 60            # 交易日窗口长度(可用命令行参数覆盖)
-OUT_NO         = 17            # 扩展图编号(09 起),见 strategies/plot_paths.py
+OUT_NO         = 27            # 扩展图编号(09 起),见 strategies/plot_paths.py;17–20 属 trend_charts.py
 OUT_AUX        = "spx_vix_60d"
 VIX_ALERT      = 20.0          # VIX 警戒线:≥20 通常代表避险情绪升温
 VIX_URL        = "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"

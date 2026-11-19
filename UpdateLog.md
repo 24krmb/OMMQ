@@ -5,12 +5,16 @@
 ### 新增脚本
 | 脚本 | 用途 |
 | --- | --- |
-| stock/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差(ETF 代理:ACWI / VT) |
+| global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差(ETF 代理:ACWI / VT) |
 
 ### 取数备忘
 - MSCI ACWI、富时 All-World 均为授权指数:akshare 无对应接口,东财全球指数清单(56 个)亦不含;本机雅虎 403、markets.ft.com 连接超时、stooq 返回 JS 校验页,故改用**同在美国收盘定价**的两只 ETF 作代理——ACWI(iShares MSCI ACWI)、VT(Vanguard Total World;基准为 FTSE Global Small Cap,即在 All-World 大中盘之外另含小盘)
 - 代理序列取数:新浪 `stock_us_hist_sina` → StockAnalysis(`api.stockanalysis.com/api/symbol/e/<代码>/history`)依次降级;两源最新收盘一致,且都是未复权价(价格指数口径,不含分红),两序列取公共交易日交集对齐,不存在跨时区快照错位
-- 图例直接写 `VT(富时全球小型股)` 而非指数名,避免误读为富时 All-World 指数本身;扩展图编号取 18(17 已被 `plot_spx_vix_60d.py` 占用)
+- 图例直接写 `VT(富时全球小型股)` 而非指数名,避免误读为富时 All-World 指数本身
+
+### 目录调整
+- 新建 `strategies/global/`,6 个全球市场脚本从 `strategies/stock/` 迁入:`plot_global_indices_60d.py`(编号 16)、`plot_spx_vix_60d.py`(27)、`plot_acwi_ftseaw_60d.py`(28)、`global_index_week_curve.py`(15)、`global_index_5y_mdd.py`(22)、`trend_charts.py`(17–20);同层平移不动代码,`sys.path` 注入与 `plot_paths` / `plot_utils` 的复用关系不变,README 与 `strategies/README.md` 表内前缀、各脚本 docstring 的用法行同步改为 `strategies/global/`
+- **撞号修正**:`trend_charts.py` 的四张图占用 17/18/19/20(编号写在 `groups` 的 `no=` 字段,此前只按 `OUT_NO` 与 `report_image_path(N)` 扫描因而漏掉),导致 `plot_spx_vix_60d.py` 的 17、`plot_acwi_ftseaw_60d.py` 的 18 与它重复;现改为 17→27、18→28,全库编号恢复唯一(1–28 连续无缺口)
 
 ## 2026-11-18 (V1.2.1)
 
