@@ -23,13 +23,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import requests
 warnings.filterwarnings("ignore")
-# 复用仓库共享模块
+# 复用仓库共享模块:gindex_fetch 降级取数/字体、plot_paths 编号、plot_utils 配色
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(os.path.dirname(_HERE))
 for _p in (_HERE, os.path.join(_ROOT, "strategies"), _ROOT):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-from plot_global_indices_60d import _series, fetch_index, setup_font
+from gindex_fetch import _series, fetch_index, setup_font
 from plot_paths import report_image_path
 from plot_utils import DOWN_COLOR, UP_COLOR
 
@@ -211,7 +211,7 @@ def main() -> None:
     if span is not None:
         lead, lag = float(span.max()), float(span.min())
         corr = float(pair[0].diff().corr(pair[1].diff()))
-        print(f"[附图] ACWI − VT 期末 {span.iloc[-1]:+.2f}pct"
+        print(f"[附图] ACWI-VT 期末 {span.iloc[-1]:+.2f}pct"
               f"  区间最大领先 {lead:+.2f}pct({span.idxmax():%m-%d})"
               f"  区间最大落后 {lag:+.2f}pct({span.idxmin():%m-%d})")
         print(f"  两者日收益相关系数 {corr:+.3f}(接近1=全球大盘股走势高度一致,"

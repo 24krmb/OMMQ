@@ -6,7 +6,7 @@
     对齐:两图共用标普500交易日 x 轴;VIX 按同交易日对齐,个别缺失日向前填充
 口径:价格指数口径(不含分红),累计收益 = 当日收盘 / 区间首日收盘 - 1
 取数:标普500 新浪 → 东财;VIX CBOE 官网 → 雅虎(均按顺序降级,复用
-      plot_global_indices_60d.py 的 fetch_index 重试/降级逻辑)
+      gindex_fetch.py 的 fetch_index 重试/降级逻辑)
 用法:.\\.venv\\Scripts\\python.exe strategies/global/plot_spx_vix_60d.py [交易日数]
       (交易日数默认60;复用上游取数链单次最多返回140个交易日,超出则按140天绘制并提示)
 输出:reports/YYYYMMDD/27_spx_vix_60d.png(编号规则见 strategies/plot_paths.py)
@@ -30,14 +30,14 @@ import requests
 
 warnings.filterwarnings("ignore")
 
-# 复用仓库共享模块:根目录 plot_utils 配色、strategies/plot_paths 编号、同目录脚本的降级取数
+# 复用仓库共享模块:根目录 plot_utils 配色、strategies/plot_paths 编号、同目录 gindex_fetch 降级取数
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(os.path.dirname(_HERE))
 for _p in (_HERE, os.path.join(_ROOT, "strategies"), _ROOT):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-from plot_global_indices_60d import (_series, em_global, fetch_index, setup_font,
-                                     sina_us, yahoo_chart)
+from gindex_fetch import (_series, em_global, fetch_index, setup_font,
+                          sina_us, yahoo_chart)
 from plot_paths import report_image_path
 from plot_utils import DOWN_COLOR, UP_COLOR
 

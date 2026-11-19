@@ -12,6 +12,11 @@
 - 代理序列取数:新浪 `stock_us_hist_sina` → StockAnalysis(`api.stockanalysis.com/api/symbol/e/<代码>/history`)依次降级;两源最新收盘一致,且都是未复权价(价格指数口径,不含分红),两序列取公共交易日交集对齐,不存在跨时区快照错位
 - 图例直接写 `VT(富时全球小型股)` 而非指数名,避免误读为富时 All-World 指数本身
 
+### 重构
+- 抽出共享取数模块 `strategies/global/gindex_fetch.py`:参数 `N_DAYS` / `WINDOW_ROWS` / `EM_CALL_PAUSE` 与 `_series`、`em_global`、`sina_us`、`sina_global`、`sina_hk`、`sina_a`、`sina_eem`、`yahoo_chart`、`fetch_index`、`setup_font`.原先这些长在 `plot_global_indices_60d.py` 里,`plot_spx_vix_60d.py`、`plot_acwi_ftseaw_60d.py` 只能"脚本 import 脚本";现三个脚本统一 `from gindex_fetch import …`,各自只保留指数清单、配色与绘图
+- 修掉一个只在 GBK 控制台暴露的崩溃:`plot_acwi_ftseaw_60d.py` 统计行用了 `−`(U+2212),GBK 无法编码,图已保存却以 `UnicodeEncodeError` 非零退出;该行改用 ASCII `-`(图内标注保留规范减号)
+- 仍保留的一处脚本间依赖:`global_index_5y_mdd.py` 从 `global_index_week_curve.py` 取 `LINE_COLORS` / `fetch_index_close` / `window_cum_return`(A股·恒指·标普的周窗口算法,与 gindex_fetch 的全球公共日口径不同,暂未合并)
+
 ### 目录调整
 - 新建 `strategies/global/`,6 个全球市场脚本从 `strategies/stock/` 迁入:`plot_global_indices_60d.py`(编号 16)、`plot_spx_vix_60d.py`(27)、`plot_acwi_ftseaw_60d.py`(28)、`global_index_week_curve.py`(15)、`global_index_5y_mdd.py`(22)、`trend_charts.py`(17–20);同层平移不动代码,`sys.path` 注入与 `plot_paths` / `plot_utils` 的复用关系不变,README 与 `strategies/README.md` 表内前缀、各脚本 docstring 的用法行同步改为 `strategies/global/`
 - **撞号修正**:`trend_charts.py` 的四张图占用 17/18/19/20(编号写在 `groups` 的 `no=` 字段,此前只按 `OUT_NO` 与 `report_image_path(N)` 扫描因而漏掉),导致 `plot_spx_vix_60d.py` 的 17、`plot_acwi_ftseaw_60d.py` 的 18 与它重复;现改为 17→27、18→28,全库编号恢复唯一(1–28 连续无缺口)

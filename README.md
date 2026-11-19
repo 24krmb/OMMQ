@@ -142,6 +142,8 @@ OMMQ/
 ├── reports/                      # 产物归档:reports/YYYYMMDD/(编号规则见 strategies/plot_paths.py)
 ├── strategies/                   # 量化策略与图表脚本
 │   ├── stock/                    # A 股相关脚本(除标注外基于 Akshare)
+│   ├── global/                   # 全球市场脚本(标普/纳指/恒指/日经/宽基,取数走新浪·东财·CBOE·ETF)
+│   │   └── gindex_fetch.py       # 全球指数共享取数模块(多源降级 + 中文字体回退)
 │   ├── futures/                  # 期货相关脚本(含股指期现基差)
 │   ├── tqsdk/                    # 期货量化脚本(需 tqsdk + 账户)
 │   ├── plot_paths.py             # 产物编号归档共享模块

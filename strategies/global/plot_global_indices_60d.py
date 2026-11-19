@@ -8,6 +8,7 @@
 对齐口径 : 全球公共交易日对齐——取所有指数共同有行情的最近 60 个交易日，
            各指数统一在区间首日归一化为 0%，起点一致、可直接对比。
 用法     : python plot_global_indices_60d.py
+取数     : 复用同目录 gindex_fetch.py(多源降级 + 重试 + 中文字体)
 输出     : reports/YYYYMMDD/16_global_index_60d.png(编号遵循 strategies/plot_paths.py)
 依赖     : akshare>=1.20  pandas  matplotlib  requests
 """
@@ -16,7 +17,6 @@ import os
 import sys
 import time
 import warnings
-from datetime import datetime
 warnings.filterwarnings("ignore")
 import pandas as pd
 import matplotlib
@@ -24,19 +24,22 @@ matplotlib.use("Agg")  # 只出图不弹窗；如需交互窗口可注释本行
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
-from matplotlib import font_manager
 import akshare as ak
 # 产物统一落盘 reports/<当天日期>/,复用仓库统一编号规则
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.dirname(os.path.dirname(_HERE))
+for _p in (_HERE, os.path.join(_ROOT, "strategies"), _ROOT):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+from gindex_fetch import (EM_CALL_PAUSE, N_DAYS, WINDOW_ROWS, em_global, fetch_index,
+                          setup_font, sina_a, sina_eem, sina_global, sina_hk, sina_us,
+                          yahoo_chart)
 from plot_paths import report_image_path
 
 # ════════════════════════ 可调参数 ════════════════════════
-N_DAYS        = 60          # 公共交易日窗口长度
-WINDOW_ROWS   = 140         # 每个指数取最近140个交易日参与公共日求交集
 OUT_NO        = 16          # 扩展图编号(09 起),见 strategies/plot_paths.py
 OUT_AUX       = "global_index_60d"
 COLOR_MODE    = "classic"   # "classic"=经典多色；"sign"=红涨绿跌按盈亏着色
-EM_CALL_PAUSE = 1.0
 # ══════════════════════════════════════════════════════════
 TEXT_C   = "#27254c"
 TEXT_SOFT = "#73718b"
@@ -81,93 +84,6 @@ INDEXES = [
      [("雅虎", lambda: yahoo_chart("^MXEF")),
       ("新浪EEM代理", lambda: sina_eem())]), 
 ]
-
-# ════════════════════════ 数据获取 ════════════════════════
-def em_global(symbol: str) -> pd.Series:
-    df = ak.index_global_hist_em(symbol=symbol)
-    return _series(df["日期"], df["最新价"])
-def sina_us(symbol: str) -> pd.Series:
-    df = ak.index_us_daily_sina(symbol=symbol)
-    return _series(df["date"], df["close"])
-def sina_global(name: str) -> pd.Series:
-    df = ak.index_global_hist_sina(symbol=name)
-    return _series(df["date"], df["close"])
-def sina_hk(symbol: str) -> pd.Series:
-    df = ak.index_hk_daily_sina(symbol=symbol)
-    return _series(df["date"], df["close"])
-def sina_a(symbol: str) -> pd.Series:
-    df = ak.index_zh_daily_sina(symbol=symbol)
-    return _series(df["date"], df["close"])
-def sina_eem() -> pd.Series:
-    df = ak.stock_us_hist_sina(symbol="EEM", period="daily")
-    return _series(df["date"], df["close"])
-def yahoo_chart(ticker: str) -> pd.Series:
-    import requests
-    last_err = None
-    for host in ("query1", "query2"):
-        try:
-            url = f"https://{host}.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(ticker)}"
-            r = requests.get(url, params={"range": "6mo", "interval": "1d"},
-                             headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-            res = r.json()["chart"]["result"][0]
-            ts = res["timestamp"]
-            closes = res["indicators"]["quote"][0]["close"]
-            idx = pd.to_datetime(ts, unit="s", utc=True).tz_convert(None)
-            return _series(pd.Series(idx), pd.Series(closes))
-        except Exception as e:
-            last_err = e
-    raise last_err
-
-
-def _series(dates, closes) -> pd.Series:
-    s = pd.Series(pd.to_numeric(pd.Series(closes), errors="coerce").values,
-                  index=pd.to_datetime(pd.Series(dates), errors="coerce"))
-    s.index = s.index.normalize()
-    s = s.replace([float("inf"), float("-inf")], pd.NA).dropna()
-    s = s[s > 0]
-    s = s[~s.index.duplicated(keep="last")].sort_index()
-    return s.astype(float)
-
-def fetch_index(label: str, steps) -> tuple:
-    last_err = None
-    for desc, fn in steps:
-        for attempt in range(2):
-            try:
-                s = fn()
-                if len(s) >= N_DAYS + 10:
-                    return s.tail(WINDOW_ROWS), desc
-                raise ValueError(f"返回数据不足({len(s)}行)")
-            except Exception as e:
-                last_err = e
-                if attempt == 0:
-                    time.sleep(2)
-        print(f"  [降级] {label} <- {desc} 失败: {type(last_err).__name__}: {str(last_err)[:70]}")
-    print(f"  [失败] {label}: 全部来源均不可用，本图将不含该指数")
-    return None, ""
-# ════════════════════════ 中文字体(跨平台) ════════════════════════
-def setup_font():
-    preferred = ["Microsoft YaHei", "SimHei", "PingFang SC", "Hiragino Sans GB",
-                 "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
-                 "WenQuanYi Micro Hei", "WenQuanYi Zen Hei", "Arial Unicode MS"]
-    installed = {f.name for f in font_manager.fontManager.ttflist}
-    chosen = [n for n in preferred if n in installed]
-    if not chosen:  # 常见字体文件路径兜底注册
-        for path in ("/usr/share/fonts/truetype/chinese/NotoSansSC-Regular.ttf",
-                     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-                     "C:/Windows/Fonts/msyh.ttc",
-                     "/System/Library/Fonts/PingFang.ttc"):
-            try:
-                if os.path.exists(path):
-                    font_manager.fontManager.addfont(path)
-                    chosen = [font_manager.FontProperties(fname=path).get_name()]
-                    break
-            except Exception:                                 # noqa: BLE001
-                pass
-    if chosen:
-        plt.rcParams["font.sans-serif"] = chosen + ["DejaVu Sans"]
-    else:
-        print("警告: 未找到中文字体，图中中文可能显示为方块(可安装微软雅黑/思源黑体后重试)")
-    plt.rcParams["axes.unicode_minus"] = False
 
 # ════════════════════════ 绘图 ════════════════════════
 def plot(cur: dict, sources: dict, failed: list):
