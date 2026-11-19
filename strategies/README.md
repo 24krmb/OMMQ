@@ -1,6 +1,6 @@
 ## 策略脚本
 
-`strategies/` 下的脚本**独立于技能体系**,直接用拉取公开数据并出图,可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`(编号规则见 `strategies/plot_paths.py`:核心八图 01–08、扩展研究图 09 起,参数化脚本以代码作后缀避免覆盖)；股票财务脚本导出的 CSV 数据文件仍存 `strategies/output/financials/`。
+`strategies/` 下的脚本**独立于技能体系**,直接用拉取数据并出图,可单独运行或作为取数参考。图表产物按**当天日期**统一写入 `reports/YYYYMMDD/`;
 
 | 脚本 | 用途 |
 | --- | --- |
@@ -24,9 +24,10 @@
 | stock/global_index_5y_mdd.py | 标普500 vs 沪深300:近5年累计收益与最大回撤对比 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
-| stock/neff_value_strategy.py | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
+| stock/neff_value_strategy.py | John Neff低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
 | stock/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
 | stock/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
 | stock/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
+| stock/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。
