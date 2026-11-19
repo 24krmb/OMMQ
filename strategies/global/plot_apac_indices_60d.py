@@ -10,6 +10,8 @@
 口径提醒 : 各指数以本币计价、未做汇率调整，且均为价格指数(不含分红)。
 用法     : python plot_apac_indices_60d.py
 取数     : 复用同目录 gindex_fetch.py(多源降级 + 重试 + 中文字体)
+输出     : reports/YYYYMMDD/29_apac_index_60d.png(编号遵循 strategies/plot_paths.py)
+依赖     : akshare>=1.20  pandas  matplotlib  requests
 """
 
 import os

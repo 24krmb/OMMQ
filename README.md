@@ -48,7 +48,8 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | global/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
 | global/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
-| global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比 |
+| global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图 |
+| global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图(泛欧Stoxx50+7国) |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。
