@@ -44,7 +44,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | stock/global_index_5y_mdd.py | 标普500 vs 沪深300:近5年累计收益与最大回撤对比 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
-| stock/neff_value_strategy.py | 约翰·内夫(John Neff)低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
+| stock/neff_value_strategy.py | John Neff低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
 | stock/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
 | stock/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
 | stock/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
@@ -126,37 +126,6 @@ You are in code review mode. Focus on:
 
 Provide constructive feedback without making direct changes.
 ```
-
-## OpenCode 文档(docs/)
-
-`docs/` 收录 OpenCode 官方文档的本地存档(英文原文),便于离线查阅与 Agent 按需引用;内容以 [opencode.ai/docs](https://opencode.ai/docs) 为准。项目自定义的 Agent、技能与规则见 `AGENTS.md` 与 `.opencode/`。
-
-| 文档 | 主题 |
-| --- | --- |
-| [platform.md](docs/platform.md) | 平台总览:CLI / 桌面 / Web 下载安装、Docker、接入 Provider |
-| [cli.md](docs/cli.md) | CLI 使用(命令与 TUI) |
-| [console.md](docs/console.md) | OpenCode Console 云端服务:工作区、模型推理、预算与团队策略 |
-| [config.md](docs/config.md) | `opencode.jsonc` 配置(全局/系统级位置与常用选项) |
-| [providers.md](docs/providers.md) | LLM Provider 接入与自定义配置 |
-| [models.md](docs/models.md) | 模型列表、切换与 variant 参数 |
-| [mcp-servers.md](docs/mcp-servers.md) | MCP 服务器接入配置 |
-| [agents.md](docs/agents.md) | 自定义 Agent:system prompt、模式、模型、权限、步骤数 |
-| [skills.md](docs/skills.md) | 技能:`SKILL.md` 编写、发现位置与触发机制 |
-| [commands.md](docs/commands.md) | 自定义斜杠命令(`/review` 等) |
-| [plugins.md](docs/plugins.md) | 插件开发与加载 |
-| [formatters.md](docs/formatters.md) | 代码格式化工具集成 |
-| [tools.md](docs/tools.md) | 内置工具总览与工具级配置 |
-| [permissions.md](docs/permissions.md) | 工具权限规则:`allow` / `ask` / `deny` |
-| [policies.md](docs/policies.md) | 策略:二元强制规则,只收紧权限、从不提示 |
-| [network.md](docs/network.md) | 代理(`HTTP_PROXY` / `NO_PROXY`)等网络设置 |
-| [websearch.md](docs/websearch.md) | 联网搜索:Provider 选择与用法 |
-| [instructions.md](docs/instructions.md) | `AGENTS.md` 项目级持久化指引 |
-| [references.md](docs/references.md) | 引用(别名挂载)项目外目录 |
-| [attachments.md](docs/attachments.md) | 向 prompt 附加本地文件(截图、CSV 等) |
-| [compaction.md](docs/compaction.md) | 长会话上下文压缩(摘要 + 保留近期对话) |
-| [warming.md](docs/warming.md) | 会话保温:暂停期间维持 Provider 侧 prompt 缓存 |
-| [snapshots.md](docs/snapshots.md) | 快照:`/undo` 一并回滚对话与文件改动 |
-| [themes.md](docs/themes.md) | 界面主题定制 |
 
 ## 目录结构
 
@@ -325,6 +294,37 @@ pip install -U akshare
 | `tqcenter` 导入失败 | 将通达信 `PYPlugins\user` 目录加入 `sys.path`,并优先使用 `sys.path.insert(0, ...)`   |
 | `talib` 导入报错    | 使用本项目的 `TA-Lib 0.8.3`(PyPI 预编译 wheel),`pip install -r requirements.txt` 即可,无需单独安装 C 库 |
 | 数据缺失            | 如实标注缺失项,**不得编造**；必要时改用 Akshare 补充数据源   |
+
+## OpenCode 文档(docs/)
+
+`docs/` 收录 OpenCode 官方文档的本地存档(英文原文),便于离线查阅与 Agent 按需引用;内容以 [opencode.ai/docs](https://opencode.ai/docs) 为准。项目自定义的 Agent、技能与规则见 `AGENTS.md` 与 `.opencode/`。
+
+| 文档 | 主题 |
+| --- | --- |
+| [platform.md](docs/platform.md) | 平台总览:CLI / 桌面 / Web 下载安装、Docker、接入 Provider |
+| [cli.md](docs/cli.md) | CLI 使用(命令与 TUI) |
+| [console.md](docs/console.md) | OpenCode Console 云端服务:工作区、模型推理、预算与团队策略 |
+| [config.md](docs/config.md) | `opencode.jsonc` 配置(全局/系统级位置与常用选项) |
+| [providers.md](docs/providers.md) | LLM Provider 接入与自定义配置 |
+| [models.md](docs/models.md) | 模型列表、切换与 variant 参数 |
+| [mcp-servers.md](docs/mcp-servers.md) | MCP 服务器接入配置 |
+| [agents.md](docs/agents.md) | 自定义 Agent:system prompt、模式、模型、权限、步骤数 |
+| [skills.md](docs/skills.md) | 技能:`SKILL.md` 编写、发现位置与触发机制 |
+| [commands.md](docs/commands.md) | 自定义斜杠命令(`/review` 等) |
+| [plugins.md](docs/plugins.md) | 插件开发与加载 |
+| [formatters.md](docs/formatters.md) | 代码格式化工具集成 |
+| [tools.md](docs/tools.md) | 内置工具总览与工具级配置 |
+| [permissions.md](docs/permissions.md) | 工具权限规则:`allow` / `ask` / `deny` |
+| [policies.md](docs/policies.md) | 策略:二元强制规则,只收紧权限、从不提示 |
+| [network.md](docs/network.md) | 代理(`HTTP_PROXY` / `NO_PROXY`)等网络设置 |
+| [websearch.md](docs/websearch.md) | 联网搜索:Provider 选择与用法 |
+| [instructions.md](docs/instructions.md) | `AGENTS.md` 项目级持久化指引 |
+| [references.md](docs/references.md) | 引用(别名挂载)项目外目录 |
+| [attachments.md](docs/attachments.md) | 向 prompt 附加本地文件(截图、CSV 等) |
+| [compaction.md](docs/compaction.md) | 长会话上下文压缩(摘要 + 保留近期对话) |
+| [warming.md](docs/warming.md) | 会话保温:暂停期间维持 Provider 侧 prompt 缓存 |
+| [snapshots.md](docs/snapshots.md) | 快照:`/undo` 一并回滚对话与文件改动 |
+| [themes.md](docs/themes.md) | 界面主题定制 |
 
 ## 提交信息规范
 

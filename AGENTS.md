@@ -17,7 +17,7 @@ If the `.venv` directory does not exist in the project root, create the virtual 
 - Windows 用 `.\.venv\Scripts\python.exe`,macOS/Linux 用 `.venv/bin/python`;`.venv` 不入库,本机缺失时先 `python3 -m venv .venv` 再装依赖。
 - Python ≥ 3.12;依赖以根目录 `requirements.txt` 全量锁定(akshare、TA-Lib 0.8.3 预编译 wheel 无需装 C 库);**不要改锁定版本**。
 - tqcenter 本地 HTTP(`127.0.0.1:17709`,JSON-RPC)仅 **Windows 通达信客户端**可用;macOS/Linux 取数改用 `tdx-aidata`(libTdxAiData.dylib)、gildata-aidata 远程 MCP(需用户级环境变量 `GILDATA_API_KEY`,`{env:...}` 在服务启动时解析,改密钥后必须重启 OpenCode)或 akshare。
-- tqsdk 为可选依赖(固定 3.10.4):`pip install -r strategies/tqsdk/requirements.txt`;快期账号走 `YOUR_ACCOUNT` / `YOUR_PASSWORD` 环境变量。
+- tqsdk 为期货实盘可选依赖:`pip install -r strategies/tqsdk/requirements.txt`;账号和密码走 `YOUR_ACCOUNT` / `YOUR_PASSWORD` 环境变量。
 
 ## 脚本与产物
 
@@ -30,15 +30,13 @@ If the `.venv` directory does not exist in the project root, create the virtual 
 
 ## Agent 调度
 
-- 投研任务优先复用 `strategies/` 下现成脚本,再走技能取数。
+- 投研任务优先复用 `strategies/` 下现成脚本,再走技能取数。详见 [README.md](./strategies/README.md)
 - 主 Agent:Build(默认)/ Plan / Explore;子 Agent:TdxQuant(通达信投研)、Futures(TqSdk 期货)、General(多步任务)。定义在 `.opencode/agents/`。
-- 技能在 `.opencode/skills/`,按任务类型加载:取数 tdx-tq-local/tdx-quant/tdx-aidata;分析 tdx-financial-quick-read / tdx-stock-analysis / tdx-gszddf / tdx-valuation-navigator / tdx-dragon-tiger-miner / tdx-yjygby;收盘复盘 market-close-analysis;期货 tqsdk-trading-and-data;热点 a-market-hotspot-discovery(走 gildata-aidata)。
+- 技能在 `.opencode/skills/`,按任务类型加载;
 
 ## 绘图铁律
 
-1. 红涨绿跌;配色统一:红 `#F36`、绿 `#0C9`、蓝 `#99F`、黄 `#FC3`,标题与坐标文字色 `#27254c`;
-2. 图表来源一律标注 `OMMQ`,不标注具体上游数据源;
-3. 所有面向用户的文本与图表用**中文**;
+红涨绿跌;配色统一:红 `#F36`、绿 `#0C9`、蓝 `#99F`、黄 `#FC3`,标题与坐标文字色 `#27254c`;图表来源一律标注 `OMMQ`,不标注具体上游数据源;所有面向用户的文本与图表用**中文**;
 
 ## 数据与安全硬规则
 
