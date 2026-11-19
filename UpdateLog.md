@@ -20,6 +20,7 @@
 ### 目录调整
 - 新建 `strategies/global/`,6 个全球市场脚本从 `strategies/stock/` 迁入:`plot_global_indices_60d.py`(编号 16)、`plot_spx_vix_60d.py`(27)、`plot_acwi_ftseaw_60d.py`(28)、`global_index_week_curve.py`(15)、`global_index_5y_mdd.py`(22)、`trend_charts.py`(17–20);同层平移不动代码,`sys.path` 注入与 `plot_paths` / `plot_utils` 的复用关系不变,README 与 `strategies/README.md` 表内前缀、各脚本 docstring 的用法行同步改为 `strategies/global/`
 - **撞号修正**:`trend_charts.py` 的四张图占用 17/18/19/20(编号写在 `groups` 的 `no=` 字段,此前只按 `OUT_NO` 与 `report_image_path(N)` 扫描因而漏掉),导致 `plot_spx_vix_60d.py` 的 17、`plot_acwi_ftseaw_60d.py` 的 18 与它重复;现改为 17→27、18→28,全库编号恢复唯一(1–28 连续无缺口)
+- README 与 `strategies/README.md` 的脚本表按目录重排为连续分组:stock 14 行 → futures 4 行 → global 6 行 → `fetch_daily.py`;共 25 行,行文字一字未改,仅顺序变化
 
 ## 2026-11-18 (V1.2.1)
 
