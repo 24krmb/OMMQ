@@ -27,7 +27,7 @@
 
 输出:
     - reports/YYYYMMDD/23_sector.png / 24_sector_avg.png / 25_sector_5d.png / 26_oi_change.png
-    - strategies/output/futures/YYYYMMDD_snapshot.csv(当日全市场快照表)
+    - reports/YYYYMMDD/futures_snapshot.csv(当日全市场快照表)
 运行:.venv/bin/python strategies/futures/futures_sector_review.py
 """
 
@@ -50,7 +50,7 @@ from matplotlib.patches import Patch
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from plot_paths import report_image_path
+from plot_paths import report_file_path, report_image_path
 
 warnings.filterwarnings("ignore")
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
@@ -66,9 +66,6 @@ UP_COLOR = "#F36"    # 红涨
 DOWN_COLOR = "#0C9"  # 绿跌
 BLUE = "#99F"
 YELLOW = "#FC3"
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_DIR = os.path.join(ROOT, "output", "futures")
 
 EXCLUDE_EXCHANGE = {"cffex"}  # 剔除金融期货
 EXCHANGE_ZH = {
@@ -218,8 +215,7 @@ def build_snapshot(today: dt.date) -> pd.DataFrame:
             "最新价", "昨收盘", "昨结算", "均价", "涨跌幅(%)", "成交量", "持仓量"]
     df = df[cols].sort_values("代码").reset_index(drop=True)
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    csv_path = os.path.join(OUT_DIR, f"{today:%Y%m%d}_snapshot.csv")
+    csv_path = report_file_path("futures_snapshot", "csv")
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
     print(f"快照已保存: {csv_path}(共 {len(df)} 个品种)")
     return df

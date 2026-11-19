@@ -24,8 +24,8 @@ If the `.venv` directory does not exist in the project root, create the virtual 
 - 脚本从**仓库根目录**运行:`.venv/bin/python strategies/<stock|global>/xxx.py [参数]`,参数见脚本头部注释;`stock/` 放 A股个股与板块,`global/` 放全球指数(标普/纳指/恒指/日经/宽基等,取数走新浪·东财·CBOE·ETF,不走通达信)。
 - 图表统一写入 `reports/YYYYMMDD/`,编号规则见 `strategies/plot_paths.py`(核心八图 01–08、扩展图 09 起、参数化脚本以代码为后缀如 `10_600519.png`);**不要顺手修改编号规则**。报告正文用相对路径 `./<NN>.png` 嵌图。
 - 复用工具前先把仓库根加入 `sys.path`:`sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))`,再 `from plot_paths import report_image_path`(根目录 `plot_utils.py` 同理),勿重复造轮子。
-- 财务 CSV → `strategies/output/financials/`;日线缓存 → `data/daily/`(parquet,`fetch_daily.py` 生成)。
-- 以下均为运行产物、**不入库**:`reports/`、`strategies/output/`、`data/`、`backtest/data|output/`、`自定义数据/`、`自定义指标/`、`neff_value_strategy_tdx.py`(开发中)。需长期保留的案例放 `.opencode/Example/` 或 `backtest/archive/`(这两个入库)。
+- 财务/期货快照 CSV 统一写入 `reports/YYYYMMDD/`(与图表同目录,编号扁平命名,如 `12_600519_主要财务指标.csv`、`futures_snapshot.csv`);日线缓存仍在 `data/daily/`(parquet,`fetch_daily.py` 生成)。
+- 以下均为运行产物、**不入库**:`reports/`、`strategies/output/`(旧版残留目录,已无脚本写入,可手动删除)、`data/`、`backtest/data|output/`、`自定义数据/`、`自定义指标/`、`neff_value_strategy_tdx.py`(开发中)。需长期保留的案例放 `.opencode/Example/` 或 `backtest/archive/`(这两个入库)。
 - 回测入口 `backtest/equal_weight_backtest.py`:fetch/process/all 三阶段,`--board xflt|scqlt`,fetch 需本机通达信在线(process 不需要),支持断点续传。
 
 ## Agent 调度

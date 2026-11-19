@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 """plot_paths — 统一产物归档路径(按当前日期落盘 reports/)
 
-所有图表与文章产物统一写入 reports/<当天日期>/,与报告 Markdown 同目录:
+所有图表、CSV 数据与文章产物统一写入 reports/<当天日期>/,与报告 Markdown 同目录:
     - 核心八图编号固定:01 全景 / 02 情绪 / 03 板块TOP5 / 04 轮动热力图 /
       05 两融资金 / 06 期货TOP5 / 07 期货量仓 / 08 期货基差
     - 扩展与研究图从 09 起；参数化脚本以代码作后缀避免同日覆盖,如 10_600519.png
-    - 报告正文用相对路径 ./<NN>.png 嵌入图片
+    - CSV 数据文件同样写入 reports/YYYYMMDD/,编号与同名图表一致(扁平命名,
+      形如 <NN>[_<aux>][_<名称>].csv),如 12_600519_主要财务指标.csv 与 12_600519.png 同目录
+    - 报告正文用相对路径 ./<NN>.png 嵌入图片、./<NN>_xxx.csv 引用数据
 
-用法(strategies/stock 与 strategies/futures 下的脚本,导入前先把 strategies/ 目录加入 sys.path):
+用法(strategies/stock、futures 与 global 下的脚本,导入前先把 strategies/ 目录加入 sys.path):
     import os, sys
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from plot_paths import report_image_path
+    from plot_paths import report_image_path, report_data_path, report_file_path
     out = report_image_path(7)            # -> reports/20261023/07.png
     out = report_image_path(10, code)     # -> reports/20261023/10_600519.png
+    csv = report_data_path(12, "600519", "主要财务指标")  # -> reports/20261023/12_600519_主要财务指标.csv
+    csv = report_file_path("futures_snapshot", "csv")    # -> reports/20261023/futures_snapshot.csv
 """
 
 from __future__ import annotations
@@ -32,3 +36,20 @@ def report_image_path(no: int, aux: str = "", date: dt.date | None = None) -> st
     """当天日期目录下的编号图片路径:reports/YYYYMMDD/<NN>[_<aux>].png。"""
     name = f"{no:02d}_{aux}.png" if aux else f"{no:02d}.png"
     return os.path.join(report_dir(date), name)
+
+
+def report_file_path(name: str, ext: str = "", date: dt.date | None = None) -> str:
+    """当天日期目录下的任意产物:reports/YYYYMMDD/<name><ext>(ext 可带或不带点)。"""
+    if ext and not ext.startswith("."):
+        ext = "." + ext
+    return os.path.join(report_dir(date), f"{name}{ext}")
+
+
+def report_data_path(no: int, aux: str = "", name: str = "", date: dt.date | None = None) -> str:
+    """当天日期目录下的数据文件:reports/YYYYMMDD/<NN>[_<aux>][_<name>].csv。"""
+    parts = [f"{no:02d}"]
+    if aux:
+        parts.append(aux)
+    if name:
+        parts.append(name)
+    return report_file_path("_".join(parts), ".csv", date)

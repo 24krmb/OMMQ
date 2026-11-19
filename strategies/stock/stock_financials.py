@@ -7,8 +7,8 @@
       ak.stock_financial_report_sina(symbol="sh600519", indicator="利润表")
 
 说明:东方财富接口在本机被限流,故采用同花顺 + 源。
-输出:strategies/output/financials/<代码>/*.csv(utf-8-sig,Excel 可直接打开)
-      reports/YYYYMMDD/12_<代码>.png(中文图表；CSV 数据仍存 strategies/output/)
+输出:reports/YYYYMMDD/12_<代码>_<指标或报表名>.csv(utf-8-sig,Excel 可直接打开)
+      reports/YYYYMMDD/12_<代码>.png(中文图表，与 CSV 同目录同前缀)
 运行:uv run python strategies/stock/stock_financials.py [股票代码]   # 默认 600519
 """
 
@@ -25,7 +25,7 @@ import pandas as pd
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from plot_paths import report_image_path
+from plot_paths import report_data_path, report_dir, report_image_path
 
 matplotlib.rcParams["font.sans-serif"] = ["PingFang SC","Noto Sans SC","Microsoft YaHei", "Arial Unicode MS"]
 matplotlib.rcParams["axes.unicode_minus"] = False
@@ -35,8 +35,6 @@ matplotlib.rcParams["axes.labelcolor"] = "#27254c"
 matplotlib.rcParams["axes.titlecolor"] = "#27254c"
 matplotlib.rcParams["xtick.color"] = "#27254c"
 matplotlib.rcParams["ytick.color"] = "#27254c"
-
-OUT_DIR = "strategies/output/financials"
 
 REPORTS = ("利润表", "资产负债表", "现金流量表")
 QUARTERS = 12  # 图表展示最近多少个季度
@@ -149,7 +147,7 @@ def _single_quarter(values: list[float], years: list[str]) -> list[float]:
     return out
 
 
-def plot_overview(code: str, ind: pd.DataFrame, out_dir: str) -> str | None:
+def plot_overview(code: str, ind: pd.DataFrame) -> str | None:
     """按季度绘制中文财务概览图表(营收/净利/EPS 为单季口径)。"""
     df = ind.copy()
     df["报告期"] = df["报告期"].astype(str)
@@ -237,14 +235,12 @@ def plot_overview(code: str, ind: pd.DataFrame, out_dir: str) -> str | None:
 def main() -> None:
     code = sys.argv[1].strip() if len(sys.argv) > 1 else "600519"
     stock = sina_prefix(code)
-    out_dir = os.path.join(OUT_DIR, code)
-    os.makedirs(out_dir, exist_ok=True)
     print(f"标的:{code} (代码 {stock})\n")
 
     # 1) 主要财务指标
     try:
         ind = fetch_main_indicators(code)
-        path = os.path.join(out_dir, "主要财务指标.csv")
+        path = report_data_path(12, code, "主要财务指标")
         ind.to_csv(path, index=False, encoding="utf-8-sig")
         print(f"[OK] 主要财务指标: {ind.shape[0]} 期 x {ind.shape[1]} 指标 -> {path}")
         latest = ind.sort_values("报告期", ascending=False).head(3)
@@ -253,7 +249,7 @@ def main() -> None:
         print("\n最近 3 期主要指标:")
         print(latest[show].to_string(index=False))
 
-        chart = plot_overview(code, ind, out_dir)
+        chart = plot_overview(code, ind)
         if chart:
             print(f"[OK] 财务概览图表 -> {chart}")
     except Exception as e:  # noqa: BLE001
@@ -264,14 +260,14 @@ def main() -> None:
     for name in REPORTS:
         try:
             df = fetch_report(stock, name)
-            path = os.path.join(out_dir, f"{name}.csv")
+            path = report_data_path(12, code, name)
             df.to_csv(path, index=False, encoding="utf-8-sig")
             periods = df.shape[0]
             print(f"[OK] {name}: {periods} 期 x {df.shape[1]} 项 -> {path}")
         except Exception as e:  # noqa: BLE001
             print(f"[失败] {name}: {type(e).__name__} {e}")
 
-    print(f"\n全部数据已保存至:{out_dir}")
+    print(f"\n全部数据已保存至:{report_dir()}")
 
 
 if __name__ == "__main__":

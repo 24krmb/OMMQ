@@ -22,6 +22,12 @@
 - **撞号修正**:`trend_charts.py` 的四张图占用 17/18/19/20(编号写在 `groups` 的 `no=` 字段,此前只按 `OUT_NO` 与 `report_image_path(N)` 扫描因而漏掉),导致 `plot_spx_vix_60d.py` 的 17、`plot_acwi_ftseaw_60d.py` 的 18 与它重复;现改为 17→27、18→28,全库编号恢复唯一(1–28 连续无缺口)
 - README 与 `strategies/README.md` 的脚本表按目录重排为连续分组:stock 14 行 → futures 4 行 → global 6 行 → `fetch_daily.py`;共 25 行,行文字一字未改,仅顺序变化
 
+### 产物归档统一(CSV)
+- 财务 CSV 由 `strategies/output/financials/<代码>/<名称>.csv` 迁至 `reports/YYYYMMDD/12_<代码>_<名称>.csv`(如 `12_600519_主要财务指标.csv`),与 `12_<代码>.png` 同目录同前缀;`utf-8-sig` 编码不变
+- 期货板块复盘的全市场快照由 `strategies/output/futures/YYYYMMDD_snapshot.csv` 迁至 `reports/YYYYMMDD/futures_snapshot.csv`
+- `strategies/output/` 自此成为纯历史残留目录,已无脚本写入;`.gitignore` 保留该忽略项以防误入库
+- `strategies/plot_paths.py` 新增 `report_file_path`(任意产物)与 `report_data_path`(编号 CSV)两个路径函数;`stock_financials.py`、`futures_sector_review.py` 改用之,`plot_overview` 去掉未使用的 `out_dir` 参数
+
 ## 2026-11-18 (V1.2.1)
 
 ### 绘图
