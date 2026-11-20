@@ -31,8 +31,9 @@
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
 | global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图 |
 | global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图 |
+| global/plot_gold_silver_ratio_120d.py | 国际金银比近120个交易日走势 + 比值最大回撤 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 
-**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(指数多源降级取数 + 中文字体回退,供 `global/` 下五个 60 日脚本与 `stock/plot_ashare_indices_60d.py` 复用;A股另有 `csindex_a`(中证官网)/`cni_a`(国证官网)兜底源);不属于脚本清单,不单独运行。
+**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(指数多源降级取数 + 中文字体回退,供 `global/` 下五个 60 日脚本与 `stock/plot_ashare_indices_60d.py` 复用;A股另有 `csindex_a`(中证官网)/`cni_a`(国证官网)兜底源);`global/plot_gold_silver_ratio_120d.py` 只复用其 `_series`(序列清洗)与 `setup_font`,金银比按"配对"降级、不走 `fetch_index`;均不属于脚本清单,不单独运行。
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。
