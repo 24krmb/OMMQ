@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-"""全球指数共享取数模块(供 plot_global_indices_60d / plot_spx_vix_60d / plot_acwi_ftseaw_60d 复用)
+"""全球/A股指数共享取数模块(供 plot_global_indices_60d / plot_spx_vix_60d / plot_acwi_ftseaw_60d / plot_ashare_indices_60d 复用)
 内容:
     _series        : 任意 (dates, closes) 归一为干净日线 Series(去重、去非正、按日期升序)
     fetch_index    : 按"降级清单"依次取数,每个来源重试 2 次,全失败返回 (None, "")
-    sina_* / em_global / yahoo_chart : 各上游的单序列取数封装
+    sina_* / em_global / yahoo_chart / csindex_a / cni_a : 各上游的单序列取数封装
     setup_font     : 中文字体优先本机已安装字体,避免变体字回退成细体
 用法:from gindex_fetch import fetch_index, sina_us, em_global, yahoo_chart, setup_font
-      (脚本从仓库根目录运行,同目录模块由 sys.path 注入后可直接 import)
+      (脚本从仓库根目录运行,同目录模块由 sys.path 注入后可直接 import;
+       strategies/stock 下的 A股脚本同样注入本目录以复用降级与字体逻辑)
 注意:真指数(MSCI ACWI、富时 All-World)无免费日线,ETF 代理取数见 plot_acwi_ftseaw_60d.py
+      中证/国证官网接口的 start_date/end_date 默认值写死在函数签名里(且已过期),必须显式传区间
 """
 
 from __future__ import annotations
+import datetime as dt
 import os
 import sys
 import time
@@ -54,6 +57,24 @@ def sina_hk(symbol: str) -> pd.Series:
 def sina_a(symbol: str) -> pd.Series:
     df = ak.index_zh_daily_sina(symbol=symbol)
     return _series(df["date"], df["close"])
+
+def _recent(days: int) -> tuple:
+    """官网接口的显式区间(近 days 个自然日),避免沿用函数签名里过期的默认结束日。"""
+    end = dt.date.today()
+    start = end - dt.timedelta(days=days)
+    return f"{start:%Y%m%d}", f"{end:%Y%m%d}"
+
+def csindex_a(symbol: str, lookback_days: int = 220) -> pd.Series:
+    """中证指数官网(上证综指/上证50/中证500/中证1000 等中证系列)。"""
+    s0, s1 = _recent(lookback_days)
+    df = ak.index_hist_csindex(symbol=symbol, start_date=s0, end_date=s1)
+    return _series(df["日期"], df["收盘"])
+
+def cni_a(symbol: str, lookback_days: int = 220) -> pd.Series:
+    """国证指数官网(深证成指/创业板指/国证2000 等国证系列),发布比新浪晚一个交易日。"""
+    s0, s1 = _recent(lookback_days)
+    df = ak.index_hist_cni(symbol=symbol, start_date=s0, end_date=s1)
+    return _series(df["日期"], df["收盘价"])
 
 def sina_eem() -> pd.Series:
     df = ak.stock_us_hist_sina(symbol="EEM", period="daily")

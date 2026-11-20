@@ -18,6 +18,7 @@
 | stock/charts_demo.py | 绘图示例:折线、柱状、直方、热力图各一张 |
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
 | stock/neff_value_strategy.py | John Neff低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
+| stock/plot_ashare_indices_60d.py | A股主要宽基指数近60个交易日累计收益率对比图|
 | futures/futures_basis_spread.py | 期货基差与跨期价差:期货 vs 现货、近月 vs 远月、股指基差 |
 | futures/futures_top5_chart.py | 国内商品期货主力合约 涨幅/跌幅 TOP5 |
 | futures/futures_volume_oi.py | 期货量仓:主力合约成交量与持仓量、日增仓 |
@@ -29,9 +30,9 @@
 | global/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
 | global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图 |
-| global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图(泛欧Stoxx50 / 英德法瑞意荷西) |
+| global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图 |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
 
-**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(全球指数多源降级取数 + 中文字体回退,供 `global/` 下五个 60 日脚本复用);不属于脚本清单,不单独运行。
+**共享模块**:`plot_paths.py`(产物编号归档规则)、`global/gindex_fetch.py`(指数多源降级取数 + 中文字体回退,供 `global/` 下五个 60 日脚本与 `stock/plot_ashare_indices_60d.py` 复用;A股另有 `csindex_a`(中证官网)/`cni_a`(国证官网)兜底源);不属于脚本清单,不单独运行。
 
 **回测**:`backtest/equal_weight_backtest.py` 提供自定义板块等权指数回测(通达信数据,`--board xflt|scqlt` 参数化,fetch/process/all 三阶段,支持断点续传),历史报告见 `backtest/archive/`,详见 `backtest/README.md`。

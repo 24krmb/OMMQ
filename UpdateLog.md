@@ -8,6 +8,7 @@
 | global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差(ETF 代理:ACWI / VT) |
 | global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图(10 条,公共交易日对齐,编号 29 接 28 之后) |
 | global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图(泛欧 Stoxx50 + 英德法瑞意荷西 共 8 条,公共交易日对齐,编号 30) |
+| stock/plot_ashare_indices_60d.py | A股主要宽基指数近60个交易日累计收益率对比图(上证/深成/创业板/上证50/中证500/中证1000/国证2000 共 7 条,统一交易日对齐,编号 31) |
 
 ### 取数备忘
 - MSCI ACWI、富时 All-World 均为授权指数:akshare 无对应接口,东财全球指数清单(56 个)亦不含;本机雅虎 403、markets.ft.com 连接超时、stooq 返回 JS 校验页,故改用**同在美国收盘定价**的两只 ETF 作代理——ACWI(iShares MSCI ACWI)、VT(Vanguard Total World;基准为 FTSE Global Small Cap,即在 All-World 大中盘之外另含小盘)
@@ -24,6 +25,12 @@
 - 汇率取数坑:`ak.currency_boc_sina` 在 1.20.65 已改名 `fx_boc_rate_sina`,且实测对 2026-08 至今区间返回 0 行;改用美股货币 ETF(FXE / FXB / FXF / UUP)取汇率变动
 - 第二指数源比对(趁东财首调用得通抓到三条):荷兰AEX 1098.73 vs 新浪 1098.74、德国DAX 25736.24 两源完全一致、瑞士SMI 14886.12 vs 14886.13,窗口累计收益同为 -0.82% / -2.09% / +2.36%;Stoxx50 与富时100 未拿到东财第二源,以上一条的 ETF 残差佐证
 - 两源都把德国指数写作"DAX 30"(历史命名),序列数值一致;现行 DAX 为 40 只成分,故图内标注 `德国DAX40`,与图 16 同口径
+- A股 7 条宽基一律**新浪优先**(`index_zh_daily_sina`,代码带 `sh`/`sz` 前缀):连取 7 条无限流,全部新鲜到 11-19;东财 `index_zh_daily_em` / `index_zh_hist_em` 今日仍 `Push2RateLimitError`(单次调用即限,与亚太/欧洲脚本遇到的同一 IP 限制),故只作备用而未进主链路
+- akshare 1.20.65 的改名坑:`index_zh_a_hist` → `index_zh_hist_em`、`stock_zh_index_daily_em` → `index_zh_daily_em`,调用旧名直接 `AttributeError` 且提示"已在 1.20.44 改名"
+- 官网接口默认区间陷阱:`index_hist_csindex` 默认 `end_date='20261111'`、`index_hist_cni` 默认 `end_date='20240114'`(写死在函数签名里),不显式传区间就会拿到停更序列;`gindex_fetch` 新增的 `csindex_a` / `cni_a` 统一按"今日往前 220 自然日"传参
+- 第二源逐条验证(同日同区间 2026-08-19~11-18,新浪 vs 中证/国证官网):上证指数 -7.87% / -7.87%、中证500 -19.29% / -19.29%、深证成指 -23.26% / -23.26%、国证2000 -17.83% / -17.83%、创业板指 -33.45% / -33.45%,差值全部 0.000pp,末日收盘点位亦一致(3587.83 / 6282.22 / 10659.41 / 8023.45 / 2311.62);上证50、中证1000 另与中证官网逐日核对到 -0.0000% 误差
+- 国证官网发布节奏比新浪晚一个交易日(11-18 vs 11-19):若某条降级到官网源,公共日交集会把全图窗口整体前移一天,脚本会打印该提示;停更保护 `MAX_STALE_DAYS = 10` 沿用亚太/欧洲脚本口径
+- 幅度复核(避免误读为序列错误):本次窗口 上证50 -3.75% 而 创业板指 -34.39%、深证成指 -24.26%,大盘/小盘剪刀差真实存在;图注同时标明**上证指数是综合指数**(全部沪市上市股票计权),与其余成分指数口径不同
 
 ### 重构
 - 抽出共享取数模块 `strategies/global/gindex_fetch.py`:参数 `N_DAYS` / `WINDOW_ROWS` / `EM_CALL_PAUSE` 与 `_series`、`em_global`、`sina_us`、`sina_global`、`sina_hk`、`sina_a`、`sina_eem`、`yahoo_chart`、`fetch_index`、`setup_font`.原先这些长在 `plot_global_indices_60d.py` 里,`plot_spx_vix_60d.py`、`plot_acwi_ftseaw_60d.py` 只能"脚本 import 脚本";现三个脚本统一 `from gindex_fetch import …`,各自只保留指数清单、配色与绘图

@@ -38,6 +38,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | stock/charts_demo.py | 绘图示例:折线、柱状、直方、热力图各一张 |
 | stock/sector_equal_weight_curve.py | 自定义板块收益回测分析案例(**需本机通达信**取板块成分) |
 | stock/neff_value_strategy.py | John Neff低PE价值投资策略/选股/回测/监控/模板 4 个功能全部内置在里面 |
+| stock/plot_ashare_indices_60d.py | A股主要宽基指数近60个交易日累计收益率对比图 |
 | futures/futures_basis_spread.py | 期货基差与跨期价差:期货 vs 现货、近月 vs 远月、股指基差 |
 | futures/futures_top5_chart.py | 国内商品期货主力合约 涨幅/跌幅 TOP5 |
 | futures/futures_volume_oi.py | 期货量仓:主力合约成交量与持仓量、日增仓 |
@@ -47,7 +48,7 @@ OMMQ 是一个**轻量级、本地优先**的 A股、期货投研工作台,不�
 | global/trend_charts.py | 近三年“费半”、“七姐妹”走势对比图 |
 | global/plot_global_indices_60d.py | 全球主要股指近60个交易日累计收益率对比图 |
 | global/plot_spx_vix_60d.py | 标普500 近60个交易日累计收益+ VIX 恐慌指数 |
-| global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+ 两者收益差|
+| global/plot_acwi_ftseaw_60d.py | MSCI ACWI vs 富时All-World 近60个交易日累计收益+两者收益差|
 | global/plot_apac_indices_60d.py | 亚太主要股指近60个交易日累计收益率对比图 |
 | global/plot_euro_indices_60d.py | 欧洲主要股指近60个交易日累计收益率对比图(泛欧Stoxx50+7国) |
 | fetch_daily.py | 本地日线行情缓存:data/daily/ 按证券代码分文件(parquet) |
@@ -145,7 +146,7 @@ OMMQ/
 ├── strategies/                   # 量化策略与图表脚本
 │   ├── stock/                    # A 股相关脚本(除标注外基于 Akshare)
 │   ├── global/                   # 全球市场脚本(标普/纳指/恒指/日经/宽基,取数走新浪·东财·CBOE·ETF)
-│   │   └── gindex_fetch.py       # 全球指数共享取数模块(多源降级 + 中文字体回退)
+│   │   └── gindex_fetch.py       # 全球/A股指数共享取数模块(多源降级 + 中文字体回退)
 │   ├── futures/                  # 期货相关脚本(含股指期现基差)
 │   ├── tqsdk/                    # 期货量化脚本(需 tqsdk + 账户)
 │   ├── plot_paths.py             # 产物编号归档共享模块
